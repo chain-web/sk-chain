@@ -1,0 +1,24 @@
+{
+  "compilerOptions": {
+    "module": "ESNext",
+    "target": "ES2020",
+    "sourceMap": true,
+    "moduleResolution": "Node",
+    "resolveJsonModule": true,
+    "allowSyntheticDefaultImports": true,
+    "skipLibCheck": true,
+    "strict": true,
+    "declaration": true,
+    "isolatedModules": true,
+    "types": [
+      "node", "mocha",
+    ],
+    "lib": ["ESNext", "DOM"],
+    "outDir": "./dist",
+    "baseUrl": "./src",
+  },
+  "include": [
+    "./src/**/*.ts",
+    "./global.d.ts"
+  ]
+}
