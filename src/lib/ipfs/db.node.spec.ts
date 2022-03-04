@@ -1,8 +1,9 @@
 import { DidJson } from '../p2p/did';
-import { createIpfs, SKDB } from './ipfs';
+import { SKDB } from './ipfs.interface';
 import { resolve } from 'path';
 import { homedir } from 'os';
 import { equal } from 'assert';
+import { createIpfs } from './ipfs';
 const account: DidJson = {
   id: '12D3KooWL8qb3L8nKPjDtQmJU8jge5Qspsn6YLSBei9MsbTjJDr8',
   privKey:

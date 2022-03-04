@@ -1,4 +1,4 @@
-import { genTestDb } from '../ipfs/db.spec';
+import { genTestDb } from '../ipfs/db.node.spec';
 import { SKDB } from '../ipfs/ipfs.interface';
 import { Slice } from './slice';
 import { equal } from 'assert';

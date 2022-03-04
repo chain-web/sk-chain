@@ -105,7 +105,6 @@ export class Slice {
   };
 
   private refreshCurrPeers = async () => {
-    message.info('cur slice peer count: ', this.curPeers.size);
     const keys = [];
     for (const key of this.curPeers.keys()) {
       if (
