@@ -14,9 +14,9 @@ export class Slice {
   // 单个分片最小节点数
   static minCount = 64;
   // 发布自己活跃的信号间隔
-  static pubTimeout = 20 * 1000;
+  static pubTimeout = 8 * 1000;
   // 节点不活跃后被判定为离线的时间间隔
-  static peerOfflineTimeout = Slice.pubTimeout * 8;
+  static peerOfflineTimeout = Slice.pubTimeout * 4;
   db: SKDB;
   peerId: string;
   _slice!: string;
@@ -26,6 +26,7 @@ export class Slice {
   curPeers: Map<string, { ts: number }> = new Map();
 
   set slice(str: string) {
+    // 主要是为了能自动更新nextSlice
     this._slice = str;
     this.nextSlice = this.getNextSlice(str);
     this.save();
@@ -44,7 +45,7 @@ export class Slice {
   public init = async () => {
     lifecycleEvents.emit(lifecycleStap.initingSlice);
 
-    // 把缓存里的当前节点prres拿出来
+    // 把缓存里的当前节点prees拿出来
     const cid = this.db.cache.get(this.slicePeersCacheName);
     if (cid) {
       const cidObj = this.db.CID.parse(cid);
