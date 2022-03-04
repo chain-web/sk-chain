@@ -45,7 +45,7 @@ export class Slice {
   public init = async () => {
     lifecycleEvents.emit(lifecycleStap.initingSlice);
 
-    // 把缓存里的当前节点prees拿出来
+    // 把缓存里的当前节点peers拿出来
     const cid = this.db.cache.get(this.slicePeersCacheName);
     if (cid) {
       const cidObj = this.db.CID.parse(cid);
