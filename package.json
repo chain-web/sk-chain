@@ -1,6 +1,6 @@
 {
   "name": "sk-chain",
-  "version": "1.0.0",
+  "version": "0.0.1",
   "description": "单独可以供浏览器端和node端使用的主链",
   "main": "dist/index.js",
   "type": "module",
@@ -11,8 +11,11 @@
   },
   "scripts": {
     "build": "tsc",
-    "dev":"rollup -c -w"
+    "dev": "rollup -c -w"
   },
+  "files": [
+    "dist"
+  ],
   "author": "scc",
   "license": "ISC",
   "devDependencies": {
@@ -26,6 +29,7 @@
   },
   "dependencies": {
     "bignumber.js": "^9.0.2",
+    "cwjsr": "^0.1.0",
     "ipfs": "^0.62.0",
     "ipfs-core": "^0.14.0",
     "it-pipe": "^2.0.3",
