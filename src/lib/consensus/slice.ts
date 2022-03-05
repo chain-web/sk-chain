@@ -14,7 +14,7 @@ export class Slice {
   // 单个分片最小节点数
   static minCount = 64;
   // 发布自己活跃的信号间隔
-  static pubTimeout = 8 * 1000;
+  static pubTimeout = 6 * 1000;
   // 节点不活跃后被判定为离线的时间间隔
   static peerOfflineTimeout = Slice.pubTimeout * 4;
   db: SKDB;
