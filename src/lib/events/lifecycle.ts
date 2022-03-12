@@ -13,8 +13,7 @@ export enum lifecycleStap {
   'checkedGenesisBlock' = 'checkedGenesisBlock',
   'initingSlice' = 'initingSlice',
   'initedSlice' = 'initedSlice',
-  'startFilterPeers' = 'startFilterPeers',
-  'filterPeersDone' = 'filterPeersDone',
+  'initedContract' = 'initedContract',
 }
 
 Object.keys(lifecycleStap).forEach((key) => {

@@ -4,7 +4,7 @@ specifiers:
   '@types/mocha': ^9.1.0
   '@types/node': ^17.0.14
   bignumber.js: ^9.0.2
-  cwjsr: ^0.1.0
+  cwjsr: ^0.1.2
   ipfs: ^0.62.0
   ipfs-core: ^0.14.0
   it-pipe: ^2.0.3
@@ -20,7 +20,7 @@ specifiers:
 
 dependencies:
   bignumber.js: 9.0.2
-  cwjsr: 0.1.0
+  cwjsr: 0.1.2
   ipfs: 0.62.0_node-fetch@3.2.0
   ipfs-core: 0.14.0_node-fetch@3.2.0
   it-pipe: 2.0.3
@@ -1267,8 +1267,8 @@ packages:
     dev: false
     optional: true
 
-  /cwjsr/0.1.0:
-    resolution: {integrity: sha512-SoGgx65O7VmN6i4Miy43Waf5D0xaZZ5UvGzqxyuPozxsZkoLyx6hn9W/1z+/Pn9jyPnl8oII9HhVEkOLMAHhEw==}
+  /cwjsr/0.1.2:
+    resolution: {integrity: sha512-PD7FFKU+lDGgJIemf6egKWSJztMRIlwBjsGO9yBWFF67NI19UJaa6am1NzmlKYmyG87GUPQOT7RvhZa8xj6Jdw==}
     dev: false
 
   /dag-jose/1.0.0:

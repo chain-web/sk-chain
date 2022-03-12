@@ -29,7 +29,7 @@
   },
   "dependencies": {
     "bignumber.js": "^9.0.2",
-    "cwjsr": "^0.1.0",
+    "cwjsr": "^0.1.2",
     "ipfs": "^0.62.0",
     "ipfs-core": "^0.14.0",
     "it-pipe": "^2.0.3",

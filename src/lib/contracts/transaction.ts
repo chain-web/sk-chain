@@ -1,9 +1,4 @@
-import { execCode } from 'lib/contract/runtime';
-import { bytes } from 'multiformats';
-
-const code = `
-  console.log('trans')
-`;
-
-//demo
-execCode(bytes.fromString(code));
+export const transContract = () => {
+  let a = 1;
+  return 1;
+};

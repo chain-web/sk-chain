@@ -7,11 +7,14 @@ import { bytes } from 'multiformats';
 import { verifyById } from '../p2p/did';
 import { message } from '../../utils/message';
 import { BlockHeaderData } from '../../mate/block';
+import { transContract } from 'lib/contracts/transaction';
+import { Contract } from 'lib/contract';
 
 // 处理交易活动
 export class TransactionAction {
   constructor(db: SKDB) {
     this.db = db;
+    this.contract = new Contract();
   }
 
   private waitTransMap: Map<number, Transaction[]> = new Map();
@@ -19,10 +22,12 @@ export class TransactionAction {
   private db: SKDB;
   // 头部块，块头
   private blockHeader: BlockHeaderData = null as unknown as BlockHeaderData;
+  private contract: Contract;
 
   init = async () => {
     await this.initTransactionListen();
     await this.startTransTask();
+    await this.contract.init();
   };
 
   startTransTask = async () => {
@@ -59,6 +64,9 @@ export class TransactionAction {
     await trans.genHash(this.db);
     message.info('handel--trans', trans);
     this.add(trans);
+    // test
+    const res = this.contract.runFunction(transContract);
+    message.info(res);
   };
 
   private initTransactionListen = async () => {
