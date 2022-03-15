@@ -13,6 +13,7 @@ import { Slice } from './lib/consensus/slice';
 import { signById } from './lib/p2p/did';
 import { message } from './utils/message';
 import { TransactionAction } from './lib/transaction';
+import { Ipld } from 'lib/ipld';
 
 export interface SKChainOption {
   genesis: GenesisConfig;
@@ -23,6 +24,7 @@ export class SKChain {
   constructor(option: SKChainOption) {
     lifecycleEvents.emit(lifecycleStap.startCreateSKChain);
     this.db = option.db;
+    this.ipld = new Ipld(this.db);
     this.did = this.db.cache.get(skCacheKeys.accountId);
     this.genesis = option.genesis;
     this.slice = new Slice(this.db);
@@ -34,7 +36,8 @@ export class SKChain {
   genesis: GenesisConfig;
   // 交易
   transAction: TransactionAction;
-
+  // 数据操作
+  ipld: Ipld;
   did: string;
   slice: Slice;
   inited = false;

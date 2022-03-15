@@ -2,15 +2,17 @@ import { BigNumber } from 'bignumber.js';
 import { CID } from './types';
 // 账户，基础数据结构
 export class Account {
-  constructor({ codeCid }: { codeCid?: CID }) {
+  constructor({ codeCid, account }: { codeCid?: CID, account: string }) {
     this.nonce = new BigNumber(0);
     this.balance = [];
+    this.account = account
     if (codeCid) {
       // 如果传入了
       this.codeCid = codeCid;
       this.storageRoot = this.generateStorageRoot();
     }
   }
+  account: string;
   // 当前账户交易次数
   private nonce: BigNumber;
   // 账户余额
@@ -25,7 +27,7 @@ export class Account {
   // 存储合约代码的地址
   private codeCid?: CID;
 
-  public static from = () => {};
+  public static from = () => { };
 
   // TODO
   // 合约账户首次创建时，创建合约存储地址
@@ -38,5 +40,5 @@ export class Account {
   };
 
   // 数据从内存提交到ipfs
-  commit = () => {};
+  commit = () => { };
 }
