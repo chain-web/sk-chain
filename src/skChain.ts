@@ -28,7 +28,7 @@ export class SKChain {
     this.did = this.db.cache.get(skCacheKeys.accountId);
     this.genesis = option.genesis;
     this.slice = new Slice(this.db);
-    this.transAction = new TransactionAction(this.db);
+    this.transAction = new TransactionAction(this.db, this.ipld);
   }
   // 数据存取服务
   db: SKDB;

@@ -1,3 +1,4 @@
+import { Ipld } from './../ipld/index';
 import BigNumber from 'bignumber.js';
 import { Transaction, transMeta } from '../../mate/transaction';
 import { Message } from 'ipfs-core-types/src/pubsub';
@@ -12,14 +13,16 @@ import { Contract } from 'lib/contract';
 
 // 处理交易活动
 export class TransactionAction {
-  constructor(db: SKDB) {
+  constructor(db: SKDB, ipld: Ipld) {
     this.db = db;
-    this.contract = new Contract();
+    this.ipld = ipld;
+    this.contract = new Contract(ipld);
   }
 
   private waitTransMap: Map<number, Transaction[]> = new Map();
   private transMap: Map<string, Transaction[]> = new Map();
   private db: SKDB;
+  ipld: Ipld;
   // 头部块，块头
   private blockHeader: BlockHeaderData = null as unknown as BlockHeaderData;
   private contract: Contract;

@@ -1,14 +1,20 @@
+import { Ipld } from './../ipld/index';
 import init, { evaluate } from 'cwjsr';
 import { lifecycleEvents, lifecycleStap } from 'lib/events/lifecycle';
 import { bytes } from 'multiformats';
 import { message } from 'utils/message';
 
 export class Contract {
-  constructor() {}
+  constructor(ipld: Ipld) {
+    this.ipld = ipld;
+  }
 
   ready = false;
+  ipld: Ipld;
 
   public init = async () => {
+    // 向智能合约内注入数据查询的方法
+    (window as any).__sk__ipld__getAccount = this.ipld.getAccount
     await init();
     this.ready = true;
     lifecycleEvents.emit(lifecycleStap.initedContract);
