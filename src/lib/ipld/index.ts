@@ -1,3 +1,4 @@
+import { BigNumber } from 'bignumber.js';
 import {
   createLink,
   createNode,
@@ -10,7 +11,15 @@ import { SKDB } from 'lib/ipfs/ipfs.interface';
 import { Account } from 'mate/account';
 import { CID } from 'multiformats';
 
-export type UpdateAccountI = Partial<Account> & { account: Account['account'] };
+export interface UpdateOps {
+  plus?: BigNumber;
+  minus?: BigNumber;
+  state?: any;
+}
+
+export type UpdateAccountI = { ops: UpdateOps } & {
+  account: Account['account'];
+};
 
 export class Ipld {
   constructor(db: SKDB) {
@@ -19,7 +28,7 @@ export class Ipld {
   db: SKDB;
 
   // 缓存未写入block的账户数据
-  private updates: Map<string, UpdateAccountI> = new Map();
+  private updates: Map<string, Account> = new Map();
 
   clearUpdates = () => {
     this.updates = new Map();
@@ -30,28 +39,35 @@ export class Ipld {
    * @param did
    * @returns
    */
-  getAccount = async (did: string) => {
+  getAccount = async (did: string): Promise<Account> => {
     if (this.updates.has(did)) {
-      return this.updates.get(did);
+      return this.updates.get(did) as Account;
     } else {
       return await this.getAccountFromDb(did);
     }
   };
 
-  getAccountFromDb = async (did: string) => {
+  getAccountFromDb = async (did: string): Promise<Account> => {
     this.db.block.get(CID.parse(did));
-    return 'account msg';
+    return 'account msg' as unknown as Account;
   };
 
   /**
    * 接收智能合约的执行结果，更新账户数据
    * @param account
    */
-  addUpdate = (account: UpdateAccountI) => {
-    this.updates.set(account.account, {
-      ...(this.updates.get(account.account) || {}),
-      ...account,
-    });
+  addUpdate = async (update: UpdateAccountI) => {
+    const account = await this.getAccount(update.account);
+    if (update.ops.plus) {
+      account.plusBlance(update.ops.plus);
+    }
+    if (update.ops.minus) {
+      account.minusBlance(update.ops.minus);
+    }
+    if (update.ops.state) {
+      account.updateState(update.ops.state);
+    }
+    this.updates.set(account.account, account);
   };
 
   /**

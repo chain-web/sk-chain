@@ -10,6 +10,7 @@ import { message } from '../../utils/message';
 import { BlockHeaderData } from '../../mate/block';
 import { transContract } from 'lib/contracts/transaction';
 import { Contract } from 'lib/contract';
+import { skCacheKeys } from 'lib/ipfs/key';
 
 // 处理交易活动
 export class TransactionAction {
@@ -19,8 +20,8 @@ export class TransactionAction {
     this.contract = new Contract(ipld);
   }
 
-  private waitTransMap: Map<number, Transaction[]> = new Map();
-  private transMap: Map<string, Transaction[]> = new Map();
+  private waitTransMap: Map<string, Transaction[]> = new Map(); // 等待执行的交易
+  private transQueue: Transaction[] = []; // 当前块可执行的交易
   private db: SKDB;
   ipld: Ipld;
   // 头部块，块头
@@ -29,21 +30,33 @@ export class TransactionAction {
 
   init = async () => {
     await this.initTransactionListen();
-    await this.startTransTask();
     await this.contract.init();
+    await this.startTransTask();
   };
 
   startTransTask = async () => {
     // 执行打包任务
-    // if () {}
+    const cArr: {contribute: BigNumber, did: string}[] = [];
+    for (const did of this.waitTransMap.keys()) {
+      const account = await this.ipld.getAccount(did);
+      cArr.push({
+        contribute: account.contribute,
+        did
+      });
+    }
+    const sortedArr = cArr.sort((a, b) =>
+      a.contribute.isLessThan(b.contribute) ? -1 : 1,
+    );
+    // 从 sortedArr 中找到contribute 高的交易者发起的交易
+    console.log(sortedArr)
   };
 
   private add = async (trans: Transaction) => {
-    const hasedTrans = this.waitTransMap.get(trans.ts);
+    const hasedTrans = this.waitTransMap.get(trans.from);
     if (hasedTrans) {
-      this.waitTransMap.set(trans.ts, [...hasedTrans, trans]);
+      this.waitTransMap.set(trans.from, [...hasedTrans, trans]);
     } else {
-      this.waitTransMap.set(trans.ts, [trans]);
+      this.waitTransMap.set(trans.from, [trans]);
     }
   };
 
@@ -86,6 +99,10 @@ export class TransactionAction {
 
   private receiveTransaction = async (data: Message) => {
     // 接收p2p网络里的交易，并塞到交易列表
+    if (data.from === this.db.cache.get(skCacheKeys.accountId)) {
+      // 不再处理自己发出的交易，因为已经直接添加到了队列
+      return;
+    }
     const tm: transMeta = JSON.parse(bytes.toString(data.data));
     const signature = tm.signature;
     if (
