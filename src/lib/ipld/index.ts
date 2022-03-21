@@ -40,11 +40,12 @@ export class Ipld {
 
   getAccountFromDb = async (did: string) => {
     this.db.block.get(CID.parse(did));
+    return 'account msg';
   };
 
   /**
    * 接收智能合约的执行结果，更新账户数据
-   * @param account 
+   * @param account
    */
   addUpdate = (account: UpdateAccountI) => {
     this.updates.set(account.account, {

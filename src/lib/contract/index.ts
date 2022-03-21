@@ -3,6 +3,7 @@ import init, { evaluate } from 'cwjsr';
 import { lifecycleEvents, lifecycleStap } from 'lib/events/lifecycle';
 import { bytes } from 'multiformats';
 import { message } from 'utils/message';
+import { Transaction } from 'mate/transaction';
 
 export class Contract {
   constructor(ipld: Ipld) {
@@ -14,7 +15,7 @@ export class Contract {
 
   public init = async () => {
     // 向智能合约内注入数据查询的方法
-    (window as any).__sk__ipld__getAccount = this.ipld.getAccount
+    window.__sk__ipld__getAccount = this.ipld.getAccount;
     await init();
     this.ready = true;
     lifecycleEvents.emit(lifecycleStap.initedContract);
@@ -25,9 +26,11 @@ export class Contract {
    * @param code [Function] js function
    * @returns
    */
-  runFunction = <T>(fn: (data: any) => T): string => {
+  runFunction = <T>(fn: (data: any) => T, params: any): string => {
     // function code string + run function by name()
-    const codeString = `const __sk_run__ = ${fn.toString()}; __sk_run__()`;
+    const codeString = `
+      const __sk_params__ = ${JSON.stringify(params)}
+      const __sk_run__ = ${fn.toString()}; __sk_run__(JSON.parse(__sk_params__))`;
     return evaluate(codeString);
   };
 

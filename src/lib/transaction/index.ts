@@ -68,7 +68,11 @@ export class TransactionAction {
     message.info('handel--trans', trans);
     this.add(trans);
     // test
-    const res = this.contract.runFunction(transContract);
+    const res = this.contract.runFunction(transContract, {
+      from: trans.from,
+      recipient: trans.recipient,
+      amount: trans.amount,
+    });
     message.info(res);
   };
 
