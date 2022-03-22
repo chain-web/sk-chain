@@ -10,6 +10,9 @@ import {
 import { SKDB } from 'lib/ipfs/ipfs.interface';
 import { Account } from 'mate/account';
 import { CID } from 'multiformats';
+import { skCacheKeys } from 'lib/ipfs/key';
+import { Block } from 'mate/block';
+import { getKey } from './mpt';
 
 export interface UpdateOps {
   plus?: BigNumber;
@@ -43,13 +46,25 @@ export class Ipld {
     if (this.updates.has(did)) {
       return this.updates.get(did) as Account;
     } else {
-      return await this.getAccountFromDb(did);
+      return await this.getAccountFromDb([did]);
     }
   };
 
-  getAccountFromDb = async (did: string): Promise<Account> => {
-    this.db.block.get(CID.parse(did));
-    return 'account msg' as unknown as Account;
+  getAccounts = async (did: string[]): Promise<Account[]> => {
+    return [];
+  };
+
+  getAccountFromDb = async (did: string[]): Promise<Account> => {
+    console.log(did);
+    const headerBlock = await Block.fromCidOnlyHeader(
+      this.db.cache.get(skCacheKeys['sk-block']),
+      this.db,
+    );
+    const stateRoot = headerBlock.header.stateRoot;
+    // TODO MPT 批量查找
+    const accountCid = await getKey(this.db, stateRoot, did[0]);
+
+    return await Account.fromCid(this.db, accountCid);
   };
 
   /**

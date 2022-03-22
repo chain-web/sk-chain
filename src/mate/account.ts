@@ -1,5 +1,6 @@
+import { SKDB } from '../lib/ipfs/ipfs.interface';
 import { BigNumber } from 'bignumber.js';
-import { CID } from './types';
+import { CID } from 'multiformats';
 // 账户，基础数据结构
 export class Account {
   constructor({
@@ -11,6 +12,7 @@ export class Account {
     account: string;
     contribute: BigNumber;
   }) {
+    // TODO cannot use
     this.nonce = new BigNumber(0);
     this.balance = [];
     this.account = account;
@@ -36,7 +38,10 @@ export class Account {
   // 存储合约代码的地址
   private codeCid?: CID;
 
-  public static from = () => {};
+  public static fromCid = async (db: SKDB, cid: string) => {
+    const accountData = (await db.dag.get(CID.parse(cid))).value;
+    return new Account({ ...accountData });
+  };
 
   // TODO
   // 合约账户首次创建时，创建合约存储地址
@@ -76,7 +81,7 @@ export class Account {
     this.balance[Date.now()] = amount;
   };
 
-  updateState = (data: any) => {}
+  updateState = (data: any) => {};
 
   // 数据从内存提交到ipfs
   commit = (amount: BigNumber) => {};

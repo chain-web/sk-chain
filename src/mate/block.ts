@@ -2,7 +2,8 @@ import BigNumber from 'bignumber.js';
 import { IPFS } from 'ipfs-core';
 import { Transaction } from './transaction';
 import type { cidHash } from './types';
-import type { CID } from 'multiformats/cid';
+import { CID } from 'multiformats/cid';
+import { SKDB } from 'lib/ipfs/ipfs.interface';
 
 export interface createBlockOpt {
   transactions: Transaction[];
@@ -10,7 +11,7 @@ export interface createBlockOpt {
 
 // 区块，块头基础数据结构
 export interface BlockHeaderData {
-  hash: cidHash; // 当前节点hash
+  hash?: cidHash; // 当前节点hash
   parent: CID; // 父级区块 stateRoot
   stateRoot: cidHash; // 全账户状态树根节点hash
   transactionsRoot: cidHash; // 当前块的交易树根节点hash
@@ -23,7 +24,7 @@ export interface BlockHeaderData {
   ts: number; // 当前块创建时间
   slice: [number, number]; // 分片信息
   extraData?: { [key: string]: unknown }; // 当前块自定义数据，不能超过？kb
-  body?: CID;
+  body?: string;
 }
 
 // 区块，块数据体基础数据结构
@@ -31,12 +32,12 @@ export interface BlockBodyData {
   transactions: Transaction[];
 }
 export class Block {
-  constructor(header: BlockHeaderData, body: BlockBodyData) {
+  constructor(header: Omit<BlockHeaderData, 'hash'>, body?: BlockBodyData) {
     this.body = body;
     this.header = header;
   }
   header: BlockHeaderData;
-  body: BlockBodyData;
+  body?: BlockBodyData;
 
   /**
    * 创建一个新的块
@@ -48,12 +49,39 @@ export class Block {
   // };
 
   /**
-   * 从已有数据，读取一个区块
+   * 从已有cid，读取一个区块,只包含块头，但不解析body
    */
-  public static from = (cid: cidHash) => {};
+  public static fromCidOnlyHeader = async (
+    cid: cidHash,
+    db: SKDB,
+  ): Promise<Block> => {
+    const blockData = (await db.dag.get(CID.parse(cid))).value;
+    return new Block({
+      ...blockData,
+    });
+  };
+
+  /**
+   * 从已有cid，读取一个区块,包含块头、body
+   */
+  public static fromCid = async (cid: cidHash, db: SKDB): Promise<Block> => {
+    const block = await Block.fromCidOnlyHeader(cid, db);
+    block.body = (await db.dag.get(CID.parse(block.header.body!))).value;
+    return block;
+  };
 
   createStateRoot = (): cidHash => {
     return '' as unknown as cidHash;
+  };
+
+  genHash = async (db: SKDB) => {
+    const obj = {
+      ...this.header,
+      body: this.body,
+    };
+    delete (obj as any).hash;
+    const cid = await db.dag.put(obj);
+    this.header.hash = cid.toString();
   };
 
   /**
@@ -61,7 +89,7 @@ export class Block {
    */
   commit = async (ipfs: IPFS) => {
     const bodyCid = await ipfs.dag.put(this.body);
-    this.header.body = bodyCid;
+    this.header.body = bodyCid.toString();
     const blockCid = await ipfs.dag.put(this.header);
     return blockCid;
   };

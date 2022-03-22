@@ -20,6 +20,8 @@ export class TransactionAction {
     this.contract = new Contract(ipld);
   }
 
+  MAX_TEANS_LIMIT = 50; // 每个block能打包的交易上限
+  WAIT_TIME_LIMIT = 8 * 1000; // 每个交易从被发出到能进行打包的最短时间间隔 ms
   private waitTransMap: Map<string, Transaction[]> = new Map(); // 等待执行的交易
   private transQueue: Transaction[] = []; // 当前块可执行的交易
   private db: SKDB;
@@ -27,6 +29,7 @@ export class TransactionAction {
   // 头部块，块头
   private blockHeader: BlockHeaderData = null as unknown as BlockHeaderData;
   private contract: Contract;
+  taskInProgress = false; // 是否正在执行智能合约\打包
 
   init = async () => {
     await this.initTransactionListen();
@@ -35,20 +38,37 @@ export class TransactionAction {
   };
 
   startTransTask = async () => {
+    // 检查是否要执行打包任务
+    setInterval(async () => {
+      if (this.taskInProgress) {
+        return;
+      }
+      if (this.waitTransMap.size === 0) {
+        return;
+      }
+      this.taskInProgress = true;
+      await this.doTransTask();
+      this.taskInProgress = false;
+    }, 1000);
+  };
+
+  doTransTask = async () => {
     // 执行打包任务
-    const cArr: {contribute: BigNumber, did: string}[] = [];
+    const cArr: { contribute: BigNumber; did: string }[] = [];
+    const waitTransArr: Transaction[] = [];
     for (const did of this.waitTransMap.keys()) {
       const account = await this.ipld.getAccount(did);
       cArr.push({
         contribute: account.contribute,
-        did
+        did,
       });
     }
     const sortedArr = cArr.sort((a, b) =>
       a.contribute.isLessThan(b.contribute) ? -1 : 1,
     );
     // 从 sortedArr 中找到contribute 高的交易者发起的交易
-    console.log(sortedArr)
+    console.log(sortedArr);
+    // sortedArr
   };
 
   private add = async (trans: Transaction) => {
@@ -80,13 +100,13 @@ export class TransactionAction {
     await trans.genHash(this.db);
     message.info('handel--trans', trans);
     this.add(trans);
-    // test
-    const res = this.contract.runFunction(transContract, {
-      from: trans.from,
-      recipient: trans.recipient,
-      amount: trans.amount,
-    });
-    message.info(res);
+    // test contract
+    // const res = this.contract.runFunction(transContract, {
+    //   from: trans.from,
+    //   recipient: trans.recipient,
+    //   amount: trans.amount,
+    // });
+    // message.info(res);
   };
 
   private initTransactionListen = async () => {
