@@ -14,6 +14,7 @@ import { signById } from './lib/p2p/did';
 import { message } from './utils/message';
 import { TransactionAction } from './lib/transaction';
 import { Ipld } from 'lib/ipld';
+import { createEmptyNode } from 'lib/ipld/util';
 
 export interface SKChainOption {
   genesis: GenesisConfig;
@@ -61,11 +62,10 @@ export class SKChain {
       // 完全冷启动
       // 创建创世区块
       const genesisBlockHeader: BlockHeaderData = {
-        hash: this.genesis.hash,
         parent: this.genesis.parent as unknown as CID,
-        stateRoot: this.genesis.stateRoot,
-        transactionsRoot: this.genesis.transactionsRoot,
-        receiptRoot: this.genesis.receiptRoot,
+        stateRoot: (await this.db.dag.put(createEmptyNode())).toString(),
+        transactionsRoot: (await this.db.dag.put(createEmptyNode())).toString(),
+        receiptRoot: (await this.db.dag.put(createEmptyNode())).toString(),
         logsBloom: this.genesis.logsBloom,
         difficulty: this.genesis.difficulty,
         number: this.genesis.number,
@@ -78,6 +78,7 @@ export class SKChain {
         transactions: [],
       };
       const genesisBlock = new Block(genesisBlockHeader, genesisBlockBody);
+      await genesisBlock.genHash(this.db);
       const cid = await genesisBlock.commit(this.db);
       // this.transAction.setBlockHeader(genesisBlock.header);
       // 把块头记录在cache
