@@ -20,10 +20,10 @@ export class TransactionAction {
     this.contract = new Contract(ipld);
   }
 
-  MAX_TEANS_LIMIT = 50; // 每个block能打包的交易上限
+  MAX_TRANS_LIMIT = 50; // 每个block能打包的交易上限
   WAIT_TIME_LIMIT = 8 * 1000; // 每个交易从被发出到能进行打包的最短时间间隔 ms
-  private waitTransMap: Map<string, Transaction[]> = new Map(); // 等待执行的交易
-  private transQueue: Transaction[] = []; // 当前块可执行的交易
+  private waitTransMap: Map<string, Map<number, Transaction>> = new Map(); // 等待执行的交易
+  private transQueue: Transaction[] = []; // 当前块可执行的交易队列
   private db: SKDB;
   ipld: Ipld;
   // 头部块，块头
@@ -48,7 +48,7 @@ export class TransactionAction {
       }
       this.taskInProgress = true;
       await this.doTransTask();
-      this.taskInProgress = false;
+      // this.taskInProgress = false;
     }, 1000);
   };
 
@@ -66,17 +66,37 @@ export class TransactionAction {
     const sortedArr = cArr.sort((a, b) =>
       a.contribute.isLessThan(b.contribute) ? -1 : 1,
     );
-    // 从 sortedArr 中找到contribute 高的交易者发起的交易
     console.log(sortedArr);
-    // sortedArr
+    // 在 sortedArr 按发起交易者的 contribute 来排序，加到当前块打包队列中
+    sortedArr.forEach((ele) => {
+      if (waitTransArr.length < this.MAX_TRANS_LIMIT) {
+        const trans = this.waitTransMap.get(ele.did);
+        Array.from(trans!.keys()).forEach((one) => {
+          // 为防止分叉，交易被发出WAIT_TIME_LIMIT时间后才会被打包
+          if (Date.now() - one >= this.WAIT_TIME_LIMIT) {
+            // 此处必定有one这个trans
+            waitTransArr.push(trans!.get(one)!);
+
+            // GC
+            trans!.delete(one)
+            if (trans!.size === 0) {
+              this.waitTransMap.delete(ele.did)
+            }
+          }
+        });
+      }
+    });
+    console.log(waitTransArr);
   };
 
   private add = async (trans: Transaction) => {
     const hasedTrans = this.waitTransMap.get(trans.from);
     if (hasedTrans) {
-      this.waitTransMap.set(trans.from, [...hasedTrans, trans]);
+      hasedTrans.set(trans.ts, trans);
     } else {
-      this.waitTransMap.set(trans.from, [trans]);
+      const transMap = new Map();
+      transMap.set(trans, trans);
+      this.waitTransMap.set(trans.from, transMap);
     }
   };
 
