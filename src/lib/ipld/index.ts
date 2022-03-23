@@ -1,3 +1,4 @@
+import { newAccount } from './../../mate/account';
 import { BigNumber } from 'bignumber.js';
 import {
   createLink,
@@ -12,7 +13,7 @@ import { Account } from 'mate/account';
 import { CID } from 'multiformats';
 import { skCacheKeys } from 'lib/ipfs/key';
 import { Block } from 'mate/block';
-import { getKey } from './mpt';
+import { Mpt } from './mpt';
 
 export interface UpdateOps {
   plus?: BigNumber;
@@ -29,6 +30,7 @@ export class Ipld {
     this.db = db;
   }
   db: SKDB;
+  private stateMpt!: Mpt;
 
   // 缓存未写入block的账户数据
   private updates: Map<string, Account> = new Map();
@@ -46,25 +48,22 @@ export class Ipld {
     if (this.updates.has(did)) {
       return this.updates.get(did) as Account;
     } else {
-      return await this.getAccountFromDb([did]);
+      return await this.getAccountFromDb(did);
     }
   };
 
-  getAccounts = async (did: string[]): Promise<Account[]> => {
-    return [];
-  };
-
-  getAccountFromDb = async (did: string[]): Promise<Account> => {
+  getAccountFromDb = async (did: string): Promise<Account> => {
     console.log(did);
-    const headerBlock = await Block.fromCidOnlyHeader(
-      this.db.cache.get(skCacheKeys['sk-block']),
-      this.db,
-    );
-    const stateRoot = headerBlock.header.stateRoot;
-    // TODO MPT 批量查找
-    const accountCid = await getKey(this.db, stateRoot, did[0]);
+    await this.checkMpt();
 
-    return await Account.fromCid(this.db, accountCid);
+    const accountCid = await this.stateMpt.getKey(did);
+
+    if (accountCid) {
+      return await Account.fromCid(this.db, accountCid);
+    } else {
+      // 如果没有此account就create
+      return newAccount(did);
+    }
   };
 
   /**
@@ -83,6 +82,18 @@ export class Ipld {
       account.updateState(update.ops.state);
     }
     this.updates.set(account.account, account);
+  };
+
+  checkMpt = async () => {
+    if (!this.stateMpt) {
+      const headerBlock = await Block.fromCidOnlyHeader(
+        this.db.cache.get(skCacheKeys['sk-block']),
+        this.db,
+      );
+      const stateRoot = headerBlock.header.stateRoot;
+      this.stateMpt = new Mpt(this.db, stateRoot);
+      await this.stateMpt.initRootTree();
+    }
   };
 
   /**

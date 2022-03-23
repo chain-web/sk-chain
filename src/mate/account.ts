@@ -1,25 +1,26 @@
 import { SKDB } from '../lib/ipfs/ipfs.interface';
 import { BigNumber } from 'bignumber.js';
 import { CID } from 'multiformats';
+
+interface AccountMeta {
+  codeCid?: Account['codeCid'];
+  account: Account['account'];
+  contribute: Account['contribute'];
+  nonce: Account['nonce'];
+  balance: Account['balance'];
+}
+
 // 账户，基础数据结构
 export class Account {
-  constructor({
-    codeCid,
-    account,
-    contribute,
-  }: {
-    codeCid?: CID;
-    account: string;
-    contribute: BigNumber;
-  }) {
+  constructor(meta: AccountMeta) {
     // TODO cannot use
-    this.nonce = new BigNumber(0);
-    this.balance = [];
-    this.account = account;
-    this.contribute = contribute;
-    if (codeCid) {
+    this.nonce = meta.nonce;
+    this.balance = meta.balance;
+    this.account = meta.account;
+    this.contribute = meta.contribute;
+    if (meta.codeCid) {
       // 如果传入了
-      this.codeCid = codeCid;
+      this.codeCid = meta.codeCid;
       this.storageRoot = this.generateStorageRoot();
     }
   }
@@ -88,5 +89,10 @@ export class Account {
 }
 
 export const newAccount = (did: string) => {
-  return new Account({ account: did, contribute: new BigNumber(0) });
+  return new Account({
+    account: did,
+    contribute: new BigNumber(0),
+    nonce: new BigNumber(0),
+    balance: [],
+  });
 };
