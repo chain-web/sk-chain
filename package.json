@@ -31,11 +31,11 @@
     "@ipld/dag-pb": "^2.1.16",
     "bignumber.js": "^9.0.2",
     "cwjsr": "^0.1.2",
-    "ipfs": "^0.62.0",
-    "ipfs-core": "^0.14.0",
+    "ipfs": "^0.62.1",
+    "ipfs-core": "^0.14.1",
     "it-pipe": "^2.0.3",
     "libp2p": "^0.36.2",
-    "multiformats": "^9.6.2",
+    "multiformats": "^9.6.4",
     "node-fetch": "^3.2.0",
     "peer-id": "^0.16.0"
   }
