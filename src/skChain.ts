@@ -15,6 +15,7 @@ import { message } from './utils/message';
 import { TransactionAction } from './lib/transaction';
 import { Ipld } from 'lib/ipld';
 import { createEmptyNode } from 'lib/ipld/util';
+import * as packageJson from '../package.json'
 
 export interface SKChainOption {
   genesis: GenesisConfig;
@@ -24,6 +25,7 @@ export interface SKChainOption {
 export class SKChain {
   constructor(option: SKChainOption) {
     lifecycleEvents.emit(lifecycleStap.startCreateSKChain);
+    this.version = packageJson.version;
     this.db = option.db;
     this.ipld = new Ipld(this.db);
     this.did = this.db.cache.get(skCacheKeys.accountId);
@@ -31,6 +33,7 @@ export class SKChain {
     this.slice = new Slice(this.db);
     this.transAction = new TransactionAction(this.db, this.ipld);
   }
+  version: string;
   // 数据存取服务
   db: SKDB;
   // 创世配置

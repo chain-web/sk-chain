@@ -1,4 +1,5 @@
 import typescript from 'rollup-plugin-typescript2';
+import json from '@rollup/plugin-json';
 // import { terser } from 'rollup-plugin-terser';
 // import rollupReplace from 'rollup-plugin-replace';
 // import fileSize from 'rollup-plugin-filesize';
@@ -18,7 +19,7 @@ const createNpmConfig = ({ input, output }) => ({
   input,
   output,
   preserveModules: true,
-  plugins: [createTsPlugin()],
+  plugins: [json() ,createTsPlugin()],
 });
 
 const createUmdConfig = ({ input, output, target = undefined }) => ({
