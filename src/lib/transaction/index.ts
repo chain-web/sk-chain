@@ -11,6 +11,7 @@ import { BlockHeaderData } from '../../mate/block';
 import { transContract } from 'lib/contracts/transaction';
 import { Contract } from 'lib/contract';
 import { skCacheKeys } from 'lib/ipfs/key';
+import { transDemoFn } from 'lib/contracts/transaction_demo';
 
 // 处理交易活动
 export class TransactionAction {
@@ -48,7 +49,7 @@ export class TransactionAction {
       }
       this.taskInProgress = true;
       await this.doTransTask();
-      // this.taskInProgress = false;
+      this.taskInProgress = false;
     }, 1000);
   };
 
@@ -78,15 +79,28 @@ export class TransactionAction {
             waitTransArr.push(trans!.get(one)!);
 
             // GC
-            trans!.delete(one)
+            trans!.delete(one);
             if (trans!.size === 0) {
-              this.waitTransMap.delete(ele.did)
+              this.waitTransMap.delete(ele.did);
             }
           }
         });
       }
     });
-    console.log(waitTransArr);
+    for (const trans of waitTransArr) {
+      // 依次执行交易的合约
+      const update = await transDemoFn(
+        {
+          from: trans.from,
+          recipient: trans.recipient,
+          amount: trans.amount,
+        },
+        this.ipld.getAccount,
+      );
+      // 更新一个交易的结果到当前块状态机
+      this.ipld.addUpdates(update);
+    }
+    this.ipld.commit()
   };
 
   private add = async (trans: Transaction) => {

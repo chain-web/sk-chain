@@ -1,24 +1,19 @@
+import { message } from 'utils/message';
 import { newAccount } from './../../mate/account';
 import { BigNumber } from 'bignumber.js';
-import {
-  createLink,
-  createNode,
-  PBLink,
-  PBNode,
-  encode,
-  ByteView,
-} from '@ipld/dag-pb';
 import { SKDB } from 'lib/ipfs/ipfs.interface';
 import { Account } from 'mate/account';
 import { CID } from 'multiformats';
 import { skCacheKeys } from 'lib/ipfs/key';
 import { Block } from 'mate/block';
 import { Mpt } from './mpt';
+import { TransErrorType } from 'lib/contracts/transaction_demo';
 
 export interface UpdateOps {
   plus?: BigNumber;
   minus?: BigNumber;
   state?: any;
+  error?: TransErrorType;
 }
 
 export type UpdateAccountI = { ops: UpdateOps } & {
@@ -46,7 +41,7 @@ export class Ipld {
    */
   getAccount = async (did: string): Promise<Account> => {
     if (this.updates.has(did)) {
-      return this.updates.get(did) as Account;
+      return this.updates.get(did)!;
     } else {
       return await this.getAccountFromDb(did);
     }
@@ -67,6 +62,16 @@ export class Ipld {
   };
 
   /**
+   * 接收智能合约的执行结果，批量更新账户数据
+   * @param account
+   */
+  addUpdates = async (updates: UpdateAccountI[]) => {
+    for (const update of updates) {
+      await this.addUpdate(update);
+    }
+  };
+
+  /**
    * 接收智能合约的执行结果，更新账户数据
    * @param account
    */
@@ -80,6 +85,9 @@ export class Ipld {
     }
     if (update.ops.state) {
       account.updateState(update.ops.state);
+    }
+    if (update.ops.error) {
+      message.error(update.ops.error);
     }
     this.updates.set(account.account, account);
   };
@@ -95,6 +103,11 @@ export class Ipld {
       await this.stateMpt.initRootTree();
     }
   };
+
+  /**
+   * 提交当前区块的数据，进行打包
+   */
+  commit = async () => {};
 
   /**
    * 将账户更新的缓存写入到磁盘

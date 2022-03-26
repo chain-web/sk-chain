@@ -38,7 +38,7 @@ export const verifyById = async (
   return verifyed;
 };
 
-genetateDid();
+// genetateDid();
 
 // const testDid = async () => {
 //   // 验证一下did生成的每一位的随机性，确实是随机的
