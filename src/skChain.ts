@@ -15,7 +15,7 @@ import { message } from './utils/message';
 import { TransactionAction } from './lib/transaction';
 import { Ipld } from 'lib/ipld';
 import { createEmptyNode } from 'lib/ipld/util';
-import * as packageJson from '../package.json'
+import * as packageJson from '../package.json';
 
 export interface SKChainOption {
   genesis: GenesisConfig;
@@ -65,7 +65,7 @@ export class SKChain {
       // 完全冷启动
       // 创建创世区块
       const genesisBlockHeader: BlockHeaderData = {
-        parent: this.genesis.parent as unknown as CID,
+        parent: this.genesis.parent,
         stateRoot: (await this.db.dag.put(createEmptyNode())).toString(),
         transactionsRoot: (await this.db.dag.put(createEmptyNode())).toString(),
         receiptRoot: (await this.db.dag.put(createEmptyNode())).toString(),
@@ -76,11 +76,9 @@ export class SKChain {
         cuUsed: new BigNumber(0),
         ts: this.genesis.timestamp,
         slice: [1, 0],
+        body: (await this.db.dag.put([])).toString(),
       };
-      const genesisBlockBody: BlockBodyData = {
-        transactions: [],
-      };
-      const genesisBlock = new Block(genesisBlockHeader, genesisBlockBody);
+      const genesisBlock = new Block(genesisBlockHeader);
       await genesisBlock.genHash(this.db);
       const cid = await genesisBlock.commit(this.db);
       // this.transAction.setBlockHeader(genesisBlock.header);

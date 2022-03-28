@@ -34,4 +34,18 @@ export class Mpt {
       return contentCid.Hash.toString();
     }
   };
+
+  updateKey = async (key: string, data: CID) => {
+    const index = this.rootTree.Links.findIndex((ele) => ele.Name === key);
+    const link = createLink(key, (await this.db.block.stat(data)).size, data);
+    if (index) {
+      this.rootTree.Links[index] = link;
+    } else {
+      this.rootTree.Links.push(link);
+    }
+  };
+
+  save = async () => {
+    return await this.db.dag.put(this.initRootTree);
+  };
 }
