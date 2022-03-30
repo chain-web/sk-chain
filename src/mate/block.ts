@@ -13,7 +13,7 @@ export interface BlockHeaderData {
   parent: string; // 父级区块 stateRoot
   stateRoot: string; // 全账户状态树根节点hash
   transactionsRoot: string; // 当前块的交易树根节点hash
-  receiptRoot: string; // 当前块的收据树根节点hash
+  receiptsRoot: string; // 当前块的收据树根节点hash
   logsBloom: Uint8Array; // 当前块交易接收者的bloom，用于快速查找
   difficulty: BigNumber; // 难度，用来调整出块时间，由于不挖矿，具体实现待定
   number: BigNumber; // 当前块序号
@@ -82,10 +82,10 @@ export class Block {
   /**
    * 将区块数据保存，落文件
    */
-  commit = async (ipfs: IPFS) => {
-    const bodyCid = await ipfs.dag.put(this.body);
+  commit = async (db: SKDB) => {
+    const bodyCid = await db.dag.put(this.body);
     this.header.body = bodyCid.toString();
-    const blockCid = await ipfs.dag.put({
+    const blockCid = await db.dag.put({
       header: this.header,
       hash: this.hash,
     });

@@ -8,6 +8,7 @@ import { skCacheKeys } from 'lib/ipfs/key';
 import { Block } from 'mate/block';
 import { Mpt } from './mpt';
 import { TransErrorType } from 'lib/contracts/transaction_demo';
+import { Transaction } from 'mate/transaction';
 
 export interface UpdateOps {
   plus?: BigNumber;
@@ -26,9 +27,18 @@ export class Ipld {
   }
   db: SKDB;
   private stateMpt!: Mpt;
+  private transactionMpt!: Mpt;
+  private receiptsMpt!: Mpt;
+
+  // 已经打包好的最新块
+  private headerBlock!: Block;
 
   // 缓存未写入block的账户数据
   private updates: Map<string, Account> = new Map();
+
+  init = async () => {
+    await this.initMpt();
+  };
 
   clearUpdates = () => {
     this.updates = new Map();
@@ -49,7 +59,6 @@ export class Ipld {
 
   getAccountFromDb = async (did: string): Promise<Account> => {
     console.log(did);
-    await this.checkMpt();
 
     const accountCid = await this.stateMpt.getKey(did);
 
@@ -93,16 +102,50 @@ export class Ipld {
     this.updates.set(account.account, account);
   };
 
-  checkMpt = async () => {
-    if (!this.stateMpt) {
+  getHeaderBlock = async () => {
+    if (!this.headerBlock) {
       const headerBlock = await Block.fromCidOnlyHeader(
         this.db.cache.get(skCacheKeys['sk-block']),
         this.db,
       );
-      const stateRoot = headerBlock.header.stateRoot;
+      this.headerBlock = headerBlock;
+    }
+    return this.headerBlock;
+  };
+
+  initMpt = async () => {
+    // init stateMpt
+    if (!this.stateMpt) {
+      const stateRoot = this.headerBlock.header.stateRoot;
       this.stateMpt = new Mpt(this.db, stateRoot);
       await this.stateMpt.initRootTree();
     }
+
+    // init transactionMpt
+    if (!this.transactionMpt) {
+      const transactionsRoot = this.headerBlock.header.transactionsRoot;
+      this.transactionMpt = new Mpt(this.db, transactionsRoot);
+      await this.transactionMpt.initRootTree();
+    }
+
+    // init receiptsMpt
+    if (!this.receiptsMpt) {
+      const receiptsRoot = this.headerBlock.header.receiptsRoot;
+      this.receiptsMpt = new Mpt(this.db, receiptsRoot);
+      await this.receiptsMpt.initRootTree();
+    }
+  };
+
+  addTransaction = async (trans: Transaction) => {
+    // TODO
+    // const transCid = await trans.commit(this.db);
+    // this.transactionMpt.updateKey(trans.hash, transCid);
+  };
+
+  addReceipts = async (trans: Transaction) => {
+    // TODO
+    // const receiptsCid = await trans.commit(this.db);
+    // this.receiptsMpt.updateKey(trans.hash, receiptsCid);
   };
 
   /**

@@ -2,6 +2,7 @@ import BigNumber from 'bignumber.js';
 import { SKDB } from '../lib/ipfs/ipfs.interface';
 import { Address } from './types';
 import type { CID } from 'multiformats/cid';
+import { BlockHeaderData } from './block';
 
 export interface transMeta {
   from: Transaction['from'];
@@ -21,7 +22,6 @@ export interface TransactionOption {
   recipient: Address;
   amount: BigNumber;
   payload?: string;
-  db: SKDB;
   ts: number;
 }
 
@@ -36,8 +36,8 @@ export class Transaction {
     this.amount = opt.amount;
     this.payload = opt.payload;
     this.ts = opt.ts;
-    this.genHash(opt.db);
   }
+  blockNumber!: BlockHeaderData['number'];
   accountNonce: BigNumber;
   cu: BigNumber;
   cuLimit: BigNumber;
@@ -45,11 +45,12 @@ export class Transaction {
   recipient: Address;
   amount: BigNumber;
   payload?: string;
-  hash!: CID;
+  hash!: string;
   ts: number;
 
   genHash = async (db: SKDB) => {
     const obj = {
+      blockNumber: this.blockNumber,
       accountNonce: this.accountNonce,
       cu: this.cu,
       cuLimit: this.cuLimit,
@@ -59,6 +60,27 @@ export class Transaction {
       ts: this.ts,
     };
     const cid = await db.dag.put(obj);
-    this.hash = cid;
+    this.hash = cid.toString();
+  };
+
+  fromCid = async () => {};
+
+  /**
+   * 将区块数据保存，落文件
+   */
+  commit = async (db: SKDB, blockNumber: BigNumber) => {
+    this.blockNumber = blockNumber;
+    const transCid = await db.dag.put([
+      this.accountNonce,
+      this.amount,
+      this.cu,
+      this.cuLimit,
+      this.from,
+      this.hash,
+      this.payload,
+      this.recipient,
+      this.ts,
+    ]);
+    return transCid;
   };
 }

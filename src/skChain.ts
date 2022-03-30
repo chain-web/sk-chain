@@ -50,6 +50,7 @@ export class SKChain {
     // await this.db.swarm.connect(
     //   '/ip4/47.99.47.82/tcp/4003/ws/p2p/12D3KooWDd6gAZ1Djtt4bhAG7djGKM32ETxiiiJCCWnH5ypK2csa',
     // );
+    await this.ipld.init();
     await this.transAction.init();
     await this.slice.init();
     this.inited = true;
@@ -68,7 +69,7 @@ export class SKChain {
         parent: this.genesis.parent,
         stateRoot: (await this.db.dag.put(createEmptyNode())).toString(),
         transactionsRoot: (await this.db.dag.put(createEmptyNode())).toString(),
-        receiptRoot: (await this.db.dag.put(createEmptyNode())).toString(),
+        receiptsRoot: (await this.db.dag.put(createEmptyNode())).toString(),
         logsBloom: this.genesis.logsBloom,
         difficulty: this.genesis.difficulty,
         number: this.genesis.number,

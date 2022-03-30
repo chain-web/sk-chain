@@ -97,8 +97,10 @@ export class TransactionAction {
         },
         this.ipld.getAccount,
       );
+      // 按交易执行顺序把交易添加到当前块交易树
+      await this.ipld.addTransaction(trans);
       // 更新一个交易的结果到当前块状态机
-      this.ipld.addUpdates(update);
+      await this.ipld.addUpdates(update);
     }
     this.ipld.commit()
   };
@@ -121,7 +123,6 @@ export class TransactionAction {
   handelTransaction = async (tm: transMeta) => {
     // 处理接受到的或者本地发起的交易
     const trans = new Transaction({
-      db: this.db,
       from: tm.from,
       cu: tm.cu,
       cuLimit: new BigNumber(0),
