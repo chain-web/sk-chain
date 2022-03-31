@@ -87,7 +87,8 @@ export class TransactionAction {
         });
       }
     });
-    for (const trans of waitTransArr) {
+    for (let index = 0; index < waitTransArr.length; index++) {
+      const trans = waitTransArr[index];
       // 依次执行交易的合约
       const update = await transDemoFn(
         {
@@ -97,12 +98,11 @@ export class TransactionAction {
         },
         this.ipld.getAccount,
       );
-      // 按交易执行顺序把交易添加到当前块交易树
-      await this.ipld.addTransaction(trans);
       // 更新一个交易的结果到当前块状态机
-      await this.ipld.addUpdates(update);
+      await this.ipld.addUpdates(trans, update, index);
     }
-    this.ipld.commit()
+
+    this.ipld.commit();
   };
 
   private add = async (trans: Transaction) => {

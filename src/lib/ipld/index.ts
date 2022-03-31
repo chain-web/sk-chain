@@ -9,6 +9,7 @@ import { Block } from 'mate/block';
 import { Mpt } from './mpt';
 import { TransErrorType } from 'lib/contracts/transaction_demo';
 import { Transaction } from 'mate/transaction';
+import { Receipt } from 'mate/receipt';
 
 export interface UpdateOps {
   plus?: BigNumber;
@@ -30,6 +31,8 @@ export class Ipld {
   private transactionMpt!: Mpt;
   private receiptsMpt!: Mpt;
 
+  nextBlock!: Block;
+
   // 已经打包好的最新块
   private headerBlock!: Block;
 
@@ -38,6 +41,20 @@ export class Ipld {
 
   init = async () => {
     await this.initMpt();
+    this.nextBlock = new Block({
+      number: this.headerBlock.header.number.plus(1),
+      parent: this.headerBlock.hash,
+      stateRoot: '',
+      receiptsRoot: '',
+      transactionsRoot: '',
+      logsBloom: new Uint8Array([]), // TODO
+      difficulty: new BigNumber(0), // TODO
+      cuLimit: new BigNumber(0), // TODO ,应该在此时根据上一个块的信息生成
+      ts: Date.now(),
+      cuUsed: new BigNumber(0),
+      slice: [0, 0], // 忘了最开始设计这个字段的目的了，尴尬
+      body: '',
+    });
   };
 
   clearUpdates = () => {
@@ -75,7 +92,24 @@ export class Ipld {
    * 接收智能合约的执行结果，批量更新账户数据
    * @param account
    */
-  addUpdates = async (updates: UpdateAccountI[]) => {
+  addUpdates = async (
+    trans: Transaction,
+    updates: UpdateAccountI[],
+    index: number,
+  ) => {
+    const tx = await this.addTransaction(trans);
+    const receipt = new Receipt({
+      blockNumber: this.nextBlock.header.number,
+      updates,
+      logs: [],
+      status: 1,
+      cuUsed: new BigNumber(0),
+      from: trans.from,
+      to: trans.recipient,
+      transaction: tx,
+      transactionIndex: index,
+    });
+    this.addReceipts(tx, receipt);
     for (const update of updates) {
       await this.addUpdate(update);
     }
@@ -137,15 +171,15 @@ export class Ipld {
   };
 
   addTransaction = async (trans: Transaction) => {
-    // TODO
-    // const transCid = await trans.commit(this.db);
-    // this.transactionMpt.updateKey(trans.hash, transCid);
+    const transCid = await trans.commit(this.db, this.nextBlock.header.number);
+    this.transactionMpt.updateKey(trans.hash, transCid);
+    return trans.hash;
   };
 
-  addReceipts = async (trans: Transaction) => {
+  addReceipts = async (tx: string, receipt: Receipt) => {
     // TODO
-    // const receiptsCid = await trans.commit(this.db);
-    // this.receiptsMpt.updateKey(trans.hash, receiptsCid);
+    const receiptsCid = await receipt.commit(this.db);
+    this.receiptsMpt.updateKey(tx, receiptsCid);
   };
 
   /**
@@ -156,8 +190,20 @@ export class Ipld {
       const newCid = await account[1].commit(this.db);
       await this.stateMpt.updateKey(account[0], newCid);
     }
-    // 新块的stateRoot
+    // 新块的三棵树
     const stateRoot = await this.stateMpt.save();
+    const transactionsRoot = await this.transactionMpt.save();
+    const receiptRoot = await this.receiptsMpt.save();
+    this.nextBlock.header.stateRoot = stateRoot.toString();
+    this.nextBlock.header.transactionsRoot = transactionsRoot.toString();
+    this.nextBlock.header.receiptsRoot = receiptRoot.toString();
+
+    this.nextBlock.header.ts = Date.now();
+    await this.nextBlock.genHash(this.db);
+    const nextCid = await this.nextBlock.commit(this.db);
+
+    // 落文件
+    this.db.cache.put(skCacheKeys['sk-block'], nextCid.toString());
 
     // TODO
     // const nextBlock = new Block({
