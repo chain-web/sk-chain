@@ -97,6 +97,9 @@ export class Slice {
     }
   };
 
+  /**
+   * 定时发消息，通知其他节点自己在哪个分片
+   */
   private pubSlice = async () => {
     await this.db.pubsub.publish(this.slice, new Uint8Array([]));
     await this.refreshCurrPeers();
@@ -105,6 +108,9 @@ export class Slice {
     }, Slice.pubTimeout);
   };
 
+  /**
+   * 检查之前收到广播的节点是否已经长时间不活跃
+   */
   private refreshCurrPeers = async () => {
     const keys = [];
     for (const key of this.curPeers.keys()) {
@@ -117,11 +123,13 @@ export class Slice {
         keys.push(key);
       }
     }
+    // 把活跃的节点列表写到文件，下次冷启动时使用
     const cid = await this.db.dag.put(keys);
     this.db.cache.put(this.slicePeersCacheName, cid.toString());
   };
 
   private save = () => {
+    // 把当前自己的分片信息写入到文件
     this.db.cache.put(this.sliceCacheName, this.slice);
   };
 

@@ -16,6 +16,7 @@ import { TransactionAction } from './lib/transaction';
 import { Ipld } from 'lib/ipld';
 import { createEmptyNode } from 'lib/ipld/util';
 import * as packageJson from '../package.json';
+import { Consensus } from 'lib/consensus';
 
 export interface SKChainOption {
   genesis: GenesisConfig;
@@ -30,8 +31,12 @@ export class SKChain {
     this.ipld = new Ipld(this.db);
     this.did = this.db.cache.get(skCacheKeys.accountId);
     this.genesis = option.genesis;
-    this.slice = new Slice(this.db);
-    this.transAction = new TransactionAction(this.db, this.ipld);
+    this.consensus = new Consensus(this.db);
+    this.transAction = new TransactionAction(
+      this.db,
+      this.ipld,
+      this.consensus,
+    );
   }
   version: string;
   // 数据存取服务
@@ -42,8 +47,9 @@ export class SKChain {
   transAction: TransactionAction;
   // 数据操作
   ipld: Ipld;
+
+  consensus: Consensus;
   did: string;
-  slice: Slice;
   inited = false;
   init = async () => {
     await this.checkGenesisBlock();
@@ -52,7 +58,7 @@ export class SKChain {
     // );
     await this.ipld.init();
     await this.transAction.init();
-    await this.slice.init();
+    await this.consensus.init();
     this.inited = true;
   };
 

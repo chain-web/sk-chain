@@ -200,33 +200,11 @@ export class Ipld {
 
     this.nextBlock.header.ts = Date.now();
     await this.nextBlock.genHash(this.db);
-    const nextCid = await this.nextBlock.commit(this.db);
-
-    // 落文件
-    this.db.cache.put(skCacheKeys['sk-block'], nextCid.toString());
-
-    // TODO
-    // const nextBlock = new Block({
-    //   parent: CID; // 父级区块 stateRoot
-    //   stateRoot,
-    //   transactionsRoot: cidHash; // 当前块的交易树根节点hash
-    //   receiptRoot: cidHash; // 当前块的收据树根节点hash
-    //   logsBloom: Uint8Array; // 当前块交易接收者的bloom，用于快速查找
-    //   difficulty: BigNumber; // 难度，用来调整出块时间，由于不挖矿，具体实现待定
-    //   number: BigNumber; // 当前块序号
-    //   cuLimit: BigNumber; // 当前块，计算量上限
-    //   cuUsed: BigNumber; // 当前块消耗的计算量
-    //   ts: Date.now(); // 当前块创建时间
-    //   slice: [number, number]; // 分片信息
-    //   extraData?: { [key: string]: unknown }; // 当前块自定义数据，不能超过？kb
-    //   body?: string;
-    // })
+    return this.nextBlock
   };
 
-  /**
-   * 将账户更新的缓存写入到磁盘
-   */
-  saveUpdates = async () => {};
-
-  genNewStateRoot = async () => {};
+  goToNext = async (nextCid: string) => {
+    // 落文件
+    this.db.cache.put(skCacheKeys['sk-block'], nextCid);
+  };
 }

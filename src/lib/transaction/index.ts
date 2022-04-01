@@ -12,13 +12,15 @@ import { transContract } from 'lib/contracts/transaction';
 import { Contract } from 'lib/contract';
 import { skCacheKeys } from 'lib/ipfs/key';
 import { transDemoFn } from 'lib/contracts/transaction_demo';
+import { Consensus } from 'lib/consensus';
 
 // 处理交易活动
 export class TransactionAction {
-  constructor(db: SKDB, ipld: Ipld) {
+  constructor(db: SKDB, ipld: Ipld, consensus: Consensus) {
     this.db = db;
     this.ipld = ipld;
     this.contract = new Contract(ipld);
+    this.consensus = consensus
   }
 
   MAX_TRANS_LIMIT = 50; // 每个block能打包的交易上限
@@ -26,6 +28,7 @@ export class TransactionAction {
   private waitTransMap: Map<string, Map<number, Transaction>> = new Map(); // 等待执行的交易
   private transQueue: Transaction[] = []; // 当前块可执行的交易队列
   private db: SKDB;
+  consensus: Consensus;
   ipld: Ipld;
   // 头部块，块头
   private blockHeader: BlockHeaderData = null as unknown as BlockHeaderData;
@@ -102,7 +105,10 @@ export class TransactionAction {
       await this.ipld.addUpdates(trans, update, index);
     }
 
-    this.ipld.commit();
+    // 生成新块
+    const nextBlock = await this.ipld.commit();
+    // 广播新块
+    this.consensus.pubNewBlock(nextBlock)
   };
 
   private add = async (trans: Transaction) => {
