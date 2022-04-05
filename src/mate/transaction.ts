@@ -50,7 +50,6 @@ export class Transaction {
 
   genHash = async (db: SKDB) => {
     const obj = {
-      blockNumber: this.blockNumber,
       accountNonce: this.accountNonce,
       cu: this.cu,
       cuLimit: this.cuLimit,
@@ -63,7 +62,9 @@ export class Transaction {
     this.hash = cid.toString();
   };
 
-  fromCid = async () => {};
+  fromCid = async () => {
+    // TODO
+  };
 
   /**
    * 将区块数据保存，落文件

@@ -47,6 +47,6 @@ export class Mpt {
   };
 
   save = async () => {
-    return await this.db.dag.put(this.initRootTree);
+    return await this.db.dag.put(this.rootTree);
   };
 }

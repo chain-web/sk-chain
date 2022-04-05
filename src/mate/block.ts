@@ -75,7 +75,7 @@ export class Block {
   public static fromCidOnlyHeader = async (
     cid: string,
     db: SKDB,
-  ): Promise<Block> => {
+  ): Promise<Omit<Block, 'body'>> => {
     const blockData = (await db.dag.get(CID.parse(cid))).value;
     const headerData = blockData.header;
     const header: Partial<BlockHeaderData> = {};
@@ -87,14 +87,16 @@ export class Block {
       }
     });
 
-    return new Block(header as BlockHeaderData);
+    const newBlock = new Block(header as BlockHeaderData);
+    newBlock.hash = blockData.hash;
+    return newBlock
   };
 
   /**
    * 从已有cid，读取一个区块,包含块头、body
    */
   public static fromCid = async (cid: string, db: SKDB): Promise<Block> => {
-    const block = await Block.fromCidOnlyHeader(cid, db);
+    const block = await Block.fromCidOnlyHeader(cid, db) as Block;
     block.body = (await db.dag.get(CID.parse(block.header.body!))).value;
     return block;
   };

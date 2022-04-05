@@ -68,11 +68,12 @@ export class Ipld {
    * @returns
    */
   getAccount = async (did: string): Promise<Account> => {
-    if (this.updates.has(did)) {
-      return this.updates.get(did)!;
-    } else {
-      return await this.getAccountFromDb(did);
+    if (!this.updates.has(did)) {
+      // 第一次从存储获取，后续从缓存获取，TODO 缓存会爆炸 GC
+      const account = await this.getAccountFromDb(did);
+      this.updates.set(did, account);
     }
+    return this.updates.get(did)!;
   };
 
   getAccountFromDb = async (did: string): Promise<Account> => {
@@ -99,6 +100,8 @@ export class Ipld {
     index: number,
   ) => {
     const tx = await this.addTransaction(trans);
+
+    // 生成单个交易的收据
     const receipt = new Receipt({
       blockNumber: this.nextBlock.header.number,
       updates,
@@ -111,6 +114,7 @@ export class Ipld {
       transactionIndex: index,
     });
     this.addReceipts(tx, receipt);
+
     for (const update of updates) {
       await this.addUpdate(update);
     }
@@ -122,6 +126,7 @@ export class Ipld {
    */
   addUpdate = async (update: UpdateAccountI) => {
     const account = await this.getAccount(update.account);
+    console.log(update)
     if (update.ops.plus) {
       account.plusBlance(update.ops.plus);
     }
@@ -151,7 +156,7 @@ export class Ipld {
   initMpt = async () => {
     // init stateMpt
     if (!this.stateMpt) {
-    const stateRoot = this.headerBlock.header.stateRoot;
+      const stateRoot = this.headerBlock.header.stateRoot;
       this.stateMpt = new Mpt(this.db, stateRoot);
       await this.stateMpt.initRootTree();
     }
@@ -200,8 +205,9 @@ export class Ipld {
     this.nextBlock.header.receiptsRoot = receiptRoot.toString();
 
     this.nextBlock.header.ts = Date.now();
+    console.log(this.nextBlock);
     await this.nextBlock.genHash(this.db);
-    return this.nextBlock
+    return this.nextBlock;
   };
 
   goToNext = async (nextCid: string) => {

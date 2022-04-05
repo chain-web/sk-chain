@@ -126,7 +126,7 @@ export const newAccount = (did: string, storageRoot: CID) => {
     account: did,
     contribute: new BigNumber(0),
     nonce: new BigNumber(0),
-    balance: [],
+    balance: {},
     storageRoot,
   });
 };
