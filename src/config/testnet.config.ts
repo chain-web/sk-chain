@@ -13,10 +13,10 @@ export const genesis: GenesisConfig = {
   timestamp: 1636461884881,
   alloc: {
     '12D3KooWL8qb3L8nKPjDtQmJU8jge5Qspsn6YLSBei9MsbTjJDr8': {
-      balance: new BigNumber(10000),
+      balance: new BigNumber(10000000),
     },
     '12D3KooWL1NF6fdTJ9cucEuwvuX8V8KtpJZZnUE4umdLBuK15eUZ': {
-      balance: new BigNumber(10000),
+      balance: new BigNumber(10000000),
     },
   },
 };

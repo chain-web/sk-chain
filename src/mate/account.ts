@@ -113,7 +113,7 @@ export class Account {
     return db.dag.put([
       this.account,
       this.balance,
-      this.codeCid,
+      this.codeCid || '',
       this.contribute,
       this.nonce,
       this.storageRoot.toString(),
