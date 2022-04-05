@@ -3,6 +3,7 @@ import { IPFS } from 'ipfs-core';
 import { Transaction } from './transaction';
 import { CID } from 'multiformats/cid';
 import { SKDB } from 'lib/ipfs/ipfs.interface';
+import { message } from 'utils/message';
 
 export interface createBlockOpt {
   transactions: Transaction[];
@@ -27,10 +28,32 @@ export interface BlockHeaderData {
 
 // 区块，块数据体基础数据结构
 export interface BlockBodyData {
-  transactions: Transaction[];
+  transactions: Transaction['hash'][];
 }
+
+const blockHeaderKeys: (keyof BlockHeaderData)[] = [
+  'body',
+  'cuLimit',
+  'cuUsed',
+  'difficulty',
+  'extraData',
+  'logsBloom',
+  'number',
+  'parent',
+  'receiptsRoot',
+  'slice',
+  'stateRoot',
+  'transactionsRoot',
+  'ts',
+];
+
+const bnHeaderKeys = ['cuLimit', 'cuUsed', 'difficulty', 'number'];
+
 export class Block {
   constructor(header: Omit<BlockHeaderData, 'hash'>) {
+    if (!header.extraData) {
+      header.extraData = {};
+    }
     this.header = header;
   }
   hash!: string;
@@ -54,9 +77,17 @@ export class Block {
     db: SKDB,
   ): Promise<Block> => {
     const blockData = (await db.dag.get(CID.parse(cid))).value;
-    return new Block({
-      ...blockData,
+    const headerData = blockData.header;
+    const header: Partial<BlockHeaderData> = {};
+    blockHeaderKeys.map((key, i) => {
+      header[key] = headerData[i];
+      if (bnHeaderKeys.includes(key)) {
+        // 恢复bignumber
+        (header[key] as any) = new BigNumber(headerData[i]);
+      }
     });
+
+    return new Block(header as BlockHeaderData);
   };
 
   /**
@@ -72,9 +103,10 @@ export class Block {
     const obj = {
       ...this.header,
       body: this.body,
-      ts: undefined, // ts 不参与生成块hash
     };
+    // ts，hash 不参与生成块hash
     delete (obj as any).hash;
+    delete (obj as any).ts;
     const cid = await db.dag.put(obj);
     this.hash = cid.toString();
   };
@@ -85,10 +117,18 @@ export class Block {
   commit = async (db: SKDB) => {
     const bodyCid = await db.dag.put(this.body);
     this.header.body = bodyCid.toString();
-    const blockCid = await db.dag.put({
-      header: this.header,
+    const blockData = {
+      header: blockHeaderKeys.map((ele) => {
+        let val = this.header[ele];
+        if (bnHeaderKeys.includes(ele)) {
+          // bigNumber转为string存储
+          return (val as BigNumber).toString();
+        }
+        return val;
+      }),
       hash: this.hash,
-    });
+    };
+    const blockCid = await db.dag.put(blockData);
     return blockCid;
   };
 }

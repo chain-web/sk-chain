@@ -86,6 +86,7 @@ export class SKChain {
         body: (await this.db.dag.put([])).toString(),
       };
       const genesisBlock = new Block(genesisBlockHeader);
+      genesisBlock.body = {transactions: []};
       await genesisBlock.genHash(this.db);
       const cid = await genesisBlock.commit(this.db);
       // this.transAction.setBlockHeader(genesisBlock.header);

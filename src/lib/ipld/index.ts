@@ -40,6 +40,7 @@ export class Ipld {
   private updates: Map<string, Account> = new Map();
 
   init = async () => {
+    await this.initHeaderBlock();
     await this.initMpt();
     this.nextBlock = new Block({
       number: this.headerBlock.header.number.plus(1),
@@ -136,7 +137,7 @@ export class Ipld {
     this.updates.set(account.account, account);
   };
 
-  getHeaderBlock = async () => {
+  initHeaderBlock = async () => {
     if (!this.headerBlock) {
       const headerBlock = await Block.fromCidOnlyHeader(
         this.db.cache.get(skCacheKeys['sk-block']),
@@ -150,7 +151,7 @@ export class Ipld {
   initMpt = async () => {
     // init stateMpt
     if (!this.stateMpt) {
-      const stateRoot = this.headerBlock.header.stateRoot;
+    const stateRoot = this.headerBlock.header.stateRoot;
       this.stateMpt = new Mpt(this.db, stateRoot);
       await this.stateMpt.initRootTree();
     }
