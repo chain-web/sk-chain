@@ -20,7 +20,7 @@ export class TransactionAction {
     this.db = db;
     this.ipld = ipld;
     this.contract = new Contract(ipld);
-    this.consensus = consensus
+    this.consensus = consensus;
   }
 
   MAX_TRANS_LIMIT = 50; // 每个block能打包的交易上限
@@ -90,6 +90,10 @@ export class TransactionAction {
         });
       }
     });
+    if (!waitTransArr.length) {
+      // 如果没有可打包的交易，退出
+      return;
+    }
     for (let index = 0; index < waitTransArr.length; index++) {
       const trans = waitTransArr[index];
       // 依次执行交易的合约
@@ -108,7 +112,7 @@ export class TransactionAction {
     // 生成新块
     const nextBlock = await this.ipld.commit();
     // 广播新块
-    this.consensus.pubNewBlock(nextBlock)
+    this.consensus.pubNewBlock(nextBlock);
   };
 
   private add = async (trans: Transaction) => {
@@ -117,7 +121,7 @@ export class TransactionAction {
       hasedTrans.set(trans.ts, trans);
     } else {
       const transMap = new Map();
-      transMap.set(trans, trans);
+      transMap.set(trans.ts, trans);
       this.waitTransMap.set(trans.from, transMap);
     }
   };
