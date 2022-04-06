@@ -31,7 +31,11 @@ export class Ipld {
   private transactionMpt!: Mpt;
   private receiptsMpt!: Mpt;
 
+  // 下一个块
   nextBlock!: Block;
+
+  // 下一个块的body transaction
+  nextBlockBodyTrans: string[] = [];
 
   // 已经打包好的最新块
   private headerBlock!: Block;
@@ -100,6 +104,7 @@ export class Ipld {
     index: number,
   ) => {
     const tx = await this.addTransaction(trans);
+    this.nextBlockBodyTrans.push(tx);
 
     // 生成单个交易的收据
     const receipt = new Receipt({
@@ -196,6 +201,14 @@ export class Ipld {
       const newCid = await account[1].commit(this.db);
       await this.stateMpt.updateKey(account[0], newCid);
     }
+
+    // block body
+    const body = await this.db.dag.put(this.nextBlockBodyTrans);
+    this.nextBlock.header.body = body.toString();
+    this.nextBlock.body = {
+      transactions: this.nextBlockBodyTrans
+    }
+
     // 新块的三棵树
     const stateRoot = await this.stateMpt.save();
     const transactionsRoot = await this.transactionMpt.save();
