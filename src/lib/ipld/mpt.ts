@@ -39,7 +39,7 @@ export class Mpt {
   updateKey = async (key: string, data: CID) => {
     const index = this.rootTree.Links.findIndex((ele) => ele.Name === key);
     const link = createLink(key, (await this.db.block.stat(data)).size, data);
-    if (index) {
+    if (index !== -1) {
       this.rootTree.Links[index] = link;
     } else {
       this.rootTree.Links.push(link);

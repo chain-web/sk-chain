@@ -131,7 +131,6 @@ export class Ipld {
    */
   addUpdate = async (update: UpdateAccountI) => {
     const account = await this.getAccount(update.account);
-    console.log(update)
     if (update.ops.plus) {
       account.plusBlance(update.ops.plus);
     }

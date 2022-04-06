@@ -169,6 +169,9 @@ export class TransactionAction {
       return;
     }
     const tm: transMeta = JSON.parse(bytes.toString(data.data));
+    // parse bigNumber
+    tm.amount = new BigNumber(tm.amount);
+    tm.cu = new BigNumber(tm.cu);
     const signature = tm.signature;
     if (
       signature &&

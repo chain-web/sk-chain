@@ -30,7 +30,7 @@ export class Account {
   contribute: BigNumber;
   // 账户余额 {age: amount}
   private balance: {
-    [key: number]: BigNumber;
+    [key: string]: BigNumber;
   };
   // 合约数据库地址，可能没法用hash
   private storageRoot: CID;
@@ -45,12 +45,16 @@ export class Account {
    */
   public static fromCid = async (db: SKDB, cid: string) => {
     const accountData = (await db.dag.get(CID.parse(cid))).value;
+    const bl: Account['balance'] = {};
+    accountData[1].map((ele: [string, string]) => {
+      bl[ele[0]] = new BigNumber(ele[1]);
+    });
     return new Account({
       account: accountData[0],
-      balance: accountData[1],
+      balance: bl,
       codeCid: accountData[2],
-      contribute: accountData[3],
-      nonce: accountData[4],
+      contribute: new BigNumber(accountData[3]),
+      nonce: new BigNumber(accountData[4]),
       storageRoot: CID.parse(accountData[5]),
     });
   };
@@ -80,14 +84,16 @@ export class Account {
       return 'dont have such amount to minus';
     }
     const zero = new BigNumber(0);
+    const blanceKeys = Object.keys(this.balance).sort((a, b) => +b - +a);
     // 从年龄最大的blance开始进行减法，直到能把amount全部减掉
     while (!amount.isEqualTo(zero)) {
-      const last = this.balance[0].minus(amount);
+      const curIndex = blanceKeys.shift()!;
+      const last = this.balance[curIndex].minus(amount);
       if (last.isLessThanOrEqualTo(zero)) {
         amount = last.abs();
-        delete this.balance[0];
+        delete this.balance[curIndex];
       } else {
-        this.balance[0] = last;
+        this.balance[curIndex] = last;
         amount = zero;
       }
     }
@@ -112,10 +118,12 @@ export class Account {
   commit = async (db: SKDB) => {
     return db.dag.put([
       this.account,
-      this.balance,
+      Object.keys(this.balance).map((key) => {
+        return [key, this.balance[key].toString()];
+      }),
       this.codeCid || '',
-      this.contribute,
-      this.nonce,
+      this.contribute.toString(),
+      this.nonce.toString(),
       this.storageRoot.toString(),
     ]);
   };
