@@ -1,12 +1,42 @@
 import typescript from 'rollup-plugin-typescript2';
 import json from '@rollup/plugin-json';
+import { resolve } from 'path';
+import { readFileSync } from 'fs';
+import { nodeResolve } from '@rollup/plugin-node-resolve';
 // import { terser } from 'rollup-plugin-terser';
 // import rollupReplace from 'rollup-plugin-replace';
 // import fileSize from 'rollup-plugin-filesize';
 
+const cwjsrPlugin = () => {
+  const rootDir = resolve(process.cwd());
+  return {
+    name: 'cwjsr-resolve',
+    resolveId: (id) => {
+      if (id.match('cwjsr')) {
+        return 'cwjsr/web/cwjsr.js';
+      }
+    },
+    load: (id) => {
+      if (id.match('cwjsr')) {
+        let fileStr = readFileSync(
+          resolve(rootDir, `./node_modules/${id}`),
+        ).toString();
+        // 写死的bad code，但有用
+        // TODO， build时可能会有问题
+        fileStr = fileStr.replace(
+          'cwjsr_bg.wasm',
+          '../../node_modules/cwjsr/web/cwjsr_bg.wasm',
+        );
+        return fileStr;
+      }
+    },
+  };
+};
+
 const createTsPlugin = ({ declaration = true, target } = {}) =>
   typescript({
     clean: true,
+    tsconfig: 'tsconfig.json',
     tsconfigOverride: {
       compilerOptions: {
         declaration,
@@ -15,11 +45,18 @@ const createTsPlugin = ({ declaration = true, target } = {}) =>
     },
   });
 
-const createNpmConfig = ({ input, output }) => ({
+const createNodeConfig = ({ input, output }) => ({
   input,
   output,
   preserveModules: true,
-  plugins: [json() ,createTsPlugin()],
+  plugins: [json(), createTsPlugin()],
+});
+
+const createWebConfig = ({ input, output }) => ({
+  input,
+  output,
+  preserveModules: true,
+  plugins: [cwjsrPlugin(), json(), createTsPlugin()],
 });
 
 const createUmdConfig = ({ input, output, target = undefined }) => ({
@@ -47,16 +84,16 @@ export default [
   //     },
   //   ],
   // }),
-  createNpmConfig({
-    input: 'src/index.ts',
-    output: [
-      {
-        dir: 'dist',
-        format: 'esm',
-      },
-    ],
-  }),
-  createNpmConfig({
+  // createNodeConfig({
+  //   input: 'src/index.ts',
+  //   output: [
+  //     {
+  //       dir: 'dist',
+  //       format: 'cjs',
+  //     },
+  //   ],
+  // }),
+  createWebConfig({
     input: 'src/index.browser.ts',
     output: [
       {

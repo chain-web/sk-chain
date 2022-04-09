@@ -10,6 +10,7 @@
     "strict": true,
     "declaration": true,
     "isolatedModules": true,
+    "esModuleInterop": true,
     "types": [
       "node", "mocha",
     ],
@@ -19,6 +20,5 @@
   },
   "include": [
     "./src/**/*.ts",
-    "./global.d.ts"
   ]
 }

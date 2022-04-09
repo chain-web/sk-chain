@@ -16,7 +16,9 @@ export class Contract {
   public init = async () => {
     // 向智能合约内注入数据查询的方法
     window.__sk__ipld__getAccount = this.ipld.getAccount;
-    await init();
+    if (init) {
+      await (init as any)();
+    }
     this.ready = true;
     lifecycleEvents.emit(lifecycleStap.initedContract);
   };

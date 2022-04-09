@@ -29,15 +29,27 @@
     "typescript": "^4.5.5"
   },
   "dependencies": {
+    "@chainsafe/libp2p-noise": "^6.0.1",
     "@ipld/dag-pb": "^2.1.16",
+    "@libp2p/crypto": "^0.22.9",
+    "@libp2p/webrtc-star": "^1.0.6",
     "bignumber.js": "^9.0.2",
-    "cwjsr": "^0.1.2",
+    "cwjsr": "0.2.3",
     "ipfs": "^0.62.1",
     "ipfs-core": "^0.14.1",
     "it-pipe": "^2.0.3",
     "libp2p": "^0.36.2",
+    "libp2p-bootstrap": "^0.14.0",
+    "libp2p-gossipsub": "^0.13.0",
+    "libp2p-kad-dht": "^0.28.6",
+    "libp2p-mdns": "^0.18.0",
+    "libp2p-mplex": "^0.10.7",
+    "libp2p-tcp": "^0.17.2",
+    "libp2p-webrtc-star": "^0.25.0",
     "multiformats": "^9.6.4",
+    "native-fetch": "^4.0.2",
     "node-fetch": "^3.2.0",
-    "peer-id": "^0.16.0"
+    "peer-id": "^0.16.0",
+    "wrtc": "^0.4.7"
   }
 }
