@@ -18,9 +18,9 @@ export class Genesis extends SKChainLibBase {
   genesis: GenesisConfig;
   checkGenesisBlock = async () => {
     lifecycleEvents.emit(lifecycleStap.checkingGenesisBlock);
-    const blockHead = this.chain.db.cache.get(skCacheKeys['sk-block']);
-    if (blockHead) {
+    if (!this.chain.blockService.needGenseis()) {
       // 不是完全冷启动
+      // this.checkGenesis();
       lifecycleEvents.emit(lifecycleStap.checkedGenesisBlock);
     } else {
       // 完全冷启动
@@ -33,10 +33,10 @@ export class Genesis extends SKChainLibBase {
         parent: this.genesis.parent,
         stateRoot,
         transactionsRoot: (
-          await this.chain.db.dag.put(createEmptyNode())
+          await this.chain.db.dag.put(createEmptyNode('transactions-root'))
         ).toString(),
         receiptsRoot: (
-          await this.chain.db.dag.put(createEmptyNode())
+          await this.chain.db.dag.put(createEmptyNode('receipts-root'))
         ).toString(),
         logsBloom: this.genesis.logsBloom,
         difficulty: this.genesis.difficulty,
@@ -51,13 +51,14 @@ export class Genesis extends SKChainLibBase {
       genesisBlock.body = { transactions: [] };
       await genesisBlock.genHash(this.chain.db);
       const cid = await genesisBlock.commit(this.chain.db);
-      // this.transAction.setBlockHeader(genesisBlock.header);
-      // 把块头记录在cache
-      this.chain.db.cache.put(skCacheKeys['sk-block'], cid.toString());
+      // 将创世块cid存储到块索引
+      await this.chain.blockService.addBlockCidByNumber(
+        cid.toString(),
+        genesisBlock.header.number,
+      );
+
       lifecycleEvents.emit(lifecycleStap.checkedGenesisBlock);
     }
-
-    // this.checkGenesis(genesisBlock);
   };
 
   // 设置预设账号
@@ -75,7 +76,7 @@ export class Genesis extends SKChainLibBase {
     }
     const initStateRoot = new Mpt(
       this.chain.db,
-      (await this.chain.db.dag.put(createEmptyNode())).toString(),
+      (await this.chain.db.dag.put(createEmptyNode('state-root'))).toString(),
     );
     await initStateRoot.initRootTree();
     for (const account of accounts) {

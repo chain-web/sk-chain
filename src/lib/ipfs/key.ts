@@ -1,6 +1,7 @@
 export enum skCacheKeys {
-  // 块头cid
+  // 存储块索引信息数据的cid
   'sk-block' = 'sk-block',
+  // did
   'accountId' = 'accountId',
   'accountPublicKey' = 'accountPublicKey',
   'accountPrivKey' = 'accountPrivKey',
