@@ -2,6 +2,7 @@ import type { MessageHandlerFn } from 'ipfs-core-types/src/pubsub';
 import { lifecycleEvents, lifecycleStap } from '../events/lifecycle';
 import { SKDB } from '../ipfs/ipfs.interface';
 import { message } from '../../utils/message';
+import { CID } from 'multiformats';
 
 export class Slice {
   constructor(db: SKDB) {
@@ -48,11 +49,16 @@ export class Slice {
     // 把缓存里的当前节点peers拿出来
     const cid = this.db.cache.get(this.slicePeersCacheName);
     if (cid) {
-      const cidObj = this.db.CID.parse(cid);
-      const peers = await this.db.dag.get(cidObj);
-      peers.value.forEach((ele: string) => {
-        this.curPeers.set(ele, { ts: Date.now() });
-      });
+      try {
+        const cidObj = CID.parse(cid);
+        // TODO 这里可能会长时间不相应，待排查
+        const peers = await this.db.dag.get(cidObj, { timeout: 5000 });
+        peers.value.forEach((ele: string) => {
+          this.curPeers.set(ele, { ts: Date.now() });
+        });
+      } catch (error) {
+        console.log(error);
+      }
     }
 
     const sliceArr = this.slice.split('-');
@@ -71,6 +77,7 @@ export class Slice {
     });
     this.initSliceSubscribe();
     this.pubSlice();
+
     lifecycleEvents.emit(lifecycleStap.initedSlice);
   };
   private initSliceSubscribe = async () => {
@@ -123,6 +130,7 @@ export class Slice {
         keys.push(key);
       }
     }
+
     // 把活跃的节点列表写到文件，下次冷启动时使用
     const cid = await this.db.dag.put(keys);
     this.db.cache.put(this.slicePeersCacheName, cid.toString());
