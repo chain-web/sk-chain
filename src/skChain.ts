@@ -1,24 +1,13 @@
-import { Account, newAccount } from 'mate/account';
-import BigNumber from 'bignumber.js';
 import { GenesisConfig } from './config/types';
 import { lifecycleEvents, lifecycleStap } from './lib/events/lifecycle';
-import { peerEvent } from './lib/events/peer';
 import { skCacheKeys } from './lib/ipfs/key';
-import { Block, BlockBodyData, BlockHeaderData } from './mate/block';
-import type { CID } from 'multiformats/cid';
+import { Block } from './mate/block';
 import { SKDB } from './lib/ipfs/ipfs.interface';
-// import { Network } from './lib/p2p/network';
-import type { transMeta } from './mate/transaction';
-import { bytes } from 'multiformats';
-import { Slice } from './lib/consensus/slice';
-import { signById } from './lib/p2p/did';
-import { message } from './utils/message';
 import { TransactionAction } from './lib/transaction';
 import { Ipld } from 'lib/ipld';
-import { createEmptyNode } from 'lib/ipld/util';
 import * as packageJson from '../package.json';
 import { Consensus } from 'lib/consensus';
-import { Mpt } from 'lib/ipld/mpt';
+import { Genesis } from 'lib/genesis';
 
 export interface SKChainOption {
   genesis: GenesisConfig;
@@ -30,147 +19,55 @@ export class SKChain {
     lifecycleEvents.emit(lifecycleStap.startCreateSKChain);
     this.version = packageJson.version;
     this.db = option.db;
-    this.ipld = new Ipld(this.db);
+    this.ipld = new Ipld(this);
     this.did = this.db.cache.get(skCacheKeys.accountId);
-    this.genesis = option.genesis;
-    this.consensus = new Consensus(this.db);
-    this.transAction = new TransactionAction(
-      this.db,
-      this.ipld,
-      this.consensus,
-    );
+    this.genesis = new Genesis(this, option.genesis);
+    this.consensus = new Consensus(this);
+    this.transAction = new TransactionAction(this);
   }
+
+  // 最新块
+  private _headerBlock!: Block;
   version: string;
   // 数据存取服务
   db: SKDB;
   // 创世配置
-  genesis: GenesisConfig;
+  genesis: Genesis;
   // 交易
   transAction: TransactionAction;
   // 数据操作
   ipld: Ipld;
 
+  // 共识
   consensus: Consensus;
+  // 当前节点did
   did: string;
   inited = false;
   init = async () => {
-    await this.checkGenesisBlock();
+    await this.genesis.checkGenesisBlock();
     // await this.db.swarm.connect(
     //   '/ip4/47.99.47.82/tcp/4003/ws/p2p/12D3KooWDd6gAZ1Djtt4bhAG7djGKM32ETxiiiJCCWnH5ypK2csa',
     // );
+    await this.initHeaderBlock();
     await this.ipld.init();
     await this.transAction.init();
     await this.consensus.init();
     this.inited = true;
   };
 
-  checkGenesisBlock = async () => {
-    lifecycleEvents.emit(lifecycleStap.checkingGenesisBlock);
-    const blockHead = this.db.cache.get(skCacheKeys['sk-block']);
-    if (blockHead) {
-      // 不是完全冷启动
-      lifecycleEvents.emit(lifecycleStap.checkedGenesisBlock);
-    } else {
-      // 完全冷启动
-
-      // 初始化预设账号
-      const stateRoot = await this.initAlloc(this.genesis.alloc);
-
-      // 创建创世区块
-      const genesisBlockHeader: BlockHeaderData = {
-        parent: this.genesis.parent,
-        stateRoot,
-        transactionsRoot: (await this.db.dag.put(createEmptyNode())).toString(),
-        receiptsRoot: (await this.db.dag.put(createEmptyNode())).toString(),
-        logsBloom: this.genesis.logsBloom,
-        difficulty: this.genesis.difficulty,
-        number: this.genesis.number,
-        cuLimit: this.genesis.cuLimit,
-        cuUsed: new BigNumber(0),
-        ts: this.genesis.timestamp,
-        slice: [1, 0],
-        body: (await this.db.dag.put([])).toString(),
-      };
-      const genesisBlock = new Block(genesisBlockHeader);
-      genesisBlock.body = { transactions: [] };
-      await genesisBlock.genHash(this.db);
-      const cid = await genesisBlock.commit(this.db);
-      // this.transAction.setBlockHeader(genesisBlock.header);
-      // 把块头记录在cache
-      this.db.cache.put(skCacheKeys['sk-block'], cid.toString());
-      lifecycleEvents.emit(lifecycleStap.checkedGenesisBlock);
-    }
-
-    // this.checkGenesis(genesisBlock);
-  };
-
-  // 设置预设账号
-  initAlloc = async (alloc: GenesisConfig['alloc']) => {
-    const accounts: Account[] = [];
-    if (alloc) {
-      const dids = Object.keys(alloc);
-      for (const did of dids) {
-        const storageRoot = await this.db.dag.put({});
-        const account = newAccount(did, storageRoot);
-        // 给每个初始账号充值
-        account.plusBlance(alloc[did].balance);
-        accounts.push(account);
-      }
-    }
-    const initStateRoot = new Mpt(
+  initHeaderBlock = async () => {
+    const headerBlock = await Block.fromCidOnlyHeader(
+      this.db.cache.get(skCacheKeys['sk-block']),
       this.db,
-      (await this.db.dag.put(createEmptyNode())).toString(),
     );
-    await initStateRoot.initRootTree()
-    for (const account of accounts) {
-      await initStateRoot.updateKey(
-        account.account,
-        await account.commit(this.db),
-      );
-    }
-    return (await initStateRoot.save()).toString();
+    this._headerBlock = headerBlock;
   };
 
-  // 检查链合法性
-  checkGenesis(genesisBlock: Block) {
-    // 暂时未确定，要搞什么
+  set blockHeader(headerBlock: Block) {
+    this._headerBlock = headerBlock;
   }
 
-  transaction = async (
-    tm: Pick<transMeta, 'amount' | 'payload' | 'recipient'>,
-  ) => {
-    // 供外部调用的发起交易方法
-    // 只是做交易检查和预处理
-    if (!this.inited) {
-      message.error('wait for inited');
-      return;
-    }
-    if (!tm.amount || !tm.recipient) {
-      // 校验
-      message.error('need trans meta');
-      return;
-    }
-    const signMeta = {
-      ...tm,
-      from: this.did,
-      ts: Date.now(),
-      cu: new BigNumber(100), // todo
-    };
-    // TODO 可能 有个偶现的bug
-    // message.info(skCacheKeys.accountPrivKey)
-    // message.info(signMeta)
-    const transMeta: transMeta = {
-      ...signMeta,
-      // 这里使用交易原始信息通过ipfs存储后的cid进行签名会更好？
-      signature: await signById(
-        this.db.cache.get(skCacheKeys.accountPrivKey),
-        bytes.fromString(JSON.stringify(signMeta)),
-      ),
-    };
-    this.db.pubsub.publish(
-      peerEvent.transaction,
-      bytes.fromString(JSON.stringify(transMeta)),
-    );
-    this.transAction.handelTransaction(transMeta);
-  };
+  get headerBlock() {
+    return this._headerBlock;
+  }
 }

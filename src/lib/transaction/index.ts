@@ -1,3 +1,4 @@
+import { SKChainLibBase } from './../base';
 import { Ipld } from './../ipld/index';
 import BigNumber from 'bignumber.js';
 import { Transaction, transMeta } from '../../mate/transaction';
@@ -5,7 +6,7 @@ import { Message } from 'ipfs-core-types/src/pubsub';
 import { SKDB } from '../ipfs/ipfs.interface';
 import { peerEvent } from '../events/peer';
 import { bytes } from 'multiformats';
-import { verifyById } from '../p2p/did';
+import { signById, verifyById } from '../p2p/did';
 import { message } from '../../utils/message';
 import { BlockHeaderData } from '../../mate/block';
 import { transContract } from 'lib/contracts/transaction';
@@ -13,25 +14,20 @@ import { Contract } from 'lib/contract';
 import { skCacheKeys } from 'lib/ipfs/key';
 import { transDemoFn } from 'lib/contracts/transaction_demo';
 import { Consensus } from 'lib/consensus';
+import { SKChain } from '../../skChain';
 
 // 处理交易活动
-export class TransactionAction {
-  constructor(db: SKDB, ipld: Ipld, consensus: Consensus) {
-    this.db = db;
-    this.ipld = ipld;
-    this.contract = new Contract(ipld);
-    this.consensus = consensus;
+export class TransactionAction extends SKChainLibBase {
+  constructor(chain: SKChain) {
+    super(chain);
+    this.contract = new Contract(this.chain.ipld);
   }
 
   MAX_TRANS_LIMIT = 50; // 每个block能打包的交易上限
   WAIT_TIME_LIMIT = 8 * 1000; // 每个交易从被发出到能进行打包的最短时间间隔 ms
   private waitTransMap: Map<string, Map<number, Transaction>> = new Map(); // 等待执行的交易
   private transQueue: Transaction[] = []; // 当前块可执行的交易队列
-  private db: SKDB;
-  consensus: Consensus;
-  ipld: Ipld;
-  // 头部块，块头
-  private blockHeader: BlockHeaderData = null as unknown as BlockHeaderData;
+
   private contract: Contract;
   taskInProgress = false; // 是否正在执行智能合约\打包
 
@@ -61,7 +57,7 @@ export class TransactionAction {
     const cArr: { contribute: BigNumber; did: string }[] = [];
     const waitTransArr: Transaction[] = [];
     for (const did of this.waitTransMap.keys()) {
-      const account = await this.ipld.getAccount(did);
+      const account = await this.chain.ipld.getAccount(did);
       cArr.push({
         contribute: account.contribute,
         did,
@@ -103,16 +99,16 @@ export class TransactionAction {
           recipient: trans.recipient,
           amount: trans.amount,
         },
-        this.ipld.getAccount,
+        this.chain.ipld.getAccount,
       );
       // 更新一个交易的结果到当前块状态机
-      await this.ipld.addUpdates(trans, update, index);
+      await this.chain.ipld.addUpdates(trans, update, index);
     }
 
     // 生成新块
-    const nextBlock = await this.ipld.commit();
+    const nextBlock = await this.chain.ipld.commit();
     // 广播新块
-    this.consensus.pubNewBlock(nextBlock);
+    this.chain.consensus.pubNewBlock(nextBlock);
   };
 
   private add = async (trans: Transaction) => {
@@ -124,10 +120,6 @@ export class TransactionAction {
       transMap.set(trans.ts, trans);
       this.waitTransMap.set(trans.from, transMap);
     }
-  };
-
-  setBlockHeader = (blockHeader: BlockHeaderData) => {
-    this.blockHeader = blockHeader;
   };
 
   handelTransaction = async (tm: transMeta) => {
@@ -142,7 +134,7 @@ export class TransactionAction {
       amount: tm.amount,
       ts: tm.ts,
     });
-    await trans.genHash(this.db);
+    await trans.genHash(this.chain.db);
     message.info('handel--trans', trans);
     this.add(trans);
     // test contract
@@ -156,7 +148,7 @@ export class TransactionAction {
 
   private initTransactionListen = async () => {
     // 接收交易
-    await this.db.pubsub.subscribe(
+    await this.chain.db.pubsub.subscribe(
       peerEvent.transaction,
       this.receiveTransaction,
     );
@@ -164,7 +156,7 @@ export class TransactionAction {
 
   private receiveTransaction = async (data: Message) => {
     // 接收p2p网络里的交易，并塞到交易列表
-    if (data.from === this.db.cache.get(skCacheKeys.accountId)) {
+    if (data.from === this.chain.did) {
       // 不再处理自己发出的交易，因为已经直接添加到了队列
       return;
     }
@@ -187,5 +179,43 @@ export class TransactionAction {
     } else {
       message.info('trans unlow');
     }
+  };
+
+  transaction = async (
+    tm: Pick<transMeta, 'amount' | 'payload' | 'recipient'>,
+  ) => {
+    // 供外部调用的发起交易方法
+    // 只是做交易检查和预处理
+    if (!this.chain.inited) {
+      message.error('wait for inited');
+      return;
+    }
+    if (!tm.amount || !tm.recipient) {
+      // 校验
+      message.error('need trans meta');
+      return;
+    }
+    const signMeta = {
+      ...tm,
+      from: this.chain.did,
+      ts: Date.now(),
+      cu: new BigNumber(100), // todo
+    };
+    // TODO 可能 有个偶现的bug
+    // message.info(skCacheKeys.accountPrivKey)
+    // message.info(signMeta)
+    const transMeta: transMeta = {
+      ...signMeta,
+      // 这里使用交易原始信息通过ipfs存储后的cid进行签名会更好？
+      signature: await signById(
+        this.chain.db.cache.get(skCacheKeys.accountPrivKey),
+        bytes.fromString(JSON.stringify(signMeta)),
+      ),
+    };
+    this.chain.db.pubsub.publish(
+      peerEvent.transaction,
+      bytes.fromString(JSON.stringify(transMeta)),
+    );
+    this.handelTransaction(transMeta);
   };
 }

@@ -1,9 +1,9 @@
+import { SKChainLibBase } from './../base';
+import { SKChain } from './../../skChain';
 import { message } from 'utils/message';
 import { newAccount } from './../../mate/account';
 import { BigNumber } from 'bignumber.js';
-import { SKDB } from 'lib/ipfs/ipfs.interface';
 import { Account } from 'mate/account';
-import { CID } from 'multiformats';
 import { skCacheKeys } from 'lib/ipfs/key';
 import { Block } from 'mate/block';
 import { Mpt } from './mpt';
@@ -22,11 +22,10 @@ export type UpdateAccountI = { ops: UpdateOps } & {
   account: Account['account'];
 };
 
-export class Ipld {
-  constructor(db: SKDB) {
-    this.db = db;
+export class Ipld extends SKChainLibBase {
+  constructor(chain: SKChain) {
+    super(chain);
   }
-  db: SKDB;
   private stateMpt!: Mpt;
   private transactionMpt!: Mpt;
   private receiptsMpt!: Mpt;
@@ -37,18 +36,14 @@ export class Ipld {
   // 下一个块的body transaction
   nextBlockBodyTrans: string[] = [];
 
-  // 已经打包好的最新块
-  private headerBlock!: Block;
-
   // 缓存未写入block的账户数据
   private updates: Map<string, Account> = new Map();
 
   init = async () => {
-    await this.initHeaderBlock();
     await this.initMpt();
     this.nextBlock = new Block({
-      number: this.headerBlock.header.number.plus(1),
-      parent: this.headerBlock.hash,
+      number: this.chain.headerBlock.header.number.plus(1),
+      parent: this.chain.headerBlock.hash,
       stateRoot: '',
       receiptsRoot: '',
       transactionsRoot: '',
@@ -86,10 +81,10 @@ export class Ipld {
     const accountCid = await this.stateMpt.getKey(did);
 
     if (accountCid) {
-      return await Account.fromCid(this.db, accountCid);
+      return await Account.fromCid(this.chain.db, accountCid);
     } else {
       // 如果没有此account就create
-      const storageRoot = await this.db.dag.put({});
+      const storageRoot = await this.chain.db.dag.put({});
       return newAccount(did, storageRoot);
     }
   };
@@ -146,49 +141,41 @@ export class Ipld {
     this.updates.set(account.account, account);
   };
 
-  initHeaderBlock = async () => {
-    if (!this.headerBlock) {
-      const headerBlock = await Block.fromCidOnlyHeader(
-        this.db.cache.get(skCacheKeys['sk-block']),
-        this.db,
-      );
-      this.headerBlock = headerBlock;
-    }
-    return this.headerBlock;
-  };
-
   initMpt = async () => {
     // init stateMpt
     if (!this.stateMpt) {
-      const stateRoot = this.headerBlock.header.stateRoot;
-      this.stateMpt = new Mpt(this.db, stateRoot);
+      const stateRoot = this.chain.headerBlock.header.stateRoot;
+      this.stateMpt = new Mpt(this.chain.db, stateRoot);
       await this.stateMpt.initRootTree();
     }
 
     // init transactionMpt
     if (!this.transactionMpt) {
-      const transactionsRoot = this.headerBlock.header.transactionsRoot;
-      this.transactionMpt = new Mpt(this.db, transactionsRoot);
+      const transactionsRoot = this.chain.headerBlock.header.transactionsRoot;
+      this.transactionMpt = new Mpt(this.chain.db, transactionsRoot);
       await this.transactionMpt.initRootTree();
     }
 
     // init receiptsMpt
     if (!this.receiptsMpt) {
-      const receiptsRoot = this.headerBlock.header.receiptsRoot;
-      this.receiptsMpt = new Mpt(this.db, receiptsRoot);
+      const receiptsRoot = this.chain.headerBlock.header.receiptsRoot;
+      this.receiptsMpt = new Mpt(this.chain.db, receiptsRoot);
       await this.receiptsMpt.initRootTree();
     }
   };
 
   addTransaction = async (trans: Transaction) => {
-    const transCid = await trans.commit(this.db, this.nextBlock.header.number);
+    const transCid = await trans.commit(
+      this.chain.db,
+      this.nextBlock.header.number,
+    );
     this.transactionMpt.updateKey(trans.hash, transCid);
     return trans.hash;
   };
 
   addReceipts = async (tx: string, receipt: Receipt) => {
     // TODO
-    const receiptsCid = await receipt.commit(this.db);
+    const receiptsCid = await receipt.commit(this.chain.db);
     this.receiptsMpt.updateKey(tx, receiptsCid);
   };
 
@@ -197,16 +184,16 @@ export class Ipld {
    */
   commit = async () => {
     for (const account of this.updates) {
-      const newCid = await account[1].commit(this.db);
+      const newCid = await account[1].commit(this.chain.db);
       await this.stateMpt.updateKey(account[0], newCid);
     }
 
     // block body
-    const body = await this.db.dag.put(this.nextBlockBodyTrans);
+    const body = await this.chain.db.dag.put(this.nextBlockBodyTrans);
     this.nextBlock.header.body = body.toString();
     this.nextBlock.body = {
-      transactions: this.nextBlockBodyTrans
-    }
+      transactions: this.nextBlockBodyTrans,
+    };
 
     // 新块的三棵树
     const stateRoot = await this.stateMpt.save();
@@ -218,12 +205,12 @@ export class Ipld {
 
     this.nextBlock.header.ts = Date.now();
     console.log(this.nextBlock);
-    await this.nextBlock.genHash(this.db);
+    await this.nextBlock.genHash(this.chain.db);
     return this.nextBlock;
   };
 
   goToNext = async (nextCid: string) => {
     // 落文件
-    this.db.cache.put(skCacheKeys['sk-block'], nextCid);
+    this.chain.db.cache.put(skCacheKeys['sk-block'], nextCid);
   };
 }
