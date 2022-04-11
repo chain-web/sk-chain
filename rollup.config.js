@@ -2,7 +2,6 @@ import typescript from 'rollup-plugin-typescript2';
 import json from '@rollup/plugin-json';
 import { resolve } from 'path';
 import { readFileSync } from 'fs';
-import { nodeResolve } from '@rollup/plugin-node-resolve';
 // import { terser } from 'rollup-plugin-terser';
 // import rollupReplace from 'rollup-plugin-replace';
 // import fileSize from 'rollup-plugin-filesize';
@@ -89,7 +88,7 @@ export default [
   //   output: [
   //     {
   //       dir: 'dist',
-  //       format: 'cjs',
+  //       format: 'esm',
   //     },
   //   ],
   // }),

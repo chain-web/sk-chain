@@ -2,7 +2,7 @@ import { SKChainLibBase } from './../base';
 import { SKChain } from './../../skChain';
 import { message } from 'utils/message';
 import { newAccount } from './../../mate/account';
-import { BigNumber } from 'bignumber.js';
+import BigNumber from 'bignumber.js';
 import { Account } from 'mate/account';
 import { skCacheKeys } from 'lib/ipfs/key';
 import { Block } from 'mate/block';

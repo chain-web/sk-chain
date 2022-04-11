@@ -1,6 +1,6 @@
 import { SKDB } from '../lib/ipfs/ipfs.interface';
-import { BigNumber } from 'bignumber.js';
 import { CID } from 'multiformats';
+import BigNumber from 'bignumber.js';
 
 interface AccountMeta {
   codeCid?: Account['codeCid'];

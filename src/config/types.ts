@@ -1,6 +1,6 @@
-import { BigNumber } from 'bignumber.js';
 import { cidHash } from '../mate/types';
 import { CID } from 'multiformats/cid';
+import BigNumber from 'bignumber.js';
 
 export type networkidType = 'mainnet' | 'testnet';
 

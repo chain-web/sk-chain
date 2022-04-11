@@ -1,5 +1,5 @@
+import BigNumber from 'bignumber.js';
 import { Ipld, UpdateAccountI } from './../ipld/index';
-import { BigNumber } from 'bignumber.js';
 export interface TransactionContractParam {
   from: string;
   recipient: string;
