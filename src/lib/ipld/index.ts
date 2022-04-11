@@ -116,7 +116,7 @@ export class Ipld extends SKChainLibBase {
     this.addReceipts(tx, receipt);
 
     for (const update of updates) {
-      await this.addUpdate(update);
+      await this.addUpdate(update, trans);
     }
   };
 
@@ -124,10 +124,10 @@ export class Ipld extends SKChainLibBase {
    * 接收智能合约的执行结果，更新账户数据
    * @param account
    */
-  addUpdate = async (update: UpdateAccountI) => {
+  addUpdate = async (update: UpdateAccountI, trans: Transaction) => {
     const account = await this.getAccount(update.account);
     if (update.ops.plus) {
-      account.plusBlance(update.ops.plus);
+      account.plusBlance(update.ops.plus, trans.ts.toString());
     }
     if (update.ops.minus) {
       account.minusBlance(update.ops.minus);

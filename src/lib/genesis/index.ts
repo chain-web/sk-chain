@@ -70,7 +70,7 @@ export class Genesis extends SKChainLibBase {
         const storageRoot = await this.chain.db.dag.put({});
         const account = newAccount(did, storageRoot);
         // 给每个初始账号充值
-        account.plusBlance(alloc[did].balance);
+        account.plusBlance(alloc[did].balance, "1641000000000");
         accounts.push(account);
       }
     }

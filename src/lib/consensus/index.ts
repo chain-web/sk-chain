@@ -1,3 +1,4 @@
+import { message } from './../../utils/message';
 import { SKChainLibBase } from './../base';
 import { SKChain } from './../../skChain';
 import BigNumber from 'bignumber.js';
@@ -38,8 +39,11 @@ export class Consensus extends SKChainLibBase {
       this.blockPrefix,
       bytes.fromString(JSON.stringify(nextData)),
     );
-
-    this.chain.blockHeader = nextBlock;
+    this.chain.headerBlock = nextBlock;
+    this.chain.blockService.addBlockCidByNumber(
+      blockCid.toString(),
+      nextBlock.header.number,
+    );
   };
 
   // 接收其他节点广播的新区块
@@ -49,19 +53,32 @@ export class Consensus extends SKChainLibBase {
         const newData: ConsensusNewBlockData = JSON.parse(
           bytes.toString(data.data),
         );
+        const newBlock = await Block.fromCidOnlyHeader(
+          newData.cid,
+          this.chain.db,
+        );
 
-        console.log('receive new block', newData);
-        console.log(this.chain.blockHeader);
+        console.log('receive new block', newBlock);
+        console.log(this.chain.headerBlock);
 
         if (
-          newData.number.isLessThanOrEqualTo(
-            this.chain.blockHeader.header.number,
+          newBlock.header.number.isLessThanOrEqualTo(
+            this.chain.headerBlock.header.number,
           )
         ) {
           // 接收到的块小于等于当前最新块
-          // TODO 验证受到的块是否跟自己的本地存储块hash是否相同
+          message.info('receive block: old');
+          // 验证收到的块是否跟自己的本地存储块hash是否相同
+          const savedBlock = await this.chain.blockService.getBlockByNumber(
+            newBlock.header.number,
+          );
+          if (savedBlock?.hash === newBlock.hash) {
+            message.info('receive block: check pass');
+          }
         } else {
+          // 收到的块是比自己节点存储的更新的
           // TODO
+          message.info('receive block: new');
         }
       }
     });

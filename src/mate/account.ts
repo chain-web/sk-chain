@@ -28,7 +28,7 @@ export class Account {
 
   // 当前账户的贡献值
   contribute: BigNumber;
-  // 账户余额 {age: amount}
+  // 账户余额 {age: amount},这里age是交易发起的时间
   private balance: {
     [key: string]: BigNumber;
   };
@@ -104,8 +104,8 @@ export class Account {
    * 余额增加
    * @param amount
    */
-  plusBlance = (amount: BigNumber) => {
-    this.balance[Date.now()] = amount;
+  plusBlance = (amount: BigNumber, ts: string) => {
+    this.balance[ts] = amount;
     this.setNextNonce();
   };
 
