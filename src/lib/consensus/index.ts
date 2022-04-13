@@ -39,7 +39,6 @@ export class Consensus extends SKChainLibBase {
       this.blockPrefix,
       bytes.fromString(JSON.stringify(nextData)),
     );
-    this.chain.headerBlock = nextBlock;
     this.chain.blockService.addBlockCidByNumber(
       blockCid.toString(),
       nextBlock.header.number,
@@ -58,12 +57,14 @@ export class Consensus extends SKChainLibBase {
           this.chain.db,
         );
 
-        console.log('receive new block', newBlock);
-        console.log(this.chain.headerBlock);
+        const headerBlock = await this.chain.getHeaderBlock()
+
+        // console.log('receive new block', newBlock);
+        // console.log(headerBlock);
 
         if (
           newBlock.header.number.isLessThanOrEqualTo(
-            this.chain.headerBlock.header.number,
+            headerBlock.header.number,
           )
         ) {
           // 接收到的块小于等于当前最新块

@@ -31,8 +31,6 @@ export class SKChain {
     this.transaction = this.transAction.transaction;
   }
 
-  // 最新块
-  private _headerBlock!: Block;
   version: string;
   // 数据存取服务
   db: SKDB;
@@ -70,15 +68,9 @@ export class SKChain {
 
   private initHeaderBlock = async () => {
     lifecycleEvents.emit(lifecycleStap.initingHeaderBlock);
-    const headerBlock = await this.blockService.getHeaderBlock();
-    this._headerBlock = headerBlock;
   };
 
-  set headerBlock(headerBlock: Block) {
-    this._headerBlock = headerBlock;
-  }
-
-  get headerBlock() {
-    return this._headerBlock;
-  }
+  getHeaderBlock = async () => {
+    return await this.blockService.getHeaderBlock();
+  };
 }

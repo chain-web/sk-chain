@@ -9,6 +9,7 @@ import type { DidJson } from './lib/p2p/did';
 export type { SKChain, SKChainOption } from './skChain';
 export type { DidJson } from './lib/p2p/did';
 export { skCacheKeys } from './lib/ipfs/key';
+export { Block } from './mate/block';
 export interface CreateNodeConfig {
   // 网络id
   networkid: networkidType;

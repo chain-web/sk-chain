@@ -24,7 +24,7 @@ export class TransactionAction extends SKChainLibBase {
   }
 
   MAX_TRANS_LIMIT = 50; // 每个block能打包的交易上限
-  WAIT_TIME_LIMIT = 8 * 1000; // 每个交易从被发出到能进行打包的最短时间间隔 ms
+  WAIT_TIME_LIMIT = 6 * 1000; // 每个交易从被发出到能进行打包的最短时间间隔 ms
   private waitTransMap: Map<string, Map<number, Transaction>> = new Map(); // 等待执行的交易
   private transQueue: Transaction[] = []; // 当前块可执行的交易队列
 
@@ -66,7 +66,7 @@ export class TransactionAction extends SKChainLibBase {
     const sortedArr = cArr.sort((a, b) =>
       a.contribute.isLessThan(b.contribute) ? -1 : 1,
     );
-    console.log(sortedArr);
+    // console.log(sortedArr);
     // 在 sortedArr 按发起交易者的 contribute 来排序，加到当前块打包队列中
     sortedArr.forEach((ele) => {
       if (waitTransArr.length < this.MAX_TRANS_LIMIT) {
@@ -108,7 +108,9 @@ export class TransactionAction extends SKChainLibBase {
     // 生成新块
     const nextBlock = await this.chain.ipld.commit();
     // 广播新块
-    this.chain.consensus.pubNewBlock(nextBlock);
+    await this.chain.consensus.pubNewBlock(nextBlock);
+    // 初始化下一个区块的ipld
+    this.chain.ipld.goToNext();
   };
 
   private add = async (trans: Transaction) => {

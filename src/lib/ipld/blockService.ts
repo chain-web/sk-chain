@@ -64,8 +64,8 @@ export class BlockService extends SKChainLibBase {
 
   /**
    * @description 添加或更新指定块的cid
-   * @param cid 
-   * @param number 
+   * @param cid
+   * @param number
    */
   addBlockCidByNumber = async (
     cid: string,

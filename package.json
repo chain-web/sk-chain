@@ -2,10 +2,10 @@
   "name": "sk-chain",
   "version": "0.0.2",
   "description": "单独可以供浏览器端和node端使用的主链",
-  "main": "dist/src/index.js",
   "type": "module",
-  "module": "es/src/index.js",
+  "module": "es/src/index.browser.js",
   "browser": "es/src/index.browser.js",
+  "types": "es/src/index.browser.d.ts",
   "directories": {
     "lib": "lib"
   },

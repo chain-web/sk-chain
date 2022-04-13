@@ -4,7 +4,6 @@ import { message } from 'utils/message';
 import { newAccount } from './../../mate/account';
 import BigNumber from 'bignumber.js';
 import { Account } from 'mate/account';
-import { skCacheKeys } from 'lib/ipfs/key';
 import { Block } from 'mate/block';
 import { Mpt } from './mpt';
 import { TransErrorType } from 'lib/contracts/transaction_demo';
@@ -41,9 +40,10 @@ export class Ipld extends SKChainLibBase {
 
   init = async () => {
     await this.initMpt();
+    const headerBlock = await this.chain.getHeaderBlock();
     this.nextBlock = new Block({
-      number: this.chain.headerBlock.header.number.plus(1),
-      parent: this.chain.headerBlock.hash,
+      number: headerBlock.header.number.plus(1),
+      parent: headerBlock.hash,
       stateRoot: '',
       receiptsRoot: '',
       transactionsRoot: '',
@@ -142,26 +142,21 @@ export class Ipld extends SKChainLibBase {
   };
 
   initMpt = async () => {
+    const headerBlock = await this.chain.getHeaderBlock();
     // init stateMpt
-    if (!this.stateMpt) {
-      const stateRoot = this.chain.headerBlock.header.stateRoot;
+      const stateRoot = headerBlock.header.stateRoot;
       this.stateMpt = new Mpt(this.chain.db, stateRoot);
       await this.stateMpt.initRootTree();
-    }
 
     // init transactionMpt
-    if (!this.transactionMpt) {
-      const transactionsRoot = this.chain.headerBlock.header.transactionsRoot;
+      const transactionsRoot = headerBlock.header.transactionsRoot;
       this.transactionMpt = new Mpt(this.chain.db, transactionsRoot);
       await this.transactionMpt.initRootTree();
-    }
 
     // init receiptsMpt
-    if (!this.receiptsMpt) {
-      const receiptsRoot = this.chain.headerBlock.header.receiptsRoot;
+      const receiptsRoot = headerBlock.header.receiptsRoot;
       this.receiptsMpt = new Mpt(this.chain.db, receiptsRoot);
       await this.receiptsMpt.initRootTree();
-    }
   };
 
   addTransaction = async (trans: Transaction) => {
@@ -184,6 +179,7 @@ export class Ipld extends SKChainLibBase {
    */
   commit = async () => {
     for (const account of this.updates) {
+      // TODO 不是所有的账户都有更新，只有有更新的账户才会更新
       const newCid = await account[1].commit(this.chain.db);
       await this.stateMpt.updateKey(account[0], newCid);
     }
@@ -204,13 +200,13 @@ export class Ipld extends SKChainLibBase {
     this.nextBlock.header.receiptsRoot = receiptRoot.toString();
 
     this.nextBlock.header.ts = Date.now();
-    console.log(this.nextBlock);
     await this.nextBlock.genHash(this.chain.db);
     return this.nextBlock;
   };
 
-  goToNext = async (nextCid: string) => {
-    // 落文件
-    this.chain.db.cache.put(skCacheKeys['sk-block'], nextCid);
+  goToNext = async () => {
+    this.nextBlockBodyTrans = []
+    this.updates.clear();
+    this.init()
   };
 }
