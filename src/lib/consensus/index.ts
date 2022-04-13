@@ -77,8 +77,11 @@ export class Consensus extends SKChainLibBase {
           }
         } else {
           // 收到的块是比自己节点存储的更新的
-          // TODO
           message.info('receive block: new');
+          // TODO 验证收到的块的合法性
+          // 
+          // 更新自己的本地存储块
+          await this.chain.blockService.addBlockCidByNumber(newData.cid, newBlock.header.number);
         }
       }
     });

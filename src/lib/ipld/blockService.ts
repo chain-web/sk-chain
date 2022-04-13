@@ -62,6 +62,11 @@ export class BlockService extends SKChainLibBase {
     };
   };
 
+  /**
+   * @description 添加或更新指定块的cid
+   * @param cid 
+   * @param number 
+   */
   addBlockCidByNumber = async (
     cid: string,
     number: BigNumber, // 其实没必要用BigNumber，因为这里实现是用的数组，并且最大长度为setSize，不会出现超大数字，先这么放着吧
