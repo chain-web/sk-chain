@@ -24,7 +24,7 @@ export class Account {
   }
   account: string;
   // 当前账户交易次数
-  private nonce: BigNumber;
+  nonce: BigNumber;
 
   // 当前账户的贡献值
   contribute: BigNumber;
