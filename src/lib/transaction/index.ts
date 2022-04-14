@@ -203,9 +203,6 @@ export class TransactionAction extends SKChainLibBase {
       ts: Date.now(),
       cu: new BigNumber(100), // todo
     };
-    // TODO 可能 有个偶现的bug
-    // message.info(skCacheKeys.accountPrivKey)
-    // message.info(signMeta)
     const transMeta: transMeta = {
       ...signMeta,
       // 这里使用交易原始信息通过ipfs存储后的cid进行签名会更好？

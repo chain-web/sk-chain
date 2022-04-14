@@ -93,6 +93,8 @@ export class BlockService extends SKChainLibBase {
 
       this.rootNode.Links[setIndex] = newSet; // 这里不认为setIndex必定为0，因为有新节点从其他节点同步block数据的情况，接受的块可能是无序
     }
+
+    await this.save()
   };
 
   // 获取指定高度的块cid
