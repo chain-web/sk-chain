@@ -12,6 +12,8 @@ export enum lifecycleStap {
   'checkingGenesisBlock' = 'checkingGenesisBlock',
   'checkedGenesisBlock' = 'checkedGenesisBlock',
   'initingBlockService' = 'initingBlockService',
+  'checkingBlockIndex' = 'checkingBlockIndex',
+  'checkedBlockIndex' = 'checkedBlockIndex',
   'initedBlockService' = 'initedBlockService',
   'initingHeaderBlock' = 'initingHeaderBlock',
   'initedHeaderBlock' = 'initedHeaderBlock',
@@ -21,8 +23,8 @@ export enum lifecycleStap {
 }
 
 Object.keys(lifecycleStap).forEach((key) => {
-  lifecycleEvents.addListener(key, () => {
-    message.info('on life cycle: ', key);
+  lifecycleEvents.addListener(key, (...data) => {
+    message.info('on life cycle: ', key, ...data);
   });
 });
 

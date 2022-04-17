@@ -40,10 +40,16 @@ export class TransactionAction extends SKChainLibBase {
   startTransTask = async () => {
     // 检查是否要执行打包任务
     setInterval(async () => {
+      if (!this.chain.consensus.isReady) {
+        // 节点未同步完成
+        return;
+      }
       if (this.taskInProgress) {
+        // 正在打包
         return;
       }
       if (this.waitTransMap.size === 0) {
+        // 无交易
         return;
       }
       this.taskInProgress = true;

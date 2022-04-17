@@ -1,14 +1,28 @@
+import { SKChain } from './../../skChain';
+import { SKChainLibBase } from './../base';
 import type { MessageHandlerFn } from 'ipfs-core-types/src/pubsub';
 import { lifecycleEvents, lifecycleStap } from '../events/lifecycle';
 import { SKDB } from '../ipfs/ipfs.interface';
 import { message } from '../../utils/message';
-import { CID } from 'multiformats';
+import { CID, bytes } from 'multiformats';
 
-export class Slice {
-  constructor(db: SKDB) {
-    this.db = db;
-    this.peerId = this.db.cache.get('accountId');
-    this.slice = this.db.cache.get(this.sliceCacheName) || 'o';
+type SlicePubData =
+  | {
+      blockRoot: string;
+      blockHeight: string;
+      ready: true; // 同步完成，可以打包共识
+      ts: number;
+    }
+  | {
+      ts: number;
+      ready?: false;
+    };
+
+export class Slice extends SKChainLibBase {
+  constructor(chain: SKChain) {
+    super(chain);
+    this.peerId = this.chain.db.cache.get('accountId');
+    this.slice = this.chain.db.cache.get(this.sliceCacheName) || 'o';
   }
   // 单个分片最大节点数
   static maxCount = 128;
@@ -18,13 +32,22 @@ export class Slice {
   static pubTimeout = 6 * 1000;
   // 节点不活跃后被判定为离线的时间间隔
   static peerOfflineTimeout = Slice.pubTimeout * 4;
-  db: SKDB;
+  // 将一个blockRoot作为可信的最小权重，每收到一次slice，相应blockRoot权重+1
+  static minCerdibleWeight = 4
+
   peerId: string;
   _slice!: string;
   nextSlice!: string;
   sliceCacheName = 'sk-slice';
   slicePeersCacheName = 'sk-slice-peers';
-  curPeers: Map<string, { ts: number }> = new Map();
+  curPeers: Map<string, { ts: number, ready: boolean }> = new Map();
+
+  blockRootMap: {[key: string]: {
+    weight: number;
+    blockHeigh: string;
+  }} = {}
+
+  syncing = false
 
   set slice(str: string) {
     // 主要是为了能自动更新nextSlice
@@ -47,14 +70,14 @@ export class Slice {
     lifecycleEvents.emit(lifecycleStap.initingSlice);
 
     // 把缓存里的当前节点peers拿出来
-    const cid = this.db.cache.get(this.slicePeersCacheName);
+    const cid = this.chain.db.cache.get(this.slicePeersCacheName);
     if (cid) {
       try {
         const cidObj = CID.parse(cid);
         // TODO 这里可能会长时间不相应，待排查
-        const peers = await this.db.dag.get(cidObj, { timeout: 5000 });
+        const peers = await this.chain.db.dag.get(cidObj, { timeout: 5000 });
         peers.value.forEach((ele: string) => {
-          this.curPeers.set(ele, { ts: Date.now() });
+          this.curPeers.set(ele, { ts: Date.now(), ready: this.chain.consensus.isReady });
         });
       } catch (error) {
         console.log(error);
@@ -82,14 +105,18 @@ export class Slice {
   };
   private initSliceSubscribe = async () => {
     // 监听当前分片
-    await this.db.pubsub.subscribe(this.slice, this.handelSubSliceMessage);
+    await this.chain.db.pubsub.subscribe(
+      this.slice,
+      this.handelSubSliceMessage,
+    );
   };
 
   private handelSubSliceMessage: MessageHandlerFn = async (data) => {
-    this.curPeers.set(data.from, { ts: Date.now() });
+    const slicePubData: SlicePubData = JSON.parse(bytes.toString(data.data));
+    this.curPeers.set(data.from, { ts: slicePubData.ts, ready: Boolean(slicePubData.ready) });
     // 如果节点数大于当前分片最大数量，则二分，如果小于最小，则回到上一分片
     if (this.curPeers.size > Slice.maxCount) {
-      this.db.pubsub.unsubscribe(this.slice);
+      this.chain.db.pubsub.unsubscribe(this.slice);
       this.slice = this.nextSlice;
       await this.initSliceSubscribe();
     }
@@ -98,17 +125,47 @@ export class Slice {
         // 还未分片
         return;
       }
-      this.db.pubsub.unsubscribe(this.slice);
+      this.chain.db.pubsub.unsubscribe(this.slice);
       this.slice = this.slice.substring(0, this.slice.length - 2);
       await this.initSliceSubscribe();
     }
+    this.addToBlockRootMap(slicePubData)
   };
+
+  addToBlockRootMap = async (data: SlicePubData) => {
+    if (this.syncing) {
+      // TDDO 在sync过程中，检查新收到的blockRoot，是否需要中断之前的sync
+      return
+    }
+    if (data.ready) {
+      const cur = this.blockRootMap[data.blockRoot];
+      cur.weight++
+      if (cur.weight > Slice.minCerdibleWeight) {
+        this.syncing = true
+        await this.chain.blockService.syncFromBlockRoot(data.blockRoot)
+      }
+    }
+  }
 
   /**
    * 定时发消息，通知其他节点自己在哪个分片
    */
   private pubSlice = async () => {
-    await this.db.pubsub.publish(this.slice, new Uint8Array([]));
+    let slicePubData: SlicePubData = {
+      ts: Date.now(),
+    };
+    if (this.chain.consensus.isReady) {
+      slicePubData = {
+        ...slicePubData,
+        ready: true,
+        blockHeight: this.chain.blockService.checkedBlockHeight.toString(),
+        blockRoot: this.chain.blockService.blockRoot.rootCid,
+      };
+    }
+    await this.chain.db.pubsub.publish(
+      this.slice,
+      bytes.fromString(JSON.stringify(slicePubData)),
+    );
     await this.refreshCurrPeers();
     setTimeout(() => {
       this.pubSlice();
@@ -132,13 +189,13 @@ export class Slice {
     }
 
     // 把活跃的节点列表写到文件，下次冷启动时使用
-    const cid = await this.db.dag.put(keys);
-    this.db.cache.put(this.slicePeersCacheName, cid.toString());
+    const cid = await this.chain.db.dag.put(keys);
+    this.chain.db.cache.put(this.slicePeersCacheName, cid.toString());
   };
 
   private save = () => {
     // 把当前自己的分片信息写入到文件
-    this.db.cache.put(this.sliceCacheName, this.slice);
+    this.chain.db.cache.put(this.sliceCacheName, this.slice);
   };
 
   // 根据peerId和目前所在分片，确定下一分片
