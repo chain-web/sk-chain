@@ -25,7 +25,6 @@ export class BlockRoot {
 
   rootCid!: string;
   rootNode!: PBNode;
-  blockHeight = new BigNumber(0);
 
   db: SKDB;
 
@@ -115,7 +114,6 @@ export class BlockRoot {
   };
 
   save = async () => {
-    this.rootNode.Data = bytes.fromString(this.blockHeight.toString());
     this.rootCid = (await this.db.dag.put(this.rootNode)).toString();
     return this.rootCid;
   };

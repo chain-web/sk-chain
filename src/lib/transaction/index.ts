@@ -1,5 +1,4 @@
 import { SKChainLibBase } from './../base';
-import { Ipld } from './../ipld/index';
 import BigNumber from 'bignumber.js';
 import { Transaction, transMeta } from '../../mate/transaction';
 import { Message } from 'ipfs-core-types/src/pubsub';
@@ -13,7 +12,6 @@ import { transContract } from 'lib/contracts/transaction';
 import { Contract } from 'lib/contract';
 import { skCacheKeys } from 'lib/ipfs/key';
 import { transDemoFn } from 'lib/contracts/transaction_demo';
-import { Consensus } from 'lib/consensus';
 import { SKChain } from '../../skChain';
 
 // 处理交易活动
@@ -40,7 +38,7 @@ export class TransactionAction extends SKChainLibBase {
   startTransTask = async () => {
     // 检查是否要执行打包任务
     setInterval(async () => {
-      if (!this.chain.consensus.isReady) {
+      if (!this.chain.consensus.isReady()) {
         // 节点未同步完成
         return;
       }

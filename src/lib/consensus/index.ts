@@ -35,13 +35,15 @@ export class Consensus extends SKChainLibBase {
   blockPrefix = 'sk-block-new';
   slice: Slice;
   // 是否已经同步完成，可以进行交易打包和参与共识
-  isReady = false;
+  private ready = false;
 
   possibleChainMap = new Map<string, PossibleChain>();
 
   setIsReady = (ready: boolean) => {
-    this.isReady = ready;
+    this.ready = ready;
   };
+
+  isReady = () => this.ready;
 
   init = async () => {
     await this.slice.init();

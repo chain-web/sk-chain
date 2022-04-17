@@ -33,21 +33,23 @@ export class Slice extends SKChainLibBase {
   // 节点不活跃后被判定为离线的时间间隔
   static peerOfflineTimeout = Slice.pubTimeout * 4;
   // 将一个blockRoot作为可信的最小权重，每收到一次slice，相应blockRoot权重+1
-  static minCerdibleWeight = 4
+  static minCerdibleWeight = 4;
 
   peerId: string;
   _slice!: string;
   nextSlice!: string;
   sliceCacheName = 'sk-slice';
   slicePeersCacheName = 'sk-slice-peers';
-  curPeers: Map<string, { ts: number, ready: boolean }> = new Map();
+  curPeers: Map<string, { ts: number; ready: boolean }> = new Map();
 
-  blockRootMap: {[key: string]: {
-    weight: number;
-    blockHeigh: string;
-  }} = {}
+  blockRootMap: {
+    [key: string]: {
+      weight: number;
+      // blockHeigh: string;
+    };
+  } = {};
 
-  syncing = false
+  syncing = false;
 
   set slice(str: string) {
     // 主要是为了能自动更新nextSlice
@@ -77,7 +79,10 @@ export class Slice extends SKChainLibBase {
         // TODO 这里可能会长时间不相应，待排查
         const peers = await this.chain.db.dag.get(cidObj, { timeout: 5000 });
         peers.value.forEach((ele: string) => {
-          this.curPeers.set(ele, { ts: Date.now(), ready: this.chain.consensus.isReady });
+          this.curPeers.set(ele, {
+            ts: Date.now(),
+            ready: this.chain.consensus.isReady(),
+          });
         });
       } catch (error) {
         console.log(error);
@@ -113,7 +118,11 @@ export class Slice extends SKChainLibBase {
 
   private handelSubSliceMessage: MessageHandlerFn = async (data) => {
     const slicePubData: SlicePubData = JSON.parse(bytes.toString(data.data));
-    this.curPeers.set(data.from, { ts: slicePubData.ts, ready: Boolean(slicePubData.ready) });
+    this.addToBlockRootMap(slicePubData);
+    this.curPeers.set(data.from, {
+      ts: slicePubData.ts,
+      ready: Boolean(slicePubData.ready),
+    });
     // 如果节点数大于当前分片最大数量，则二分，如果小于最小，则回到上一分片
     if (this.curPeers.size > Slice.maxCount) {
       this.chain.db.pubsub.unsubscribe(this.slice);
@@ -129,23 +138,29 @@ export class Slice extends SKChainLibBase {
       this.slice = this.slice.substring(0, this.slice.length - 2);
       await this.initSliceSubscribe();
     }
-    this.addToBlockRootMap(slicePubData)
   };
 
   addToBlockRootMap = async (data: SlicePubData) => {
     if (this.syncing) {
       // TDDO 在sync过程中，检查新收到的blockRoot，是否需要中断之前的sync
-      return
+      return;
     }
+    console.log(data);
     if (data.ready) {
-      const cur = this.blockRootMap[data.blockRoot];
-      cur.weight++
+      let cur = this.blockRootMap[data.blockRoot];
+      if (!cur) {
+        cur = {
+          weight: 0,
+        };
+      }
+      cur.weight++;
+      this.blockRootMap[data.blockRoot] = cur;
       if (cur.weight > Slice.minCerdibleWeight) {
-        this.syncing = true
-        await this.chain.blockService.syncFromBlockRoot(data.blockRoot)
+        this.syncing = true;
+        await this.chain.blockService.syncFromBlockRoot(data.blockRoot);
       }
     }
-  }
+  };
 
   /**
    * 定时发消息，通知其他节点自己在哪个分片
@@ -154,7 +169,7 @@ export class Slice extends SKChainLibBase {
     let slicePubData: SlicePubData = {
       ts: Date.now(),
     };
-    if (this.chain.consensus.isReady) {
+    if (this.chain.consensus.isReady()) {
       slicePubData = {
         ...slicePubData,
         ready: true,
