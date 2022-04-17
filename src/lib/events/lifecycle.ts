@@ -16,6 +16,7 @@ export enum lifecycleStap {
   'checkedBlockIndex' = 'checkedBlockIndex',
   'initedBlockService' = 'initedBlockService',
   'initingHeaderBlock' = 'initingHeaderBlock',
+  'syncingHeaderBlock' = 'syncingHeaderBlock',
   'initedHeaderBlock' = 'initedHeaderBlock',
   'initingSlice' = 'initingSlice',
   'initedSlice' = 'initedSlice',

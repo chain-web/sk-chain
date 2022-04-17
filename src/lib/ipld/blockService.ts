@@ -34,7 +34,7 @@ export class BlockService extends SKChainLibBase {
     lifecycleEvents.emit(lifecycleStap.initingBlockService);
     const rootCid = this.chain.db.cache.get(skCacheKeys['sk-block']);
     if (!rootCid) {
-      this.initGenseis();
+      await this.initGenseis();
     } else {
       await this.blockRoot.init(rootCid);
       await this.checkBlockRoot();
@@ -45,7 +45,7 @@ export class BlockService extends SKChainLibBase {
 
   initGenseis = async () => {
     this.blockRoot.rootNode = createEmptyNode('block-index');
-    await this.blockRoot.save();
+    await this.save();
   };
 
   checkBlockRoot = async () => {
@@ -114,7 +114,6 @@ export class BlockService extends SKChainLibBase {
     let prevBlock = await this.blockRoot.getBlockByNumber(
       this.checkedBlockHeight,
     );
-
     while (this.checkedBlockHeight.isLessThan(newHeaderBlock.header.number)) {
       // 逐个set的去把区块同步到本地
       const set = await newBlockRoot.getSetByNumber(
@@ -123,6 +122,13 @@ export class BlockService extends SKChainLibBase {
       if (set) {
         for (const blockCid of set) {
           // 每个set再逐个block校验并同步
+          lifecycleEvents.emit(
+            lifecycleStap.syncingHeaderBlock,
+            this.checkedBlockHeight.toString(),
+            '/',
+            newHeaderBlock.header.number,
+            toString(),
+          );
           const checkBlock = await Block.fromCidOnlyHeader(
             blockCid,
             this.chain.db,
@@ -137,7 +143,7 @@ export class BlockService extends SKChainLibBase {
   };
 
   save = async () => {
-    this.blockRoot.save();
+    await this.blockRoot.save();
     this.chain.db.cache.put(skCacheKeys['sk-block'], this.blockRoot.rootCid);
   };
 }
