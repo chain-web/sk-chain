@@ -2,13 +2,12 @@ import { BlockService } from './lib/ipld/blockService';
 import { GenesisConfig } from './config/types';
 import { lifecycleEvents, lifecycleStap } from './lib/events/lifecycle';
 import { skCacheKeys } from './lib/ipfs/key';
-import { Block } from './mate/block';
 import { SKDB } from './lib/ipfs/ipfs.interface';
 import { TransactionAction } from './lib/transaction';
-import { Ipld } from 'lib/ipld';
+import { Ipld } from './lib/ipld';
 import * as packageJson from '../package.json';
-import { Consensus } from 'lib/consensus';
-import { Genesis } from 'lib/genesis';
+import { Consensus } from './lib/consensus';
+import { Genesis } from './lib/genesis';
 
 export interface SKChainOption {
   genesis: GenesisConfig;

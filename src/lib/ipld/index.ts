@@ -76,8 +76,6 @@ export class Ipld extends SKChainLibBase {
   };
 
   getAccountFromDb = async (did: string): Promise<Account> => {
-    console.log(did);
-
     const accountCid = await this.stateMpt.getKey(did);
 
     if (accountCid) {
