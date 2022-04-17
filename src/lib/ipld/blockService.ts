@@ -33,14 +33,19 @@ export class BlockService extends SKChainLibBase {
   init = async () => {
     lifecycleEvents.emit(lifecycleStap.initingBlockService);
     const rootCid = this.chain.db.cache.get(skCacheKeys['sk-block']);
-    await this.blockRoot.init(rootCid);
-    await this.checkBlockRoot();
+    if (!rootCid) {
+      this.initGenseis();
+    } else {
+      await this.blockRoot.init(rootCid);
+      await this.checkBlockRoot();
+    }
+
     lifecycleEvents.emit(lifecycleStap.initedBlockService);
   };
 
   initGenseis = async () => {
     this.blockRoot.rootNode = createEmptyNode('block-index');
-    await this.save();
+    await this.blockRoot.save();
   };
 
   checkBlockRoot = async () => {
