@@ -8,6 +8,7 @@ import { Ipld } from './lib/ipld';
 import * as packageJson from '../package.json';
 import { Consensus } from './lib/consensus';
 import { Genesis } from './lib/genesis';
+import { message } from 'utils/message';
 
 export interface SKChainOption {
   genesis: GenesisConfig;
@@ -52,16 +53,21 @@ export class SKChain {
   transaction;
 
   init = async () => {
-    await this.blockService.init();
-    await this.genesis.checkGenesisBlock();
-    // await this.db.swarm.connect(
-    //   '/ip4/47.99.47.82/tcp/4003/ws/p2p/12D3KooWDd6gAZ1Djtt4bhAG7djGKM32ETxiiiJCCWnH5ypK2csa',
-    // );
-    await this.initHeaderBlock();
-    lifecycleEvents.emit(lifecycleStap.initedHeaderBlock);
-    await this.ipld.init();
-    await this.transAction.init();
-    await this.consensus.init();
+    try {
+      await this.blockService.init();
+      await this.genesis.checkGenesisBlock();
+      // await this.db.swarm.connect(
+      //   '/ip4/47.99.47.82/tcp/4003/ws/p2p/12D3KooWDd6gAZ1Djtt4bhAG7djGKM32ETxiiiJCCWnH5ypK2csa',
+      // );
+      await this.initHeaderBlock();
+      lifecycleEvents.emit(lifecycleStap.initedHeaderBlock);
+      await this.ipld.init();
+      await this.transAction.init();
+      await this.consensus.init();
+    } catch (error) {
+      message.error('init error', error)
+    }
+   
     this.inited = true;
   };
 

@@ -33,7 +33,7 @@ export class Slice extends SKChainLibBase {
   // 节点不活跃后被判定为离线的时间间隔
   static peerOfflineTimeout = Slice.pubTimeout * 4;
   // 将一个blockRoot作为可信的最小权重，每收到一次slice，相应blockRoot权重+1
-  static minCerdibleWeight = 4;
+  static minCerdibleWeight = 2;
 
   peerId: string;
   _slice!: string;

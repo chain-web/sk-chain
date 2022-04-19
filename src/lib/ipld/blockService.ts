@@ -114,7 +114,7 @@ export class BlockService extends SKChainLibBase {
     let prevBlock = await this.blockRoot.getBlockByNumber(
       this.checkedBlockHeight,
     );
-    while (this.checkedBlockHeight.isLessThanOrEqualTo(newHeaderBlock.header.number)) {
+    while (this.checkedBlockHeight.isLessThan(newHeaderBlock.header.number)) {
       // 逐个set的去把区块同步到本地
       const set = await newBlockRoot.getSetByNumber(
         this.checkedBlockHeight.plus(1),
@@ -122,7 +122,6 @@ export class BlockService extends SKChainLibBase {
       if (set) {
         for (const blockCid of set) {
           // 每个set再逐个block校验并同步
-
           const checkBlock = await Block.fromCidOnlyHeader(
             blockCid,
             this.chain.db,
@@ -136,6 +135,7 @@ export class BlockService extends SKChainLibBase {
             );
             this.checkedBlockHeight = this.checkedBlockHeight.plus(1);
             await this.addBlockCidByNumber(blockCid, this.checkedBlockHeight);
+            prevBlock = checkBlock;
           }
         }
       }
