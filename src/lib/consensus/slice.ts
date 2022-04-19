@@ -118,7 +118,9 @@ export class Slice extends SKChainLibBase {
 
   private handelSubSliceMessage: MessageHandlerFn = async (data) => {
     const slicePubData: SlicePubData = JSON.parse(bytes.toString(data.data));
-    this.addToBlockRootMap(slicePubData);
+    if (data.from !== this.chain.did) {
+      this.addToBlockRootMap(slicePubData);
+    }
     this.curPeers.set(data.from, {
       ts: slicePubData.ts,
       ready: Boolean(slicePubData.ready),
