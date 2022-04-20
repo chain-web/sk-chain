@@ -69,6 +69,14 @@ export class BlockService extends SKChainLibBase {
       } else {
         checked = true;
         // TODO check不通过，纠正数据
+        this.blockRoot.deleteFromStartNUmber(this.checkedBlockHeight);
+
+        lifecycleEvents.emit(
+          lifecycleStap.checkedBlockIndex,
+          'checkedBlockHeight: ',
+          'delete after',
+          this.checkedBlockHeight.toString(),
+        );
       }
       prevBlock = checkBlock;
     }
@@ -108,6 +116,7 @@ export class BlockService extends SKChainLibBase {
 
   // 检查收到的blockRoot与自己本地的是否一致
   syncFromBlockRoot = async (blockRoot: string) => {
+    lifecycleEvents.emit(lifecycleStap.syncingHeaderBlock, blockRoot);
     const newBlockRoot = new BlockRoot(this.chain.db);
     await newBlockRoot.init(blockRoot);
     const newHeaderBlock = await newBlockRoot.getHeaderBlock();

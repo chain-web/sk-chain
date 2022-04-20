@@ -71,6 +71,22 @@ export class BlockRoot {
     }
   };
 
+  // 删除指定块之后的所有块数据
+  deleteFromStartNUmber = async (number: BigNumber) => {
+    const { setIndex, curIndex } = this.genIndex(number);
+    const set = this.rootNode.Links[setIndex];
+    if (set) {
+      // 删除当前set中的部分
+      const setData = (await this.db.dag.get(set.Hash)).value;
+      const newSetData = setData.splice(0, curIndex + 1);
+      const newSetCid = await this.db.dag.put(newSetData);
+      set.Hash = newSetCid;
+    }
+    while (this.rootNode.Links.length > setIndex + 1) {
+      this.rootNode.Links.pop();
+    }
+  };
+
   // 获取指定高度的块cid
   getBlockCidByNumber = async (
     number: BigNumber,
