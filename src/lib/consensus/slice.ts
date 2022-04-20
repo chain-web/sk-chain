@@ -45,7 +45,7 @@ export class Slice extends SKChainLibBase {
   blockRootMap: {
     [key: string]: {
       weight: number;
-      // blockHeigh: string;
+      blockHeight: string;
     };
   } = {};
 
@@ -142,6 +142,7 @@ export class Slice extends SKChainLibBase {
     }
   };
 
+  // 更新blockRootMap中新收到的blockRoot的权重
   addToBlockRootMap = async (data: SlicePubData) => {
     console.log(data);
     if (data.ready) {
@@ -149,15 +150,33 @@ export class Slice extends SKChainLibBase {
       if (!cur) {
         cur = {
           weight: 0,
+          blockHeight: data.blockHeight,
         };
       }
       cur.weight++;
       this.blockRootMap[data.blockRoot] = cur;
-      if (cur.weight > Slice.minCerdibleWeight && !this.syncing) {
+      this.checkToSyncBlock();
+    }
+  };
+
+  checkToSyncBlock = async () => {
+    if (this.syncing) {
+      return;
+    }
+    const blockRoot = await this.chain.blockService.blockRoot.rootCid;
+    let curRoots = Object.keys(this.blockRootMap).filter((ele) => {
+      return this.blockRootMap[ele].weight >= Slice.minCerdibleWeight;
+    });
+    curRoots = curRoots.sort((a, b) => {
+      return this.blockRootMap[b].weight - this.blockRootMap[a].weight;
+    });
+    if (curRoots.length > 0) {
+      if (curRoots[0] !== blockRoot) {
         this.syncing = true;
-        cur.weight = 0;
-        await this.chain.blockService.syncFromBlockRoot(data.blockRoot);
+        await this.chain.blockService.syncFromBlockRoot(curRoots[0]);
         this.syncing = false;
+      } else {
+        this.chain.consensus.setIsReady(true);
       }
     }
   };
