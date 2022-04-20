@@ -78,7 +78,7 @@ export class BlockRoot {
     if (set) {
       // 删除当前set中的部分
       const setData = (await this.db.dag.get(set.Hash)).value;
-      const newSetData = setData.splice(0, curIndex + 1);
+      const newSetData = setData.splice(0, curIndex);
       const newSetCid = await this.db.dag.put(newSetData);
       set.Hash = newSetCid;
     }

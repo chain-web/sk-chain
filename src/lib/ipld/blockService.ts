@@ -69,7 +69,7 @@ export class BlockService extends SKChainLibBase {
       } else {
         checked = true;
         // TODO check不通过，纠正数据
-        this.blockRoot.deleteFromStartNUmber(this.checkedBlockHeight);
+        await this.blockRoot.deleteFromStartNUmber(this.checkedBlockHeight);
 
         lifecycleEvents.emit(
           lifecycleStap.checkedBlockIndex,
@@ -77,6 +77,7 @@ export class BlockService extends SKChainLibBase {
           'delete after',
           this.checkedBlockHeight.toString(),
         );
+        await this.save();
       }
       prevBlock = checkBlock;
     }
