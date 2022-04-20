@@ -5,7 +5,7 @@ import type { SKDB } from './ipfs.interface';
 import { Cache } from './cache.browser';
 import { skCacheKeys } from './key';
 import { message } from 'utils/message';
-import { bytes } from 'multiformats';
+import { bytes, CID } from 'multiformats';
 
 const IPFSGl = (window as any).Ipfs;
 
@@ -98,5 +98,19 @@ export const createIpfs = async (opts: {
   cache.put(skCacheKeys.accountId, opts.did.id);
   cache.put(skCacheKeys.accountPublicKey, opts.did.pubKey || '');
   cache.put(skCacheKeys.accountPrivKey, opts.did.privKey);
-  return { ...ipfs, cache, CID: IPFSGl.CID };
+
+  // 添加默认的超时时间
+  const dagGet = async (
+    name: CID,
+    options: Parameters<typeof ipfs.dag.get>[1],
+  ) => ipfs.dag.get(name, { ...options, timeout: 5000 });
+  return {
+    ...ipfs,
+    cache,
+    CID: IPFSGl.CID,
+    dag: {
+      ...ipfs.dag,
+      get: dagGet,
+    },
+  };
 };

@@ -25,7 +25,11 @@ export class Mpt {
   rootTree!: PBNode;
 
   initRootTree = async () => {
-    this.rootTree = (await this.db.dag.get(CID.parse(this.root))).value;
+    try {
+      this.rootTree = (await this.db.dag.get(CID.parse(this.root))).value;
+    } catch (error) {
+      message.error(error);
+    }
   };
 
   getKey = async (key: string): Promise<string | undefined> => {
