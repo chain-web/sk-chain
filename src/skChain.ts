@@ -61,8 +61,12 @@ export class SKChain {
       // );
       await this.initHeaderBlock();
       lifecycleEvents.emit(lifecycleStap.initedHeaderBlock);
+      lifecycleEvents.emit(lifecycleStap.initingIpld);
       await this.ipld.init();
+      lifecycleEvents.emit(lifecycleStap.initedIpld);
+      lifecycleEvents.emit(lifecycleStap.initingTransaction);
       await this.transAction.init();
+      lifecycleEvents.emit(lifecycleStap.initedTransaction);
       await this.consensus.init();
     } catch (error) {
       message.error('init error', error)
