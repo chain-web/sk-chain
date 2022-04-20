@@ -143,10 +143,6 @@ export class Slice extends SKChainLibBase {
   };
 
   addToBlockRootMap = async (data: SlicePubData) => {
-    if (this.syncing) {
-      // TDDO 在sync过程中，检查新收到的blockRoot，是否需要中断之前的sync
-      return;
-    }
     console.log(data);
     if (data.ready) {
       let cur = this.blockRootMap[data.blockRoot];
@@ -157,9 +153,11 @@ export class Slice extends SKChainLibBase {
       }
       cur.weight++;
       this.blockRootMap[data.blockRoot] = cur;
-      if (cur.weight > Slice.minCerdibleWeight) {
+      if (cur.weight > Slice.minCerdibleWeight && !this.syncing) {
         this.syncing = true;
+        cur.weight = 0;
         await this.chain.blockService.syncFromBlockRoot(data.blockRoot);
+        this.syncing = false;
       }
     }
   };
