@@ -68,16 +68,18 @@ export class BlockService extends SKChainLibBase {
         this.checkedBlockHeight = checkBlock?.header.number!; // 过了check，必不为空
       } else {
         checked = true;
-        // TODO check不通过，纠正数据
-        await this.blockRoot.deleteFromStartNUmber(this.checkedBlockHeight);
+        if (checkBlock) {
+          //  check不通过，纠正数据, 删除错误块及其之后的块
+          await this.blockRoot.deleteFromStartNUmber(this.checkedBlockHeight);
 
-        lifecycleEvents.emit(
-          lifecycleStap.checkedBlockIndex,
-          'checkedBlockHeight: ',
-          'delete after',
-          this.checkedBlockHeight.toString(),
-        );
-        await this.save();
+          lifecycleEvents.emit(
+            lifecycleStap.checkedBlockIndex,
+            'checkedBlockHeight: ',
+            'delete after',
+            this.checkedBlockHeight.toString(),
+          );
+          await this.save();
+        }
       }
       prevBlock = checkBlock;
     }
