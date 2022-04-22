@@ -139,15 +139,16 @@ export class BlockService extends SKChainLibBase {
             this.chain.db,
           );
           if (this.checkOneBlock(checkBlock, prevBlock)) {
+            this.checkedBlockHeight = this.checkedBlockHeight.plus(1);
+
+            await this.addBlockCidByNumber(blockCid, this.checkedBlockHeight);
+            prevBlock = checkBlock;
             lifecycleEvents.emit(
               lifecycleStap.syncingHeaderBlock,
               this.checkedBlockHeight.toString(),
               '/',
               newHeaderBlock.header.number.toString(),
             );
-            this.checkedBlockHeight = this.checkedBlockHeight.plus(1);
-            await this.addBlockCidByNumber(blockCid, this.checkedBlockHeight);
-            prevBlock = checkBlock;
           }
         }
       }
