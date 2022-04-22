@@ -105,6 +105,18 @@ export class Consensus extends SKChainLibBase {
         } else {
           // 收到的块是比自己节点存储的更新的
           message.info('receive block: new');
+          if (headerBlock.header.number.plus(1).isEqualTo(newBlock.header.number)) {
+            // 收到的是下一个块
+            if (newBlock.header.parent === headerBlock.hash) {
+              // 验证通过是下一个块
+              await this.chain.blockService.addBlockCidByNumber(
+                newData.cid,
+                newBlock.header.number,
+              );
+
+              await this.chain.transAction.stopThisBlock();
+            }
+          }
           // TODO 验证收到的块的合法性,验证过程会
           // this.possibleChainMap.set()
           //

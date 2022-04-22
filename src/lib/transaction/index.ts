@@ -30,6 +30,8 @@ export class TransactionAction extends SKChainLibBase {
   private contract: Contract;
   taskInProgress = false; // 是否正在执行智能合约\打包
 
+  private breakNextBlock = false; // 是否中断下一个块的打包
+
   init = async () => {
     await this.initTransactionListen();
     await this.contract.init();
@@ -118,6 +120,22 @@ export class TransactionAction extends SKChainLibBase {
 
     // 生成新块
     const nextBlock = await this.chain.ipld.commit();
+    if (!this.checkIsBreakTransTask()) {
+      this.taskInProgress = false;
+      const headerBlock = await this.chain.blockService.getHeaderBlock();
+      if (nextBlock.hash === headerBlock.hash) {
+        return;
+      }
+      // TODO 错误的情况下，如何处理？
+      message.error(
+        'do trans task error',
+        'nextBlock',
+        nextBlock,
+        'headerBlock',
+        headerBlock,
+      );
+      return;
+    }
     // 广播新块
     await this.chain.consensus.pubNewBlock(nextBlock);
     // 初始化下一个区块的ipld
@@ -132,6 +150,18 @@ export class TransactionAction extends SKChainLibBase {
       const transMap = new Map();
       transMap.set(trans.ts, trans);
       this.waitTransMap.set(trans.from, transMap);
+    }
+  };
+
+  // 检查是否要继续执行打包操作
+  checkIsBreakTransTask = () => {
+    return !this.breakNextBlock;
+  };
+
+  // 终止本次打包，可能是因为收到了广播出来的最新块，被调用
+  stopThisBlock = async () => {
+    if (this.taskInProgress) {
+      this.breakNextBlock = true;
     }
   };
 
