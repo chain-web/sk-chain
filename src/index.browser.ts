@@ -11,6 +11,7 @@ export type { DidJson } from './lib/p2p/did';
 export { skCacheKeys } from './lib/ipfs/key';
 export { Block } from './mate/block';
 export { Account } from './mate/account';
+export { Transaction } from './mate/transaction';
 export { CID } from 'multiformats';
 export interface CreateNodeConfig {
   // 网络id

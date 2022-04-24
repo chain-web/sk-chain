@@ -1,7 +1,7 @@
 import BigNumber from 'bignumber.js';
 import { SKDB } from '../lib/ipfs/ipfs.interface';
 import { Address } from './types';
-import type { CID } from 'multiformats/cid';
+import { CID } from 'multiformats/cid';
 import { BlockHeaderData } from './block';
 
 export interface transMeta {
@@ -23,6 +23,7 @@ export interface TransactionOption {
   amount: BigNumber;
   payload?: string;
   ts: number;
+  hash?: string;
 }
 
 // 交易，基础数据
@@ -36,6 +37,9 @@ export class Transaction {
     this.amount = opt.amount;
     this.payload = opt.payload;
     this.ts = opt.ts;
+    if (opt.hash) {
+      this.hash = opt.hash;
+    }
   }
   blockNumber!: BlockHeaderData['number'];
   accountNonce: BigNumber;
@@ -62,8 +66,19 @@ export class Transaction {
     this.hash = cid.toString();
   };
 
-  fromCid = async () => {
-    // TODO
+  static fromCid = async (db: SKDB, cid: string) => {
+    const transData = (await db.dag.get(CID.parse(cid))).value;
+    return new Transaction({
+      accountNonce: new BigNumber(transData[0]),
+      amount: new BigNumber(transData[1]),
+      cu: new BigNumber (transData[2]),
+      cuLimit: new BigNumber (transData[3]),
+      from: transData[4],
+      hash: transData[5],
+      payload: transData[6],
+      recipient: transData[7],
+      ts: transData[8],
+    });
   };
 
   /**
@@ -72,10 +87,10 @@ export class Transaction {
   commit = async (db: SKDB, blockNumber: BigNumber) => {
     this.blockNumber = blockNumber;
     const transCid = await db.dag.put([
-      this.accountNonce,
-      this.amount,
-      this.cu,
-      this.cuLimit,
+      this.accountNonce.toString(),
+      this.amount.toString(),
+      this.cu.toString(),
+      this.cuLimit.toString(),
       this.from,
       this.hash,
       this.payload,
