@@ -2,11 +2,9 @@ import { BlockRoot } from './blockRoot';
 import { Block } from './../../mate/block';
 import { createEmptyNode } from './util';
 import { skCacheKeys } from 'lib/ipfs/key';
-import { createLink, PBNode } from '@ipld/dag-pb';
 import BigNumber from 'bignumber.js';
 import { SKChain } from './../../skChain';
 import { SKChainLibBase } from './../base';
-import { CID, bytes } from 'multiformats';
 import { lifecycleEvents, lifecycleStap } from 'lib/events/lifecycle';
 
 // 管理、已经存储的块索引
