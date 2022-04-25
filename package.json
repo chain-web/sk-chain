@@ -4,6 +4,7 @@
   "description": "单独可以供浏览器端和node端使用的主链",
   "type": "module",
   "module": "es/src/index.js",
+  "main": "es/src/index.js",
   "types": "es/src/index.d.ts",
   "browser": {
     "./es/src/node.js": "./es/src/node.browser.js"
