@@ -113,6 +113,13 @@ export class BlockService extends SKChainLibBase {
     cid: string,
     number: BigNumber, // 其实没必要用BigNumber，因为这里实现是用的数组，并且最大长度为setSize，不会出现超大数字，先这么放着吧
   ) => {
+    let prevBlock = await this.blockRoot.getBlockByNumber(
+      this.checkedBlockHeight,
+    );
+    let nextBlock = await Block.fromCid(cid, this.chain.db);
+    if (this.checkOneBlock(nextBlock, prevBlock)) {
+      this.checkedBlockHeight = nextBlock.header.number;
+    }
     await this.blockRoot.addBlockToRootNode(cid, number);
     await this.save();
   };
@@ -149,6 +156,8 @@ export class BlockService extends SKChainLibBase {
               '/',
               newHeaderBlock.header.number.toString(),
             );
+          } else {
+            return;
           }
         }
       }
