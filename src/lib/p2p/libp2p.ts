@@ -1,37 +1,24 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
-import { createLibp2p } from 'libp2p';
-// const Bootstrap = require('libp2p-bootstrap');
-// const KadDHT = require('libp2p-kad-dht');
-// const MPLEX = require('libp2p-mplex');
-// const MulticastDNS = require('libp2p-mdns');
-// const { NOISE } = require('@chainsafe/libp2p-noise');
-// const GossipSub = require('libp2p-gossipsub');
-// const WS = require('libp2p-websockets');
-
-// const Bootstrap = require('libp2p-bootstrap');
-// const KadDHT = require('libp2p-kad-dht');
-// const MPLEX = require('libp2p-mplex');
-// const MulticastDNS = require('libp2p-mdns');
-// const { NOISE } = require('@chainsafe/libp2p-noise');
-// const GossipSub = require('libp2p-gossipsub');
-import TCP from 'libp2p-tcp';
+import { createLibp2p, Libp2p } from 'libp2p';
 import { Bootstrap } from '@libp2p/bootstrap';
-import KadDHT from 'libp2p-kad-dht';
 import { Mplex } from '@libp2p/mplex';
 import { MulticastDNS } from '@libp2p/mdns';
-import * as NOISE from '@chainsafe/libp2p-noise';
-import GossipSub from 'libp2p-gossipsub';
+import { TCP } from '@libp2p/tcp';
+import { KadDHT } from '@libp2p/kad-dht';
+import { Noise } from '@chainsafe/libp2p-noise';
+import { FloodSub } from '@libp2p/floodsub';
+import GossipSub from 'libp2p-gossipsub'
+
 import { WebRTCStar } from '@libp2p/webrtc-star';
 import * as wrtc from 'wrtc';
-import { Libp2pFactoryFn } from 'ipfs-core';
 
 export let network: Promise<Libp2p>;
 // const WRTC = new WebRTCStar({ wrtc: wrtc })
 const transportKey = WebRTCStar.prototype[Symbol.toStringTag];
-export const libp2pBundle: Libp2pFactoryFn = (opts) => {
+export const libp2pBundle = (opts: any) => {
   // Set convenience variables to clearly showcase some of the useful things that are available
-  const peerId = opts.peerId;
-  const bootstrapList = opts.config.Bootstrap;
+  const peerId = opts.peerId as any;
+  const bootstrapList = opts.config.Bootstrap || [];
   const announce = opts.config.Addresses?.Announce || [];
   const listen = opts.config.Addresses?.Swarm || [];
 
@@ -45,53 +32,29 @@ export const libp2pBundle: Libp2pFactoryFn = (opts) => {
     connectionManager: {
       minConnections: 20,
       maxConnections: 200,
-      pollInterval: 5000,
+      autoDialInterval: 5000,
     },
-    modules: {
-      transport: [new WebRTCStar() as any],
-      streamMuxer: [new Mplex()],
-      connEncryption: [NOISE.NOISE as any],
-      peerDiscovery: [MulticastDNS, Bootstrap],
-      dht: KadDHT,
-      pubsub: GossipSub,
-    },
-    config: {
-      transport: {
-        [transportKey]: {
-          wrtc, // You can use `wrtc` when running in Node.js
-        },
-      },
-      peerDiscovery: {
-        autoDial: true, // auto dial to peers we find when we have less peers than `connectionManager.minPeers`
-        mdns: {
-          interval: 10000,
-          enabled: true,
-        },
-        bootstrap: {
-          interval: 30e3,
-          enabled: true,
-          list: bootstrapList,
-        },
-      },
-      // Turn on relay with hop active so we can connect to more peers
-      relay: {
+    transports: [new WebRTCStar({wrtc: wrtc}) as any, new TCP()],
+    pubsub: GossipSub as any,
+    connectionEncryption: [new Noise()],
+    peerDiscovery: [
+      new MulticastDNS({
+        interval: 1e4,
+      }) as any,
+      new Bootstrap({
+        interval: 6e4,
+        list: bootstrapList,
+      }),
+    ],
+    dht: new KadDHT(),
+    //   // pubsub: GossipSub,
+    // },
+    streamMuxers: [new Mplex() as any],
+    relay: {
+      enabled: true,
+      hop: {
         enabled: true,
-        hop: {
-          enabled: true,
-          active: true,
-        },
-      },
-      dht: {
-        enabled: true,
-        kBucketSize: 20,
-        // randomWalk: {
-        //   enabled: true,
-        //   interval: 10e3, // This is set low intentionally, so more peers are discovered quickly. Higher intervals are recommended
-        //   timeout: 2e3, // End the query quickly since we're running so frequently
-        // },
-      },
-      pubsub: {
-        enabled: true,
+        active: true,
       },
     },
     metrics: {
