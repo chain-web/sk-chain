@@ -93,7 +93,17 @@ export default [
   //   ],
   // }),
   createWebConfig({
-    input: 'src/index.browser.ts',
+    input: 'src/index.ts',
+    output: [
+      {
+        dir: 'es',
+        format: 'esm',
+      },
+    ],
+  }),
+
+  createWebConfig({
+    input: 'src/node.browser.ts',
     output: [
       {
         dir: 'es',

@@ -4,16 +4,10 @@ import { SKChain } from './skChain';
 import { networkid } from './config/testnet.config';
 import { lifecycleEvents, lifecycleStap } from './lib/events/lifecycle';
 import type { SKChainOption } from './skChain';
-import type { NetworkConfig } from './lib/ipfs/ipfs';
 import type { DidJson } from './lib/p2p/did';
-export type { SKChain, SKChainOption } from './skChain';
-export type { DidJson } from './lib/p2p/did';
-export { skCacheKeys } from './lib/ipfs/key';
-export { Block } from './mate/block';
-export { Account } from './mate/account';
-export { Transaction } from './mate/transaction';
-export { CID } from 'multiformats';
-export interface CreateNodeConfig {
+import { createIpfs } from 'lib/ipfs/ipfs.browser';
+
+export interface CreateBrowserNodeConfig {
   // 网络id
   networkid: networkidType;
   // 账户
@@ -23,14 +17,13 @@ export interface CreateNodeConfig {
 const config = configMap.testnet;
 
 // 生成节点的工厂函数
-export const createNode = async (
-  cfg: Partial<CreateNodeConfig>,
+export const create = async (
+  cfg: Partial<CreateBrowserNodeConfig>,
 ): Promise<any> => {
   const allCfg = await initCreateOption(cfg);
   lifecycleEvents.emit(lifecycleStap.creatingIpfs);
 
-  const res = await import('./lib/ipfs/ipfs.browser');
-  const ipfs = await res.createIpfs({
+  const ipfs = await createIpfs({
     did: allCfg.account,
     networkid,
   });
@@ -51,8 +44,8 @@ export const createNode = async (
 
 // 初始化配置项，补充缺省
 const initCreateOption = async (
-  config: Partial<CreateNodeConfig>,
-): Promise<CreateNodeConfig> => {
+  config: Partial<CreateBrowserNodeConfig>,
+): Promise<CreateBrowserNodeConfig> => {
   return {
     networkid: config.networkid || networkid,
     account: config.account as DidJson,
