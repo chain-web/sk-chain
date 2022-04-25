@@ -205,6 +205,6 @@ export class Ipld extends SKChainLibBase {
   goToNext = async () => {
     this.nextBlockBodyTrans = []
     this.updates.clear();
-    this.init()
+    await this.init()
   };
 }

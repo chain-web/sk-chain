@@ -139,7 +139,7 @@ export class TransactionAction extends SKChainLibBase {
     // 广播新块
     await this.chain.consensus.pubNewBlock(nextBlock);
     // 初始化下一个区块的ipld
-    this.chain.ipld.goToNext();
+    await this.chain.ipld.goToNext();
   };
 
   private add = async (trans: Transaction) => {

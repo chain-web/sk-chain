@@ -65,7 +65,7 @@ export class Consensus extends SKChainLibBase {
       this.blockPrefix,
       bytes.fromString(JSON.stringify(nextData)),
     );
-    this.chain.blockService.addBlockCidByNumber(
+    await this.chain.blockService.addBlockCidByNumber(
       blockCid.toString(),
       nextBlock.header.number,
     );
