@@ -158,6 +158,9 @@ export class BlockService extends SKChainLibBase {
           } else {
             message.info('next block is not prev block + 1');
             this.checkedBlockHeight = this.checkedBlockHeight.minus(1)
+            if (this.checkedBlockHeight.isEqualTo(0)) {
+              return;
+            }
             await this.blockRoot.deleteFromStartNUmber(this.checkedBlockHeight);
             await this.save();
             await this.syncFromBlockRoot(blockRoot);
