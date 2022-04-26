@@ -6,6 +6,7 @@ import BigNumber from 'bignumber.js';
 import { SKChain } from './../../skChain';
 import { SKChainLibBase } from './../base';
 import { lifecycleEvents, lifecycleStap } from 'lib/events/lifecycle';
+import { message } from 'utils/message';
 
 // 管理、已经存储的块索引
 export class BlockService extends SKChainLibBase {
@@ -133,7 +134,7 @@ export class BlockService extends SKChainLibBase {
     );
     while (this.checkedBlockHeight.isLessThan(newHeaderBlock.header.number)) {
       // 逐个set的去把区块同步到本地
-      const set = await newBlockRoot.getSetByNumber(
+      const set = await newBlockRoot.getSetAfterNumber(
         this.checkedBlockHeight.plus(1),
       );
       if (set) {
@@ -155,6 +156,7 @@ export class BlockService extends SKChainLibBase {
               newHeaderBlock.header.number.toString(),
             );
           } else {
+            message.info('next block is not prev block + 1');
             return;
           }
         }

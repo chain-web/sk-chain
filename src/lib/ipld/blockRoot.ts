@@ -109,6 +109,14 @@ export class BlockRoot {
     }
   };
 
+// 获取指定高度的块，所在set，并且只包含指定块之后的块
+  getSetAfterNumber = async (number: BigNumber) => {
+    const { curIndex } = this.genIndex(number);
+    const setData = await this.getSetByNumber(number);
+    setData?.splice(0, curIndex);
+    return setData;
+  };
+
   // 获取指定高度的块数据
   getBlockByNumber = async (number: BigNumber) => {
     const cid = await this.getBlockCidByNumber(number);
