@@ -69,30 +69,7 @@ export const createIpfs = async (opts: {
     },
     EXPERIMENTAL: { ipnsPubsub: true },
   })) as IPFS;
-  message.info('bitswap stats', await ipfs.stats.bitswap());
-  message.info('repo stats', await ipfs.stats.repo());
   message.info('id: ', await ipfs.id());
-
-  // const topic = 'fruit-of-the-day';
-  // const receiveMsg = (msg: any) => console.log(msg);
-
-  // await ipfs.pubsub.subscribe(topic, receiveMsg);
-  // console.log(`subscribed to ${topic}`);
-  // setInterval(async () => {
-  //   await ipfs.pubsub.publish(topic, bytes.fromString(opts.did.id));
-  //   console.log(`published to ${topic}`);
-  // }, 4000);
-
-  // const howManyPrees = async () => {
-  //   console.log(await ipfs.swarm.peers());
-  //   const peerInfos = await ipfs.swarm.addrs();
-  //   console.log('peers count:', peerInfos.length);
-  //   peerInfos.forEach((info) => {
-  //     console.log(info.id);
-  //     info.addrs.forEach((addr) => console.log(addr.toString()));
-  //   });
-  // };
-  // setInterval(howManyPrees, 10000);
 
   const cache = new Cache(`sk_cache_${opts.did.id}_${opts.networkid}`);
   cache.put(skCacheKeys.accountId, opts.did.id);
