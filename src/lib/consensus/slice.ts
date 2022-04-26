@@ -173,7 +173,12 @@ export class Slice extends SKChainLibBase {
     if (curRoots.length > 0) {
       if (curRoots[0] !== blockRoot) {
         this.syncing = true;
-        await this.chain.blockService.syncFromBlockRoot(curRoots[0]);
+        try {
+          await this.chain.blockService.syncFromBlockRoot(curRoots[0]);
+        } catch (error) {
+          message.error('sync block error: ', error);
+          this.syncing = false;
+        }
         this.syncing = false;
       } else {
         this.chain.consensus.setIsReady(true);

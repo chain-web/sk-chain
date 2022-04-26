@@ -80,7 +80,7 @@ export const createIpfs = async (opts: {
   const dagGet = async (
     name: CID,
     options: Parameters<typeof ipfs.dag.get>[1],
-  ) => ipfs.dag.get(name, { ...options, timeout: 5000 });
+  ) => ipfs.dag.get(name, { ...options, timeout: 30000 });
   return {
     ...ipfs,
     cache,
