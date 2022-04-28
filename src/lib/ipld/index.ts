@@ -97,6 +97,7 @@ export class Ipld extends SKChainLibBase {
     index: number,
   ) => {
     const tx = await this.addTransaction(trans);
+    this.nextBlock.header.ts === trans.ts;
     this.nextBlockBodyTrans.push(tx);
 
     // 生成单个交易的收据

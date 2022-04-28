@@ -144,7 +144,6 @@ export class Slice extends SKChainLibBase {
 
   // 更新blockRootMap中新收到的blockRoot的权重
   addToBlockRootMap = async (data: SlicePubData) => {
-    console.log(data);
     if (data.ready) {
       let cur = this.blockRootMap[data.blockRoot];
       if (!cur) {

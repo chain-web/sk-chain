@@ -86,6 +86,7 @@ export class TransactionAction extends SKChainLibBase {
         const trans = this.waitTransMap.get(ele.did);
         Array.from(trans!.keys()).forEach((one) => {
           // 为防止分叉，交易被发出WAIT_TIME_LIMIT时间后才会被打包
+          // TODO 这里用Date.now()是否会有问题？
           if (Date.now() - one >= this.WAIT_TIME_LIMIT) {
             // 此处必定有one这个trans
             waitTransArr.push(trans!.get(one)!);
@@ -123,7 +124,7 @@ export class TransactionAction extends SKChainLibBase {
     if (!this.checkIsBreakTransTask()) {
       this.taskInProgress = false;
       const headerBlock = await this.chain.blockService.getHeaderBlock();
-      if (nextBlock.hash === headerBlock.hash) {
+      if (nextBlock.header.parent === headerBlock.hash) {
         return;
       }
       // TODO 错误的情况下，如何处理？
@@ -178,7 +179,6 @@ export class TransactionAction extends SKChainLibBase {
       ts: tm.ts,
     });
     await trans.genHash(this.chain.db);
-    message.info('handel--trans', trans);
     this.add(trans);
     // test contract
     // const res = this.contract.runFunction(transContract, {

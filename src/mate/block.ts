@@ -20,7 +20,7 @@ export interface BlockHeaderData {
   number: BigNumber; // 当前块序号
   cuLimit: BigNumber; // 当前块，计算量上限
   cuUsed: BigNumber; // 当前块消耗的计算量
-  ts: number; // 当前块创建时间
+  ts: number; // 当前块最后一个交易的时间戳
   slice: [number, number]; // 分片信息
   extraData?: { [key: string]: unknown }; // 当前块自定义数据，不能超过？kb
   body: string;
