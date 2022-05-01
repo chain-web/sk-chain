@@ -1,4 +1,5 @@
 import BigNumber from 'bignumber.js';
+import { skSdk } from 'lib/contract/skSdk';
 
 export interface TransactionContractParam {
   from: string;
@@ -6,11 +7,28 @@ export interface TransactionContractParam {
   amount: BigNumber;
 }
 
-export const transContract = (params: TransactionContractParam) => {
-  const get1 = window.__sk__ipld__getAccount(params.from);
-  const get2 = window.__sk__ipld__getAccount(params.recipient);
-  return Promise.all([get1, get2]).then((res) => {
-    console.log(res);
-    return res;
-  });
+export const transContract = (trans: TransactionContractParam) => {
+  const fromAccount = skSdk.getAccount(trans.from);
+  if (fromAccount.getBlance().minus(trans.amount).isLessThan(0)) {
+    return [
+      {
+        account: trans.from,
+        opCode: skSdk.errorCodes['Insufficient balance'],
+        value: skSdk.errorCodes['Insufficient balance'],
+      },
+    ];
+  }
+
+  return [
+    {
+      account: trans.from,
+      opCode: skSdk.accountOpCodes.minus,
+      value: trans.amount,
+    },
+    {
+      account: trans.recipient,
+      opCode: skSdk.accountOpCodes.plus,
+      value: trans.amount,
+    },
+  ];
 };

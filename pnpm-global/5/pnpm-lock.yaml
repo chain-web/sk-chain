@@ -1,7 +1,9 @@
 lockfileVersion: 5.3
 
 specifiers:
+  cwjsr: ^0.2.4
   libp2p: ^0.36.3
 
 dependencies:
+  cwjsr: link:../../../../.nvm/versions/node/v16.14.0/pnpm-global/5/node_modules/cwjsr
   libp2p: link:../../../../.nvm/versions/node/v16.14.0/pnpm-global/5/node_modules/libp2p

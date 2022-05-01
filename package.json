@@ -45,7 +45,7 @@
     "@libp2p/tcp": "^1.0.8",
     "@libp2p/webrtc-star": "^1.0.6",
     "bignumber.js": "^9.0.2",
-    "cwjsr": "0.2.3",
+    "cwjsr": "^0.2.4",
     "debug": "^4.3.4",
     "ipfs": "^0.62.1",
     "ipfs-bitswap": "^11.0.1",
