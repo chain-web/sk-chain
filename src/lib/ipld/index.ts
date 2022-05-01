@@ -6,18 +6,14 @@ import BigNumber from 'bignumber.js';
 import { Account } from 'mate/account';
 import { Block } from 'mate/block';
 import { Mpt } from './mpt';
-import { TransErrorType } from 'lib/contracts/transaction_demo';
 import { Transaction } from 'mate/transaction';
 import { Receipt } from 'mate/receipt';
+import { ValueOf } from 'global';
+import { accountOpCodes, errorCodes } from 'lib/contract/code';
 
-export interface UpdateOps {
-  plus?: BigNumber;
-  minus?: BigNumber;
-  state?: any;
-  error?: TransErrorType;
-}
+export type UpdateOpCode = ValueOf<typeof errorCodes> | ValueOf<typeof accountOpCodes>
 
-export type UpdateAccountI = { ops: UpdateOps } & {
+export type UpdateAccountI = { opCode: UpdateOpCode, value: string | BigNumber | object } & {
   account: Account['account'];
 };
 
@@ -125,17 +121,22 @@ export class Ipld extends SKChainLibBase {
    */
   addUpdate = async (update: UpdateAccountI, trans: Transaction) => {
     const account = await this.getAccount(update.account);
-    if (update.ops.plus) {
-      account.plusBlance(update.ops.plus, trans.ts.toString());
-    }
-    if (update.ops.minus) {
-      account.minusBlance(update.ops.minus);
-    }
-    if (update.ops.state) {
-      account.updateState(update.ops.state);
-    }
-    if (update.ops.error) {
-      message.error(update.ops.error);
+    switch (update.opCode) {
+      case errorCodes['Insufficient balance']:
+        message.error(update.value);
+        break;
+      case accountOpCodes.minus:
+        account.minusBlance(update.value as BigNumber);
+        break;
+      case accountOpCodes.plus:
+        account.plusBlance(update.value as BigNumber, trans.ts.toString());
+        break;
+      case accountOpCodes.updateState:
+        account.updateState(update.value);
+        break;
+      default:
+        message.error('unknown op code')
+        break;
     }
     this.updates.set(account.account, account);
   };
@@ -143,19 +144,19 @@ export class Ipld extends SKChainLibBase {
   initMpt = async () => {
     const headerBlock = await this.chain.getHeaderBlock();
     // init stateMpt
-      const stateRoot = headerBlock.header.stateRoot;
-      this.stateMpt = new Mpt(this.chain.db, stateRoot);
-      await this.stateMpt.initRootTree();
+    const stateRoot = headerBlock.header.stateRoot;
+    this.stateMpt = new Mpt(this.chain.db, stateRoot);
+    await this.stateMpt.initRootTree();
 
     // init transactionMpt
-      const transactionsRoot = headerBlock.header.transactionsRoot;
-      this.transactionMpt = new Mpt(this.chain.db, transactionsRoot);
-      await this.transactionMpt.initRootTree();
+    const transactionsRoot = headerBlock.header.transactionsRoot;
+    this.transactionMpt = new Mpt(this.chain.db, transactionsRoot);
+    await this.transactionMpt.initRootTree();
 
     // init receiptsMpt
-      const receiptsRoot = headerBlock.header.receiptsRoot;
-      this.receiptsMpt = new Mpt(this.chain.db, receiptsRoot);
-      await this.receiptsMpt.initRootTree();
+    const receiptsRoot = headerBlock.header.receiptsRoot;
+    this.receiptsMpt = new Mpt(this.chain.db, receiptsRoot);
+    await this.receiptsMpt.initRootTree();
   };
 
   addTransaction = async (trans: Transaction) => {
@@ -204,8 +205,8 @@ export class Ipld extends SKChainLibBase {
   };
 
   goToNext = async () => {
-    this.nextBlockBodyTrans = []
+    this.nextBlockBodyTrans = [];
     this.updates.clear();
-    await this.init()
+    await this.init();
   };
 }

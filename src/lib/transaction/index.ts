@@ -115,6 +115,15 @@ export class TransactionAction extends SKChainLibBase {
         },
         this.chain.ipld.getAccount,
       );
+
+      // run trans as contract
+      // const res = this.contract.runFunction(transContract, {
+      //   from: trans.from,
+      //   recipient: trans.recipient,
+      //   amount: trans.amount,
+      // });
+      // console.log(res);
+
       // 更新一个交易的结果到当前块状态机
       await this.chain.ipld.addUpdates(trans, update, index);
     }

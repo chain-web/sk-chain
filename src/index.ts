@@ -9,6 +9,7 @@ export { Block } from './mate/block';
 export { Account } from './mate/account';
 export { Transaction } from './mate/transaction';
 export { CID } from 'multiformats';
+export type { SkJsrInterface as SkGlobal } from './global';
 export interface CreateNodeConfig {
   // 网络id
   networkid: networkidType;

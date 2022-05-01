@@ -1,13 +1,10 @@
 import BigNumber from 'bignumber.js';
+import { accountOpCodes, errorCodes } from 'lib/contract/code';
 import { Ipld, UpdateAccountI } from './../ipld/index';
 export interface TransactionContractParam {
   from: string;
   recipient: string;
   amount: BigNumber;
-}
-
-export enum TransErrorType {
-  'Insufficient balance',
 }
 
 // 仅仅是demo阶段的交易处理逻辑，通过js实现,并在浏览器的js runtime执行
@@ -23,7 +20,8 @@ export const transDemoFn = async (
     return [
       {
         account: trans.from,
-        ops: { error: TransErrorType['Insufficient balance'] },
+        opCode: errorCodes['Insufficient balance'],
+        value: errorCodes['Insufficient balance'],
       },
     ];
   }
@@ -31,13 +29,13 @@ export const transDemoFn = async (
   return [
     {
       account: trans.from,
-      ops: { minus: trans.amount },
+      opCode: accountOpCodes.minus,
+      value: trans.amount,
     },
     {
       account: trans.recipient,
-      ops: {
-        plus: trans.amount,
-      },
+      opCode: accountOpCodes.plus,
+      value: trans.amount,
     },
   ];
 };
