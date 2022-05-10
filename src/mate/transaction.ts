@@ -21,7 +21,7 @@ export interface TransactionOption {
   cuLimit: BigNumber;
   recipient: Address;
   amount: BigNumber;
-  payload?: string;
+  payload?: Transaction['payload'];
   ts: number;
   hash?: string;
 }
@@ -48,7 +48,10 @@ export class Transaction {
   from: Address;
   recipient: Address;
   amount: BigNumber;
-  payload?: string;
+  payload?: {
+    mothed: string;
+    args: any[];
+  };
   hash!: string;
   ts: number;
 

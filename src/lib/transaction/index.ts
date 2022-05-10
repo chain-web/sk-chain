@@ -234,7 +234,9 @@ export class TransactionAction extends SKChainLibBase {
   };
 
   transaction = async (
-    tm: Pick<transMeta, 'amount' | 'payload' | 'recipient'>,
+    tm: Pick<transMeta, 'amount' | 'recipient'> & {
+      payload?: Transaction['payload'];
+    },
   ) => {
     // 供外部调用的发起交易方法
     // 只是做交易检查和预处理
@@ -244,7 +246,7 @@ export class TransactionAction extends SKChainLibBase {
     }
     if (!tm.amount || !tm.recipient) {
       // 校验
-      message.error('need trans meta');
+      message.error('need trans amount and recipient');
       return;
     }
     const signMeta = {
