@@ -1,4 +1,4 @@
-export type KeyType = 'base58' | 'base64';
+export type KeyType = 'base58' | 'base32';
 
 export namespace ConstractHelper {
   export type SliceDb<T> = {
@@ -14,12 +14,18 @@ const createSliceDb = <T = any>(keyType: KeyType) => {
   return new Map() as ConstractHelper.SliceDb<T>;
 };
 
+const hash = (str: string) => {
+  return sk.genCidString(str);
+};
+
 class BaseContract {
   msg = {
     sender: '',
+    ts: 0,
   };
 }
 export const constractHelper = {
   createSliceDb,
   BaseContract,
+  hash,
 };
