@@ -10,6 +10,8 @@ export { Account } from './mate/account';
 export { Transaction } from './mate/transaction';
 export { CID, bytes } from 'multiformats';
 export type { SkJsrInterface as SkGlobal } from './global';
+export { constractHelper } from './utils/contractHelper';
+export type { ConstractHelper } from './utils/contractHelper';
 export interface CreateNodeConfig {
   // 网络id
   networkid: networkidType;

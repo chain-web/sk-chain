@@ -6,6 +6,7 @@ export interface SkJsrInterface {
   getAccount: (account: string) => Account;
   errorCodes: typeof errorCodes;
   accountOpCodes: typeof accountOpCodes;
+  createDb: (keyType: 'base58' | 'base64') => Ipld;
 }
 
 declare global {
