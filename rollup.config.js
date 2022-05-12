@@ -2,10 +2,7 @@ import typescript from 'rollup-plugin-typescript2';
 import json from '@rollup/plugin-json';
 import { resolve } from 'path';
 import { readFileSync } from 'fs';
-// import { terser } from 'rollup-plugin-terser';
-// import rollupReplace from 'rollup-plugin-replace';
-// import fileSize from 'rollup-plugin-filesize';
-
+import hashbang from 'rollup-plugin-hashbang';
 const cwjsrPlugin = () => {
   const rootDir = resolve(process.cwd());
   return {
@@ -32,14 +29,13 @@ const cwjsrPlugin = () => {
   };
 };
 
-const createTsPlugin = ({ declaration = true, target } = {}) =>
+const createTsPlugin = (tsConfig = {}) =>
   typescript({
     clean: true,
     tsconfig: 'tsconfig.json',
     tsconfigOverride: {
       compilerOptions: {
-        declaration,
-        ...(target && { target }),
+        ...tsConfig,
       },
     },
   });
@@ -56,6 +52,20 @@ const createWebConfig = ({ input, output }) => ({
   output,
   preserveModules: true,
   plugins: [cwjsrPlugin(), json(), createTsPlugin()],
+});
+
+const createCliConfig = ({ input, output }) => ({
+  input,
+  output,
+  preserveModules: true,
+  plugins: [
+    json(),
+    createTsPlugin({
+      declaration: false,
+      target: 'es2018',
+    }),
+    hashbang(),
+  ],
 });
 
 const createUmdConfig = ({ input, output, target = undefined }) => ({
@@ -92,6 +102,16 @@ export default [
   //     },
   //   ],
   // }),
+
+  createCliConfig({
+    input: 'src/utils/contractBuilder/index.ts',
+    output: [
+      {
+        dir: 'es/cli',
+        format: 'esm',
+      },
+    ],
+  }),
   createWebConfig({
     input: 'src/index.ts',
     output: [
