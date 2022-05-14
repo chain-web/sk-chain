@@ -62,7 +62,7 @@ export class Transaction {
       cuLimit: this.cuLimit,
       recipient: this.recipient,
       amount: this.amount,
-      payload: this.payload,
+      payload: this.payload || null,
       ts: this.ts,
     };
     const cid = await db.dag.put(obj);
@@ -96,7 +96,7 @@ export class Transaction {
       this.cuLimit.toString(),
       this.from,
       this.hash,
-      this.payload,
+      this.payload || null,
       this.recipient,
       this.ts,
     ]);

@@ -29,6 +29,7 @@ export class SKChain {
 
     // 对外暴露的一些方法
     this.transaction = this.transAction.transaction;
+    this.deploy = this.transAction.deploy;
   }
 
   version: string;
@@ -51,6 +52,7 @@ export class SKChain {
 
   // public methods
   transaction;
+  deploy;
 
   init = async () => {
     try {
@@ -69,9 +71,9 @@ export class SKChain {
       lifecycleEvents.emit(lifecycleStap.initedTransaction);
       await this.consensus.init();
     } catch (error) {
-      message.error('init error', error)
+      message.error('init error', error);
     }
-   
+
     this.inited = true;
   };
 

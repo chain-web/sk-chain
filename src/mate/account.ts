@@ -130,9 +130,9 @@ export class Account {
       Object.keys(this.balance).map((key) => {
         return [key, this.balance[key].toString()];
       }),
-      this.codeCid?.toString() || '',
+      this.codeCid?.toString() || null,
       this.contribute.toString(),
-      this.owner,
+      this.owner || null,
       this.nonce.toString(),
       this.storageRoot.toString(),
     ]);
