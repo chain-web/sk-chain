@@ -37,7 +37,7 @@ export class Account {
   // 合约数据库地址，可能没法用hash
   private storageRoot: CID;
   // 存储合约代码的地址
-  private codeCid?: CID;
+  private codeCid?: CID; // v1
 
   // 合约的所有者
   private owner?: string;

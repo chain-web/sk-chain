@@ -6,14 +6,13 @@ import { peerEvent } from '../events/peer';
 import { bytes } from 'multiformats';
 import { genetateDid, signById, verifyById } from '../p2p/did';
 import { message } from '../../utils/message';
-import { BlockHeaderData } from '../../mate/block';
-import { transContract } from 'lib/contracts/transaction';
+
 import { Contract } from 'lib/contract';
 import { skCacheKeys } from 'lib/ipfs/key';
 import { transDemoFn } from 'lib/contracts/transaction_demo';
 import { SKChain } from '../../skChain';
 import { newAccount } from 'mate/account';
-import { createEmptyNode } from 'lib/ipld/util';
+import { createEmptyStorageRoot } from 'lib/ipld/util';
 
 // 处理交易活动
 export class TransactionAction extends SKChainLibBase {
@@ -154,6 +153,7 @@ export class TransactionAction extends SKChainLibBase {
   };
 
   private add = async (trans: Transaction) => {
+    await this.chain.ipld.preLoadByTrans(trans);
     const hasedTrans = this.waitTransMap.get(trans.from);
     if (hasedTrans) {
       hasedTrans.set(trans.ts, trans);
@@ -275,18 +275,22 @@ export class TransactionAction extends SKChainLibBase {
   deploy = async (meta: { payload: Uint8Array }) => {
     // TODO 要不要加update code 的接口
     const newDid = await genetateDid();
-    const storageRoot = await this.chain.db.dag.put(
-      createEmptyNode('storageRoot'),
-    );
+    const storageRoot = await createEmptyStorageRoot(this.chain.db);
+
     const codeCid = await this.chain.db.block.put(meta.payload);
-    const account = newAccount(newDid.id, storageRoot, codeCid, this.chain.did);
+    const account = newAccount(
+      newDid.id,
+      storageRoot,
+      codeCid.toV1(),
+      this.chain.did,
+    );
     await account.commit(this.chain.db);
     await this.transaction({
       amount: new BigNumber(0),
       recipient: account.account,
       payload: {
         mothed: 'constructor',
-        args: [codeCid.toString()],
+        args: [meta.payload],
       },
     });
 

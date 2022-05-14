@@ -49,7 +49,7 @@ export class Transaction {
   recipient: Address;
   amount: BigNumber;
   payload?: {
-    mothed: string;
+    mothed: 'constructor' | string;
     args: any[];
   };
   hash!: string;

@@ -10,10 +10,16 @@ import { Transaction } from 'mate/transaction';
 import { Receipt } from 'mate/receipt';
 import { ValueOf } from 'global';
 import { accountOpCodes, errorCodes } from 'lib/contract/code';
+import { createEmptyStorageRoot } from './util';
 
-export type UpdateOpCode = ValueOf<typeof errorCodes> | ValueOf<typeof accountOpCodes>
+export type UpdateOpCode =
+  | ValueOf<typeof errorCodes>
+  | ValueOf<typeof accountOpCodes>;
 
-export type UpdateAccountI = { opCode: UpdateOpCode, value: string | BigNumber | object } & {
+export type UpdateAccountI = {
+  opCode: UpdateOpCode;
+  value: string | BigNumber | object;
+} & {
   account: Account['account'];
 };
 
@@ -33,6 +39,8 @@ export class Ipld extends SKChainLibBase {
 
   // 缓存未写入block的账户数据
   private updates: Map<string, Account> = new Map();
+
+  private preLoadAccount: Map<string, Account> = new Map();
 
   init = async () => {
     await this.initMpt();
@@ -58,6 +66,31 @@ export class Ipld extends SKChainLibBase {
   };
 
   /**
+   * 在交易执行前做数据准备
+   * @param trans meta Transaction
+   */
+  preLoadByTrans = async (trans: Transaction) => {
+    if (trans.payload) {
+      // 调用智能合约
+      if (trans.payload.mothed === 'constructor') {
+        // 新建合约账户
+        console.log(trans);
+        const storageRoot = await createEmptyStorageRoot(this.chain.db);
+        const codeCid = await this.chain.db.block.put(
+          new Uint8Array(trans.payload.args[0]),
+        );
+        const account = newAccount(
+          trans.recipient,
+          storageRoot,
+          codeCid.toV1(),
+          trans.from,
+        );
+        this.preLoadAccount.set(account.account, account);
+      }
+    }
+  };
+
+  /**
    * 注册到智能合约的执行环境，获取账户数据
    * @param did
    * @returns
@@ -77,6 +110,12 @@ export class Ipld extends SKChainLibBase {
     if (accountCid) {
       return await Account.fromCid(this.chain.db, accountCid);
     } else {
+      const preloadAccount = this.preLoadAccount.get(did);
+      if (preloadAccount) {
+        // 主要针对新部署的合约账户
+        this.preLoadAccount.delete(did);
+        return preloadAccount;
+      }
       // 如果没有此account就create
       const storageRoot = await this.chain.db.dag.put({});
       return newAccount(did, storageRoot);
@@ -135,7 +174,7 @@ export class Ipld extends SKChainLibBase {
         account.updateState(update.value);
         break;
       default:
-        message.error('unknown op code')
+        message.error('unknown op code');
         break;
     }
     this.updates.set(account.account, account);

@@ -1,3 +1,4 @@
+import { SKDB } from 'lib/ipfs/ipfs.interface';
 import {
   createLink,
   createNode,
@@ -11,3 +12,12 @@ import { bytes } from 'multiformats';
 export const createEmptyNode = (name: string) => {
   return createNode(bytes.fromString(name), []);
 };
+
+export const createEmptyNodeCid = async (name: string, db: SKDB) => {
+  const storageRoot = await db.dag.put(createEmptyNode(name));
+  return storageRoot;
+};
+
+// generate init account storageRoot
+export const createEmptyStorageRoot = (db: SKDB) =>
+  createEmptyNodeCid('storageRoot', db);
