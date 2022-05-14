@@ -4,6 +4,7 @@ import BigNumber from 'bignumber.js';
 
 interface AccountMeta {
   codeCid?: Account['codeCid'];
+  owner?: Account['owner'];
   account: Account['account'];
   contribute: Account['contribute'];
   nonce: Account['nonce'];
@@ -21,6 +22,7 @@ export class Account {
     this.contribute = meta.contribute;
     this.storageRoot = meta.storageRoot;
     this.codeCid = meta.codeCid;
+    this.owner = meta.owner;
   }
   account: string;
   // 当前账户交易次数
@@ -36,6 +38,9 @@ export class Account {
   private storageRoot: CID;
   // 存储合约代码的地址
   private codeCid?: CID;
+
+  // 合约的所有者
+  private owner?: string;
 
   /**
    * 用存储account 数据的 cid string生成一个account实例
@@ -53,8 +58,9 @@ export class Account {
       account: accountData[0],
       balance: bl,
       contribute: new BigNumber(accountData[3]),
-      nonce: new BigNumber(accountData[4]),
-      storageRoot: CID.parse(accountData[5]),
+      owner: accountData[4],
+      nonce: new BigNumber(accountData[5]),
+      storageRoot: CID.parse(accountData[6]),
     };
     if (accountData[2]) {
       accountMeta.codeCid = CID.parse(accountData[2]);
@@ -126,13 +132,19 @@ export class Account {
       }),
       this.codeCid?.toString() || '',
       this.contribute.toString(),
+      this.owner,
       this.nonce.toString(),
       this.storageRoot.toString(),
     ]);
   };
 }
 
-export const newAccount = (did: string, storageRoot: CID, codeCid?: CID) => {
+export const newAccount = (
+  did: string,
+  storageRoot: CID,
+  codeCid?: CID,
+  owner?: string,
+) => {
   return new Account({
     account: did,
     contribute: new BigNumber(0),
@@ -140,5 +152,6 @@ export const newAccount = (did: string, storageRoot: CID, codeCid?: CID) => {
     balance: {},
     storageRoot,
     codeCid: codeCid,
+    owner,
   });
 };
