@@ -35,12 +35,12 @@ export class Account {
     [key: string]: BigNumber;
   };
   // 合约数据库地址，可能没法用hash
-  private storageRoot: CID;
+  storageRoot: CID;
   // 存储合约代码的地址
-  private codeCid?: CID; // v1
+  codeCid?: CID; // v1
 
   // 合约的所有者
-  private owner?: string;
+  owner?: string;
 
   /**
    * 用存储account 数据的 cid string生成一个account实例
