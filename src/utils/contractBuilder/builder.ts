@@ -106,7 +106,7 @@ export const builder = async (input: string, output?: string) => {
       }
     }
     const resultUint8 = bytes.fromString(code);
-    const resultU8String = `export default new Uint8Array(${resultUint8.toString()});`;
+    const resultU8String = `export default new Uint8Array([${resultUint8.toString()}]);`;
     writeFileSync(resolve(input, '../index.contract.js'), resultU8String, {
       flag: 'w+',
     });
