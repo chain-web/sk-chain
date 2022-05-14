@@ -49,14 +49,17 @@ export class Account {
     accountData[1].map((ele: [string, string]) => {
       bl[ele[0]] = new BigNumber(ele[1]);
     });
-    return new Account({
+    const accountMeta: AccountMeta = {
       account: accountData[0],
       balance: bl,
-      codeCid: accountData[2],
       contribute: new BigNumber(accountData[3]),
       nonce: new BigNumber(accountData[4]),
       storageRoot: CID.parse(accountData[5]),
-    });
+    };
+    if (accountData[2]) {
+      accountMeta.codeCid = CID.parse(accountData[2]);
+    }
+    return new Account(accountMeta);
   };
 
   // 每进行一次交易，执行此操作
@@ -121,7 +124,7 @@ export class Account {
       Object.keys(this.balance).map((key) => {
         return [key, this.balance[key].toString()];
       }),
-      this.codeCid || '',
+      this.codeCid?.toString() || '',
       this.contribute.toString(),
       this.nonce.toString(),
       this.storageRoot.toString(),
@@ -129,12 +132,13 @@ export class Account {
   };
 }
 
-export const newAccount = (did: string, storageRoot: CID) => {
+export const newAccount = (did: string, storageRoot: CID, codeCid?: CID) => {
   return new Account({
     account: did,
     contribute: new BigNumber(0),
     nonce: new BigNumber(0),
     balance: {},
     storageRoot,
+    codeCid: codeCid,
   });
 };
