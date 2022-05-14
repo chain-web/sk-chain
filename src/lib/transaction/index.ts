@@ -107,14 +107,22 @@ export class TransactionAction extends SKChainLibBase {
     for (let index = 0; index < waitTransArr.length; index++) {
       const trans = waitTransArr[index];
       // 依次执行交易的合约
-      const update = await transDemoFn(
-        {
-          from: trans.from,
-          recipient: trans.recipient,
-          amount: trans.amount,
-        },
-        this.chain.ipld.getAccount,
-      );
+      if (trans.payload) {
+        // 调用合约
+        const account = await this.chain.ipld.getAccount(trans.recipient);
+        const code = await this.chain.db.block.get(account.codeCid!);
+        const res = this.contract.runFunction(code, trans);
+      } else {
+        // 普通转账
+        const update = await transDemoFn(
+          {
+            from: trans.from,
+            recipient: trans.recipient,
+            amount: trans.amount,
+          },
+          this.chain.ipld.getAccount,
+        );
+      }
 
       // run trans as contract
       // const res = this.contract.runFunction(transContract, {
