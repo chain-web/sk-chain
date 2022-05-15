@@ -13,6 +13,7 @@ import { transDemoFn } from 'lib/contracts/transaction_demo';
 import { SKChain } from '../../skChain';
 import { newAccount } from 'mate/account';
 import { createEmptyStorageRoot } from 'lib/ipld/util';
+import { UpdateAccountI } from 'lib/ipld';
 
 // 处理交易活动
 export class TransactionAction extends SKChainLibBase {
@@ -106,15 +107,17 @@ export class TransactionAction extends SKChainLibBase {
     }
     for (let index = 0; index < waitTransArr.length; index++) {
       const trans = waitTransArr[index];
+      let update: UpdateAccountI[] = [];
       // 依次执行交易的合约
       if (trans.payload) {
         // 调用合约
         const account = await this.chain.ipld.getAccount(trans.recipient);
         const code = await this.chain.db.block.get(account.codeCid!);
         const res = this.contract.runFunction(code, trans);
+        console.log('res', res);
       } else {
         // 普通转账
-        const update = await transDemoFn(
+        update = await transDemoFn(
           {
             from: trans.from,
             recipient: trans.recipient,
@@ -189,7 +192,7 @@ export class TransactionAction extends SKChainLibBase {
     const trans = new Transaction({
       from: tm.from,
       cu: tm.cu,
-      cuLimit: new BigNumber(0),
+      cuLimit: new BigNumber(1000),
       payload: tm.payload,
       recipient: tm.recipient,
       accountNonce: new BigNumber(0),

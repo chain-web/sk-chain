@@ -28,12 +28,28 @@ export class Contract {
    * @param code [Function] js function
    * @returns
    */
-  runFunction = <T>(fn: (data: any) => T, params: any): string => {
-    // function code string + run function by name()
-    const codeString = `
-      const __sk_params__ = ${JSON.stringify(params)}
-      const __sk_run__ = ${fn.toString()}; __sk_run__(JSON.parse(__sk_params__))`;
-    return evaluate(codeString);
+  runFunction = (code: Uint8Array, trans: Transaction): string => {
+    const codeStr = bytes.toString(code);
+    const runCode = `
+    const cwjsrSk = __init__sk__()
+    const __sk__ = {
+      transMsg: {
+        sender: '${trans.from}',
+        ts: ${trans.ts}
+      },
+      constractHelper: {
+        createSliceDb: cwjsrSk.createSliceDb,
+        hash: cwjsrSk.genHash,
+      }
+    }
+    ${codeStr}
+    const run = () => {
+      
+    };
+    run();
+    `;
+    console.log(runCode);
+    return evaluate(runCode, BigInt(trans.cuLimit.toString()), {});
   };
 
   /**
@@ -49,6 +65,6 @@ export class Contract {
     // 这里是把js代码字符串给到wasm 的运行时
     // TODO 省去Uint8Array 转 string的过程，直接传递Uint8Array，减少两次解码消耗
     const jscode = bytes.toString(code);
-    return evaluate(jscode);
+    return evaluate(jscode, 10000n, {});
   };
 }

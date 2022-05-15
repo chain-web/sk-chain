@@ -92,7 +92,9 @@ const skContractTerserCodePlugin = (): Plugin => {
         /Object.defineProperty\(exports,"__esModule",\{value:!0\}\);/,
         '',
       );
+      code = code.replace(/"use strict";/, ';');
       code = code.replace(/(,)?exports.(\S*)=(\S*);/g, ';');
+      code = code.replace(/(,)?module.exports=(\S*);/, ';');
       return code;
     },
   };
