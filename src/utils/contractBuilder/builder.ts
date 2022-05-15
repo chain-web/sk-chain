@@ -7,9 +7,9 @@ import commonjs from '@rollup/plugin-commonjs';
 import { terser } from 'rollup-plugin-terser';
 import { bytes } from 'multiformats';
 import chalk from 'chalk';
-const skContractPlugin = (): Plugin => {
+const skContractTsPlugin = (): Plugin => {
   return {
-    name: 'sk-chain-resolve',
+    name: 'sk-chain-resolve-ts',
     transform: (code, id) => {
       // console.log(id)
       // console.log(code);
@@ -20,10 +20,7 @@ const skContractPlugin = (): Plugin => {
         if (moduleName === 'sk-chain') {
           const impStr = code.substring(ele.ss, ele.se);
           let globalSkStr = impStr.replace('import', 'const');
-          globalSkStr = globalSkStr.replace(
-            /from(([\s\S])+)/,
-            '= window.__sk__',
-          );
+          globalSkStr = globalSkStr.replace(/from(([\s\S])+)/, '= __sk__');
           globalSkStr = globalSkStr.replace(/ConstractHelper(\s*)(,?)/, '');
           code = code.replace(impStr, globalSkStr);
 
@@ -42,17 +39,17 @@ const skContractPlugin = (): Plugin => {
                   ts: number;
               };
           }
-          declare global {
-            interface Window {
-              __sk__: {
-                constractHelper: {
-                  createSliceDb: <T = any>(keyType: KeyType) => ConstractHelper.SliceDb<T>;
-                  BaseContract: typeof BaseContract;
-                  hash: (str: string) => string;
+          declare var __sk__: {
+              constractHelper: {
+                createSliceDb: <T = any>(keyType: KeyType) => ConstractHelper.SliceDb<T>;
+                BaseContract: typeof BaseContract;
+                hash: (str: string) => string;
               };
-              };
-            }
-          }
+              transMsg: {
+                sender: string;
+                ts: number;
+              }
+            };
           `);
         }
       });
@@ -60,6 +57,42 @@ const skContractPlugin = (): Plugin => {
       if (id.match('sk-chain')) {
         // console.log(code)
       }
+      return code;
+    },
+  };
+};
+
+const skContractJsPlugin = (input: string): Plugin => {
+  return {
+    name: 'sk-chain-resolve-js',
+    transform: (code, id) => {
+      if (id.match(input) && !id.match('commonjs-entry')) {
+        // delete calss extend, super
+        code = code.replace(/Contract extends(\s*)(\S*)(\s*){/, 'Contract {');
+        code = code.replace(
+          /super\(\)(;?)/,
+          `
+        this.msg = __sk__.transMsg;
+        `,
+        );
+        // console.log(code);
+      }
+
+      return code;
+    },
+  };
+};
+
+const skContractTerserCodePlugin = (): Plugin => {
+  return {
+    name: 'sk-chain-resolve-chunk',
+    renderChunk(code, _chunk, _outputOptions) {
+      // delete export
+      code = code.replace(
+        /Object.defineProperty\(exports,"__esModule",\{value:!0\}\);/,
+        '',
+      );
+      code = code.replace(/(,)?exports.(\S*)=(\S*);/g, ';');
       return code;
     },
   };
@@ -79,7 +112,14 @@ const createTsPlugin = () =>
 const createContractConfig = (input: string): RollupOptions => ({
   input,
   preserveModules: true,
-  plugins: [skContractPlugin(), commonjs({}), createTsPlugin(), terser()],
+  plugins: [
+    skContractTsPlugin(),
+    commonjs({}),
+    createTsPlugin(),
+    skContractJsPlugin(input),
+    terser(),
+    skContractTerserCodePlugin(),
+  ],
 });
 
 export const builder = async (input: string, output?: string) => {
