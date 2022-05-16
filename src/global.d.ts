@@ -14,7 +14,6 @@ export interface SkJsrInterface {
 
 declare global {
   interface Window {
-    __sk__db__: SKDB;
     __sk__: SkJsrInterface;
   }
 
