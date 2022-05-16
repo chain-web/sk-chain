@@ -53,7 +53,7 @@ const skContractTsPlugin = (): Plugin => {
           `);
         }
       });
-      // console.log(code)
+      // console.log(code);
       if (id.match('sk-chain')) {
         // console.log(code)
       }
@@ -67,13 +67,16 @@ const skContractJsPlugin = (input: string): Plugin => {
     name: 'sk-chain-resolve-js',
     transform: (code, id) => {
       if (id.match(input) && !id.match('commonjs-entry')) {
-        // delete calss extend, super
+        // delete calss extend
         code = code.replace(/Contract extends(\s*)(\S*)(\s*){/, 'Contract {');
+        // 把constructor替换为__sk__constructor，因为只有在部署合约时才调用constructor
+        code = code.replace(/constructor\(\)/, 'constructor() {};\n__sk__constructor()');
         code = code.replace(
           /super\(\)(;?)/,
+          // 把super代码写进去
           `
-        this.msg = __sk__.transMsg;
-        `,
+          this.msg = __sk__.transMsg;
+          `,
         );
         // console.log(code);
       }
@@ -87,14 +90,26 @@ const skContractTerserCodePlugin = (): Plugin => {
   return {
     name: 'sk-chain-resolve-chunk',
     renderChunk(code, _chunk, _outputOptions) {
-      // delete export
+      let className: any =
+        code.match(/(,)?exports.(\S*)=(\S*)/) ||
+        code.match(/(,)?module.exports=(\S*)/) ||
+        [];
+      className = className[0]?.split('=')[1];
+
+      // remove模块相关的代码，只剩下 纯js
       code = code.replace(
         /Object.defineProperty\(exports,"__esModule",\{value:!0\}\);/,
         '',
       );
       code = code.replace(/"use strict";/, ';');
-      code = code.replace(/(,)?exports.(\S*)=(\S*);/g, ';');
+      code = code.replace(/(,)?exports.(\S*)=(\S*);/, ';');
       code = code.replace(/(,)?module.exports=(\S*);/, ';');
+
+      if (!className) {
+        throw new Error('must have Contract Class');
+      }
+      className = className.replace(';', '');
+      code = code.concat(`const __sk__contract = new ${className}()`);
       return code;
     },
   };

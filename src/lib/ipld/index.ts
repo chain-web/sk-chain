@@ -171,7 +171,8 @@ export class Ipld extends SKChainLibBase {
         account.plusBlance(update.value as BigNumber, trans.ts.toString());
         break;
       case accountOpCodes.updateState:
-        account.updateState(update.value);
+        const cid = await this.chain.db.dag.put([update.value]);
+        account.updateState(cid);
         break;
       default:
         message.error('unknown op code');

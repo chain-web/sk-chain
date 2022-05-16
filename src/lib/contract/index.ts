@@ -14,8 +14,6 @@ export class Contract {
   ipld: Ipld;
 
   public init = async () => {
-    // 向智能合约内注入数据查询的方法
-    window.__sk__ipld__getAccount = this.ipld.getAccount;
     if (init) {
       await (init as any)();
     }
@@ -30,25 +28,50 @@ export class Contract {
    */
   runFunction = (code: Uint8Array, trans: Transaction): string => {
     const codeStr = bytes.toString(code);
+    let mothed = trans.payload?.mothed;
+    console.log(trans.payload);
+    if (mothed === 'constructor') {
+      mothed = '__sk__constructor';
+    }
+    console.log(mothed);
     const runCode = `
+    const baseContractKey = ['msg']
     const cwjsrSk = __init__sk__()
     const __sk__ = {
+      log: cwjsrSk.log,
       transMsg: {
         sender: '${trans.from}',
         ts: ${trans.ts}
       },
       constractHelper: {
-        createSliceDb: cwjsrSk.createSliceDb,
+        createSliceDb: () => new Map(),
         hash: cwjsrSk.genHash,
       }
     }
     ${codeStr}
     const run = () => {
-      
+      __sk__contract.${mothed}();
+      const saves = Object.keys(__sk__contract).map(key => {
+        let ele = __sk__contract[key];
+        const type = typeof ele;
+        if (baseContractKey.includes(key) || type === 'function') {
+          return
+        }
+        if (type === 'object') {
+          ele = JSON.stringify(ele);
+        }
+        __sk__.log(typeof ele)
+        return {
+          key,
+          type,
+          value: ele
+        }
+      }).filter(ele => !!ele)
+      return saves;
     };
     run();
     `;
-    console.log(runCode);
+    // console.log(runCode);
     return evaluate(runCode, BigInt(trans.cuLimit.toString()), {});
   };
 

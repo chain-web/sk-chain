@@ -14,6 +14,7 @@ import { SKChain } from '../../skChain';
 import { newAccount } from 'mate/account';
 import { createEmptyStorageRoot } from 'lib/ipld/util';
 import { UpdateAccountI } from 'lib/ipld';
+import { accountOpCodes } from 'lib/contract/code';
 
 // 处理交易活动
 export class TransactionAction extends SKChainLibBase {
@@ -115,6 +116,11 @@ export class TransactionAction extends SKChainLibBase {
         const code = await this.chain.db.block.get(account.codeCid!);
         const res = this.contract.runFunction(code, trans);
         console.log('res', res);
+        update.push({
+          account: trans.recipient,
+          opCode: accountOpCodes.updateState,
+          value: res,
+        });
       } else {
         // 普通转账
         update = await transDemoFn(
@@ -192,7 +198,7 @@ export class TransactionAction extends SKChainLibBase {
     const trans = new Transaction({
       from: tm.from,
       cu: tm.cu,
-      cuLimit: new BigNumber(1000),
+      cuLimit: new BigNumber(10000),
       payload: tm.payload,
       recipient: tm.recipient,
       accountNonce: new BigNumber(0),

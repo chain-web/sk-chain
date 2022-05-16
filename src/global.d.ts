@@ -1,3 +1,4 @@
+import { SKDB } from 'lib/ipfs/ipfs.interface';
 import { Account } from 'mate/account';
 import type { Ipld } from './src/lib/ipld/index';
 import { errorCodes, accountOpCodes } from './lib/contract/code';
@@ -13,7 +14,7 @@ export interface SkJsrInterface {
 
 declare global {
   interface Window {
-    __sk__ipld__getAccount: Ipld['getAccount'];
+    __sk__db__: SKDB;
     __sk__: SkJsrInterface;
   }
 

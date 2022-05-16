@@ -119,7 +119,8 @@ export class Account {
   };
 
   // 更新状态树
-  updateState = (data: any) => {
+  updateState = (cid: CID) => {
+    this.storageRoot = cid;
     this.setNextNonce();
   };
 
