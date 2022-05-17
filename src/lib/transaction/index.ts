@@ -4,23 +4,22 @@ import { Transaction, transMeta } from '../../mate/transaction';
 import { Message } from 'ipfs-core-types/src/pubsub';
 import { peerEvent } from '../events/peer';
 import { bytes } from 'multiformats';
-import { genetateDid, signById, verifyById } from '../p2p/did';
+import { genetateDid, verifyById } from '../p2p/did';
 import { message } from '../../utils/message';
 
 import { Contract } from 'lib/contract';
-import { skCacheKeys } from 'lib/ipfs/key';
 import { transDemoFn } from 'lib/contracts/transaction_demo';
 import { SKChain } from '../../skChain';
 import { newAccount } from 'mate/account';
 import { createEmptyStorageRoot } from 'lib/ipld/util';
 import { UpdateAccountI } from 'lib/ipld';
-import { accountOpCodes } from 'lib/contract/code';
+import { genTransactionClass, genTransMeta, runContract } from './trans.pure';
 
 // 处理交易活动
 export class TransactionAction extends SKChainLibBase {
   constructor(chain: SKChain) {
     super(chain);
-    this.contract = new Contract(this.chain.ipld);
+    this.contract = new Contract();
   }
 
   MAX_TRANS_LIMIT = 50; // 每个block能打包的交易上限
@@ -113,14 +112,13 @@ export class TransactionAction extends SKChainLibBase {
       if (trans.payload) {
         // 调用合约
         const account = await this.chain.ipld.getAccount(trans.recipient);
-        const code = await this.chain.db.block.get(account.codeCid!);
-        const res = this.contract.runFunction(code, trans);
-        console.log('res', res);
-        update.push({
-          account: trans.recipient,
-          opCode: accountOpCodes.updateState,
-          value: res,
-        });
+        const res = await runContract(
+          account,
+          trans,
+          this.chain,
+          this.contract,
+        );
+        update.push(res);
       } else {
         // 普通转账
         update = await transDemoFn(
@@ -193,19 +191,9 @@ export class TransactionAction extends SKChainLibBase {
     }
   };
 
-  handelTransaction = async (tm: transMeta) => {
+  handelTransaction = async (trans: Transaction) => {
     // 处理接受到的或者本地发起的交易
-    const trans = new Transaction({
-      from: tm.from,
-      cu: tm.cu,
-      cuLimit: new BigNumber(10000),
-      payload: tm.payload,
-      recipient: tm.recipient,
-      accountNonce: new BigNumber(0),
-      amount: tm.amount,
-      ts: tm.ts,
-    });
-    await trans.genHash(this.chain.db);
+
     this.add(trans);
     // test contract
     // const res = this.contract.runFunction(transContract, {
@@ -245,7 +233,8 @@ export class TransactionAction extends SKChainLibBase {
       ))
     ) {
       // 交易签名验证通过
-      this.handelTransaction(tm);
+      const trans = await genTransactionClass(tm, this.chain);
+      this.handelTransaction(trans);
     } else {
       message.info('trans unlow');
     }
@@ -257,35 +246,15 @@ export class TransactionAction extends SKChainLibBase {
     },
   ) => {
     // 供外部调用的发起交易方法
-    // 只是做交易检查和预处理
-    if (!this.chain.inited) {
-      message.error('wait for inited');
-      return;
-    }
-    if (!tm.amount || !tm.recipient) {
-      // 校验
-      message.error('need trans amount and recipient');
-      return;
-    }
-    const signMeta = {
-      ...tm,
-      from: this.chain.did,
-      ts: Date.now(),
-      cu: new BigNumber(100), // todo
-    };
-    const transMeta: transMeta = {
-      ...signMeta,
-      // 这里使用交易原始信息通过ipfs存储后的cid进行签名会更好？
-      signature: await signById(
-        this.chain.db.cache.get(skCacheKeys.accountPrivKey),
-        bytes.fromString(JSON.stringify(signMeta)),
-      ),
-    };
-    this.chain.db.pubsub.publish(
+    const transMeta = await genTransMeta(tm, this.chain);
+    await this.chain.db.pubsub.publish(
       peerEvent.transaction,
       bytes.fromString(JSON.stringify(transMeta)),
     );
-    this.handelTransaction(transMeta);
+    if (transMeta) {
+      const trans = await genTransactionClass(transMeta, this.chain);
+      await this.handelTransaction(trans);
+    }
   };
 
   // deploy contract

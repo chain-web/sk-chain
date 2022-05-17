@@ -6,12 +6,9 @@ import { message } from 'utils/message';
 import { Transaction } from 'mate/transaction';
 
 export class Contract {
-  constructor(ipld: Ipld) {
-    this.ipld = ipld;
-  }
+  constructor() {}
 
   ready = false;
-  ipld: Ipld;
 
   public init = async () => {
     if (init) {
@@ -26,14 +23,13 @@ export class Contract {
    * @param code [Function] js function
    * @returns
    */
-  runFunction = (code: Uint8Array, trans: Transaction): string => {
+  runFunction = (
+    code: Uint8Array,
+    trans: Transaction,
+    storage: string[],
+  ): string => {
     const codeStr = bytes.toString(code);
     let mothed = trans.payload?.mothed;
-    console.log(trans.payload);
-    if (mothed === 'constructor') {
-      mothed = '__sk__constructor';
-    }
-    console.log(mothed);
     const runCode = `
     const baseContractKey = ['msg']
     const cwjsrSk = __init__sk__()
@@ -46,20 +42,35 @@ export class Contract {
       constractHelper: {
         createSliceDb: () => new Map(),
         hash: cwjsrSk.genHash,
+        log: cwjsrSk.log,
       }
     }
     ${codeStr}
     const run = () => {
-      __sk__contract.${mothed}();
+      ${(() => {
+        if (mothed !== 'constructor' && storage[0]) {
+          let loadDataCode = `let savedData = JSON.parse('${storage[0]}')`;
+          loadDataCode +=  `
+          savedData.forEach(ele => {
+            __sk__contract[ele.key] = ele.value;
+          })
+          `
+          loadDataCode += `
+          __sk__contract.${mothed}(${trans.payload?.args.map(ele => `'${ele}'`).join(',')})
+          `
+          return loadDataCode;
+        }
+        return '__sk__contract.__sk__constructor();';
+      })()}
       const saves = Object.keys(__sk__contract).map(key => {
         let ele = __sk__contract[key];
         const type = typeof ele;
         if (baseContractKey.includes(key) || type === 'function') {
           return
         }
-        if (type === 'object') {
-          ele = JSON.stringify(ele);
-        }
+        // if (type === 'object') {
+        //   ele = JSON.stringify(ele);
+        // }
         __sk__.log(typeof ele)
         return {
           key,
@@ -67,12 +78,14 @@ export class Contract {
           value: ele
         }
       }).filter(ele => !!ele)
-      return saves;
+      return JSON.stringify(saves);
     };
     run();
     `;
-    // console.log(runCode);
-    return evaluate(runCode, BigInt(trans.cuLimit.toString()), {});
+    console.log(runCode);
+    let result = evaluate(runCode, BigInt(trans.cuLimit.toString()), {});
+    result = result.replace(/(\"$)|(^\")/g, "");
+    return result;
   };
 
   /**

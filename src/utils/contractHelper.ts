@@ -41,4 +41,5 @@ export const constractHelper = {
   createSliceDb,
   BaseContract,
   hash,
+  log: console.log,
 };

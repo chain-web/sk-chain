@@ -9,6 +9,7 @@ import * as packageJson from '../package.json';
 import { Consensus } from './lib/consensus';
 import { Genesis } from './lib/genesis';
 import { message } from 'utils/message';
+import { TransactionTest } from './lib/transaction/test';
 
 export interface SKChainOption {
   genesis: GenesisConfig;
@@ -26,6 +27,7 @@ export class SKChain {
     this.genesis = new Genesis(this, option.genesis);
     this.consensus = new Consensus(this);
     this.transAction = new TransactionAction(this);
+    this.transTest = new TransactionTest(this);
 
     // 对外暴露的一些方法
     this.transaction = this.transAction.transaction;
@@ -39,6 +41,7 @@ export class SKChain {
   genesis: Genesis;
   // 交易
   transAction: TransactionAction;
+  transTest: TransactionTest;
   // 数据操作
   ipld: Ipld;
 

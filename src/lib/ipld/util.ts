@@ -19,5 +19,6 @@ export const createEmptyNodeCid = async (name: string, db: SKDB) => {
 };
 
 // generate init account storageRoot
-export const createEmptyStorageRoot = (db: SKDB) =>
-  createEmptyNodeCid('storageRoot', db);
+export const createEmptyStorageRoot = async (db: SKDB) => {
+  return await db.dag.put([]);
+};

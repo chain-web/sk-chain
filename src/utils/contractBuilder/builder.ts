@@ -44,6 +44,7 @@ const skContractTsPlugin = (): Plugin => {
                 createSliceDb: <T = any>(keyType: KeyType) => ConstractHelper.SliceDb<T>;
                 BaseContract: typeof BaseContract;
                 hash: (str: string) => string;
+                log: any;
               };
               transMsg: {
                 sender: string;
@@ -66,17 +67,19 @@ const skContractJsPlugin = (input: string): Plugin => {
   return {
     name: 'sk-chain-resolve-js',
     transform: (code, id) => {
+      // console.log(code)
       if (id.match(input) && !id.match('commonjs-entry')) {
-        // delete calss extend
+      // delete calss extend
         code = code.replace(/Contract extends(\s*)(\S*)(\s*){/, 'Contract {');
         // 把constructor替换为__sk__constructor，因为只有在部署合约时才调用constructor
-        code = code.replace(/constructor\(\)/, 'constructor() {};\n__sk__constructor()');
+        // 同时，把baseContract中数据和方法写到constructor
+        code = code.replace(/constructor\(\)/, `constructor() {
+          this.msg = __sk__.transMsg;
+        };\n__sk__constructor()`);
         code = code.replace(
           /super\(\)(;?)/,
-          // 把super代码写进去
-          `
-          this.msg = __sk__.transMsg;
-          `,
+          // 把super删除
+        '',
         );
         // console.log(code);
       }
@@ -90,6 +93,7 @@ const skContractTerserCodePlugin = (): Plugin => {
   return {
     name: 'sk-chain-resolve-chunk',
     renderChunk(code, _chunk, _outputOptions) {
+      // console.log(code)
       let className: any =
         code.match(/(,)?exports.(\S*)=(\S*)/) ||
         code.match(/(,)?module.exports=(\S*)/) ||
@@ -121,7 +125,7 @@ const createTsPlugin = () =>
     tsconfigOverride: {
       compilerOptions: {
         declaration: false,
-        target: 'es2018',
+        target: 'esnext',
       },
     },
   });
@@ -134,7 +138,7 @@ const createContractConfig = (input: string): RollupOptions => ({
     commonjs({}),
     createTsPlugin(),
     skContractJsPlugin(input),
-    terser(),
+    terser({ecma: 2020, keep_classnames: true}),
     skContractTerserCodePlugin(),
   ],
 });
@@ -162,6 +166,7 @@ export const builder = async (input: string, output?: string) => {
         }
       }
     }
+    // console.log(code)
     const resultUint8 = bytes.fromString(code);
     const resultU8String = `export default new Uint8Array([${resultUint8.toString()}]);`;
     writeFileSync(resolve(input, '../index.contract.js'), resultU8String, {
