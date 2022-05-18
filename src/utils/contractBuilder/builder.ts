@@ -1,12 +1,20 @@
 import typescript from 'rollup-plugin-typescript2';
 import { resolve } from 'path';
 import { writeFileSync } from 'fs';
-import { rollup, RollupOptions, Plugin } from 'rollup';
+import {
+  rollup,
+  RollupOptions,
+  Plugin,
+  watch,
+  RollupWatcher,
+  MergedRollupOptions,
+} from 'rollup';
 import { init, parse } from 'es-module-lexer';
 import commonjs from '@rollup/plugin-commonjs';
 import { terser } from 'rollup-plugin-terser';
 import { bytes } from 'multiformats';
 import chalk from 'chalk';
+import { BuildOption } from '.';
 const skContractTsPlugin = (): Plugin => {
   return {
     name: 'sk-chain-resolve-ts',
@@ -69,17 +77,20 @@ const skContractJsPlugin = (input: string): Plugin => {
     transform: (code, id) => {
       // console.log(code)
       if (id.match(input) && !id.match('commonjs-entry')) {
-      // delete calss extend
+        // delete calss extend
         code = code.replace(/Contract extends(\s*)(\S*)(\s*){/, 'Contract {');
         // 把constructor替换为__sk__constructor，因为只有在部署合约时才调用constructor
         // 同时，把baseContract中数据和方法写到constructor
-        code = code.replace(/constructor\(\)/, `constructor() {
+        code = code.replace(
+          /constructor\(\)/,
+          `constructor() {
           this.msg = __sk__.transMsg;
-        };\n__sk__constructor()`);
+        };\n__sk__constructor()`,
+        );
         code = code.replace(
           /super\(\)(;?)/,
           // 把super删除
-        '',
+          '',
         );
         // console.log(code);
       }
@@ -138,12 +149,12 @@ const createContractConfig = (input: string): RollupOptions => ({
     commonjs({}),
     createTsPlugin(),
     skContractJsPlugin(input),
-    terser({ecma: 2020, keep_classnames: true}),
+    terser({ ecma: 2020, keep_classnames: true }),
     skContractTerserCodePlugin(),
   ],
 });
 
-export const builder = async (input: string, output?: string) => {
+export const builder = async (input: string, opts: BuildOption) => {
   try {
     console.log(chalk.green('starting build contract...'));
     await init;
@@ -177,3 +188,80 @@ export const builder = async (input: string, output?: string) => {
     console.log(error);
   }
 };
+
+// import process from 'process';
+// // import onExit from 'signal-exit';
+
+// export async function watchRollup(command: Record<string, any>): Promise<void> {
+//   process.env.ROLLUP_WATCH = 'true';
+//   let watcher: RollupWatcher;
+
+//   // onExit(close);
+//   process.on('uncaughtException', close);
+
+//   async function loadConfigFromFileAndTrack(): Promise<void> {
+
+//     await reloadConfigFile();
+
+//     async function reloadConfigFile() {
+//       try {
+//         if (watcher) {
+//           await watcher.close();
+//         }
+//         start([{ output: [{
+
+//         }] }]);
+//       } catch (err: any) {}
+//     }
+//   }
+
+//   await loadConfigFromFileAndTrack();
+
+//   function start(configs: MergedRollupOptions[]): void {
+//     try {
+//       watcher = watch(configs as any);
+//     } catch (err: any) {}
+
+//     watcher.on('event', (event: any) => {
+//       switch (event.code) {
+//         case 'ERROR':
+//           // handleError(event.error, true);
+//           // runWatchHook('onError');
+//           break;
+
+//         case 'START':
+//           // runWatchHook('onStart');
+
+//           break;
+
+//         case 'BUNDLE_START':
+//           // runWatchHook('onBundleStart');
+//           break;
+
+//         case 'BUNDLE_END':
+//           // runWatchHook('onBundleEnd');
+
+//           break;
+
+//         case 'END':
+//         // runWatchHook('onEnd')
+//       }
+
+//       if ('result' in event && event.result) {
+//         event.result.close().catch((error: any) => {});
+//       }
+//     });
+//   }
+
+//   async function close(code: number | null): Promise<void> {
+//     process.removeListener('uncaughtException', close);
+//     // removing a non-existent listener is a no-op
+//     process.stdin.removeListener('end', close);
+
+//     if (watcher) await watcher.close();
+
+//     if (code) {
+//       process.exit(code);
+//     }
+//   }
+// }
