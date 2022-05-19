@@ -1,4 +1,4 @@
-export type KeyType = 'base58' | 'base32';
+export type SliceKeyType = 'base58' | 'base32';
 
 export namespace ConstractHelper {
   export type SliceDb<T> = {
@@ -10,11 +10,11 @@ export namespace ConstractHelper {
 }
 
 class SliceDb<T> implements ConstractHelper.SliceDb<T> {
-  constructor(keyType: KeyType) {
+  constructor(keyType: SliceKeyType) {
     this.keyType = keyType;
   }
   // TODO 用keyType，用来做分片存储
-  keyType: KeyType;
+  keyType: SliceKeyType;
   db: Map<string, T> = new Map();
 
   get = this.db.get as ConstractHelper.SliceDb<T>['get'];
@@ -23,7 +23,7 @@ class SliceDb<T> implements ConstractHelper.SliceDb<T> {
   delete = this.db.delete;
 }
 
-const createSliceDb = <T = any>(keyType: KeyType) => {
+const createSliceDb = <T = any>(keyType: SliceKeyType) => {
   return new SliceDb<T>(keyType);
 };
 

@@ -5,7 +5,7 @@ import { message } from 'utils/message';
 import BigNumber from 'bignumber.js';
 import { signById } from 'lib/p2p/did';
 import { skCacheKeys } from 'lib/ipfs/key';
-import { bytes } from 'multiformats';
+import { bytes, CID } from 'multiformats';
 import { Contract } from 'lib/contract';
 import { accountOpCodes } from 'lib/contract/code';
 
@@ -63,13 +63,37 @@ export const runContract = async (
   chain: SKChain,
   contract: Contract,
 ) => {
-  const storage = (await chain.db.dag.get(account.storageRoot)).value;
+  const storage = (await chain.db.dag.get(account.storageRoot)).value[0];
+  const storeObj = JSON.parse(storage || '[]');
+  for (let i = 0; i < storeObj.length; i++) {
+    const ele = storeObj[i];
+    if (ele.type === 'sk_slice_db') {
+      for (let j = 0; j < Object.keys(ele.value).length; j++) {
+        const key = Object.keys(ele.value)[j];
+        const cid = ele.value[key];
+        const val = await chain.db.dag.get(CID.parse(cid));
+        ele.value[key] = val.value;
+      }
+    }
+  }
   const code = await chain.db.block.get(account.codeCid!);
-  const res = contract.runFunction(code, trans, storage);
+  const res = contract.runFunction(code, trans, JSON.stringify(storeObj));
+  console.log('res', res);
+  for (let i = 0; i < res.length; i++) {
+    const ele = res[i];
+    if (ele.type === 'sk_slice_db') {
+      for (let j = 0; j < Object.keys(ele.value).length; j++) {
+        const key = Object.keys(ele.value)[j];
+        const value = ele.value[key];
+        const cid = await chain.db.dag.put(value);
+        ele.value[key] = cid.toString();
+      }
+    }
+  }
   console.log('res', res);
   return {
     account: trans.recipient,
     opCode: accountOpCodes.updateState,
-    value: res,
+    value: JSON.stringify(res),
   };
 };

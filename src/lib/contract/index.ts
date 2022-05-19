@@ -4,7 +4,16 @@ import { lifecycleEvents, lifecycleStap } from 'lib/events/lifecycle';
 import { bytes } from 'multiformats';
 import { message } from 'utils/message';
 import { Transaction } from 'mate/transaction';
+import { SliceKeyType } from 'utils/contractHelper';
 
+export interface ContractResultItem {
+  key: string;
+  value: { [key: string]: any };
+  type: 'object' | 'sk_slice_db';
+  keyType?: SliceKeyType;
+}
+
+export type ContractResult = ContractResultItem[];
 export class Contract {
   constructor() {}
 
@@ -26,8 +35,8 @@ export class Contract {
   runFunction = (
     code: Uint8Array,
     trans: Transaction,
-    storage: string[],
-  ): string => {
+    storage: string,
+  ): ContractResult => {
     const codeStr = bytes.toString(code);
     let mothed = trans.payload?.mothed;
     const runCode = `
@@ -40,24 +49,46 @@ export class Contract {
         ts: ${trans.ts}
       },
       constractHelper: {
-        createSliceDb: () => new Map(),
-        hash: cwjsrSk.genHash,
+        createSliceDb: (keyType) => {
+          return {
+            get (key) {
+              return this.data[key];
+            },
+            set (key, val) {
+              this.data[key] = val;
+            },
+            delete (key) {
+              delete this.data[key];
+            },
+            data: {},
+            type: 'sk_slice_db',
+            keyType: keyType
+          }
+        },
+        hash: cwjsrSk.genRawHash,
         log: cwjsrSk.log,
       }
     }
     ${codeStr}
     const run = () => {
       ${(() => {
-        if (mothed !== 'constructor' && storage[0]) {
-          let loadDataCode = `let savedData = JSON.parse('${storage[0]}')`;
-          loadDataCode +=  `
-          savedData.forEach(ele => {
-            __sk__contract[ele.key] = ele.value;
-          })
-          `
+        if (mothed !== 'constructor' && storage) {
+          let loadDataCode = `let savedData = JSON.parse('${storage}')`;
           loadDataCode += `
-          __sk__contract.${mothed}(${trans.payload?.args.map(ele => `'${ele}'`).join(',')})
-          `
+          savedData.forEach(ele => {
+            if (ele.type === 'sk_slice_db') {
+              __sk__contract[ele.key] = __sk__.constractHelper.createSliceDb(ele.keyType);
+              __sk__contract[ele.key].data = ele.value;
+            } else {
+              __sk__contract[ele.key] = ele.value;
+            }
+          })
+          `;
+          loadDataCode += `
+          __sk__contract.${mothed}(${trans.payload?.args
+            .map((ele) => `'${ele}'`)
+            .join(',')})
+          `;
           return loadDataCode;
         }
         return '__sk__contract.__sk__constructor();';
@@ -68,10 +99,14 @@ export class Contract {
         if (baseContractKey.includes(key) || type === 'function') {
           return
         }
-        // if (type === 'object') {
-        //   ele = JSON.stringify(ele);
-        // }
-        __sk__.log(typeof ele)
+        if (type === 'object' && ele.type === 'sk_slice_db') {
+          return {
+            key: key,
+            value: ele.data,
+            type: 'sk_slice_db',
+            keyType: ele.keyType
+          }
+        }
         return {
           key,
           type,
@@ -84,8 +119,8 @@ export class Contract {
     `;
     console.log(runCode);
     let result = evaluate(runCode, BigInt(trans.cuLimit.toString()), {});
-    result = result.replace(/(\"$)|(^\")/g, "");
-    return result;
+    result = result.replace(/(\"$)|(^\")/g, '');
+    return JSON.parse(result);
   };
 
   /**
