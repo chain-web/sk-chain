@@ -1,3 +1,5 @@
+import {ContractResultItem as CRI} from '../lib/contract'
+
 export type SliceKeyType = 'base58' | 'base32';
 
 export namespace ConstractHelper {
@@ -7,6 +9,7 @@ export namespace ConstractHelper {
     delete: (key: string) => void;
     set: (key: string, value: T) => void;
   };
+  export type ContractResultItem = CRI;
 }
 
 class SliceDb<T> implements ConstractHelper.SliceDb<T> {
