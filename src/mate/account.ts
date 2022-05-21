@@ -128,7 +128,7 @@ export class Account {
   // 数据从内存提交到ipfs
   commit = async (db: SKDB) => {
     return db.dag.put([
-      this.account.address,
+      this.account.did,
       Object.keys(this.balance).map((key) => {
         return [key, this.balance[key].toString()];
       }),

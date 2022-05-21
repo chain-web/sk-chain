@@ -111,7 +111,7 @@ export class TransactionAction extends SKChainLibBase {
       // 依次执行交易的合约
       if (trans.payload) {
         // 调用合约
-        const account = await this.chain.ipld.getAccount(trans.recipient.address);
+        const account = await this.chain.ipld.getAccount(trans.recipient.did);
         const res = await runContract(
           account,
           trans,
@@ -123,8 +123,8 @@ export class TransactionAction extends SKChainLibBase {
         // 普通转账
         update = await transDemoFn(
           {
-            from: trans.from.address,
-            recipient: trans.recipient.address,
+            from: trans.from.did,
+            recipient: trans.recipient.did,
             amount: trans.amount,
           },
           this.chain.ipld.getAccount,
@@ -169,13 +169,13 @@ export class TransactionAction extends SKChainLibBase {
 
   private add = async (trans: Transaction) => {
     await this.chain.ipld.preLoadByTrans(trans);
-    const hasedTrans = this.waitTransMap.get(trans.from.address);
+    const hasedTrans = this.waitTransMap.get(trans.from.did);
     if (hasedTrans) {
       hasedTrans.set(trans.ts, trans);
     } else {
       const transMap = new Map();
       transMap.set(trans.ts, trans);
-      this.waitTransMap.set(trans.from.address, transMap);
+      this.waitTransMap.set(trans.from.did, transMap);
     }
   };
 
@@ -226,7 +226,7 @@ export class TransactionAction extends SKChainLibBase {
     if (
       signature &&
       (await verifyById(
-        tm.from.address,
+        tm.from.did,
         signature,
         // 删掉signature验证签名
         bytes.fromString(JSON.stringify({ ...tm, signature: undefined })),

@@ -93,7 +93,7 @@ export const runContract = async (
   }
   console.log('res', res);
   return {
-    account: trans.recipient.address,
+    account: trans.recipient.did,
     opCode: accountOpCodes.updateState,
     value: JSON.stringify(res),
   };

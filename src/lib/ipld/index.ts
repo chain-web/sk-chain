@@ -20,7 +20,7 @@ export type UpdateAccountI = {
   opCode: UpdateOpCode;
   value: string | BigNumber | object;
 } & {
-  account: Account['account']['address'];
+  account: Account['account']['did'];
 };
 
 export class Ipld extends SKChainLibBase {
@@ -80,12 +80,12 @@ export class Ipld extends SKChainLibBase {
           new Uint8Array(trans.payload.args[0]),
         );
         const account = newAccount(
-          trans.recipient.address,
+          trans.recipient.did,
           storageRoot,
           codeCid.toV1(),
-          trans.from.address,
+          trans.from.did,
         );
-        this.preLoadAccount.set(account.account.address, account);
+        this.preLoadAccount.set(account.account.did, account);
       }
     }
   };
@@ -178,7 +178,7 @@ export class Ipld extends SKChainLibBase {
         message.error('unknown op code');
         break;
     }
-    this.updates.set(account.account.address, account);
+    this.updates.set(account.account.did, account);
   };
 
   initMpt = async () => {
