@@ -105,17 +105,18 @@ const skContractTerserCodePlugin = (): Plugin => {
     name: 'sk-chain-resolve-chunk',
     renderChunk(code, _chunk, _outputOptions) {
       // console.log(code)
-      let className: any =
-        code.match(/(,)?exports.(\S*)=(\S*)/) ||
-        code.match(/(,)?module.exports=(\S*)/) ||
-        [];
-      className = className[0]?.split('=')[1];
-
       // remove模块相关的代码，只剩下 纯js
       code = code.replace(
         /Object.defineProperty\(exports,"__esModule",\{value:!0\}\);/,
         '',
       );
+      let className: any =
+        code.match(/(,)?exports.(\S*)=(\S*)/) ||
+        code.match(/(,)?module.exports=(\S*)/) ||
+        [];
+
+      className = className[0]?.split('=')[1];
+
       code = code.replace(/"use strict";/, ';');
       code = code.replace(/(,)?exports.(\S*)=(\S*);/, ';');
       code = code.replace(/(,)?module.exports=(\S*);/, ';');
