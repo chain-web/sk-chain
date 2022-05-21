@@ -66,7 +66,7 @@ const skContractTsPlugin = (): Plugin => {
           `);
         }
       });
-      console.log(code);
+      // console.log(code);
       if (id.match('sk-chain')) {
         // console.log(code)
       }
@@ -141,7 +141,7 @@ const createTsPlugin = () =>
     tsconfigOverride: {
       compilerOptions: {
         declaration: false,
-        target: 'esnext',
+        target: 'es2022',
       },
     },
   });
