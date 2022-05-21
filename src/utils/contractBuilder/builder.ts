@@ -30,6 +30,7 @@ const skContractTsPlugin = (): Plugin => {
           let globalSkStr = impStr.replace('import', 'const');
           globalSkStr = globalSkStr.replace(/from(([\s\S])+)/, '= __sk__');
           globalSkStr = globalSkStr.replace(/ConstractHelper(\s*)(,?)/, '');
+          globalSkStr = globalSkStr.replace(/Address(\s*)(,?)/, '');
           code = code.replace(impStr, globalSkStr);
 
           code = code.concat(`
@@ -47,6 +48,9 @@ const skContractTsPlugin = (): Plugin => {
                   ts: number;
               };
           }
+          declare class Address {
+            did: string;
+        }
           declare var __sk__: {
               constractHelper: {
                 createSliceDb: <T = any>(keyType: KeyType) => ConstractHelper.SliceDb<T>;
@@ -57,12 +61,12 @@ const skContractTsPlugin = (): Plugin => {
               transMsg: {
                 sender: string;
                 ts: number;
-              }
+              };
             };
           `);
         }
       });
-      // console.log(code);
+      console.log(code);
       if (id.match('sk-chain')) {
         // console.log(code)
       }
