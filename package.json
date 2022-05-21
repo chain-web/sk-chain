@@ -33,7 +33,7 @@
     "rollup-plugin-hashbang": "^3.0.0",
     "rollup-plugin-typescript2": "^0.31.2",
     "ts-node": "^10.4.0",
-    "typescript": "^4.5.5"
+    "typescript": "^4.6.4"
   },
   "dependencies": {
     "@chainsafe/libp2p-noise": "^6.0.1",
