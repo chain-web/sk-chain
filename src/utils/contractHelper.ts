@@ -1,3 +1,4 @@
+import { Address } from 'mate/address';
 import {ContractResultItem as CRI} from '../lib/contract'
 
 export type SliceKeyType = 'base58' | 'base32';
@@ -36,7 +37,7 @@ const hash = (str: string) => {
 
 class BaseContract {
   msg = {
-    sender: '',
+    sender: new Address(''),
     ts: 0,
   };
 }
