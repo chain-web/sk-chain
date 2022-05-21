@@ -1,7 +1,7 @@
 import BigNumber from 'bignumber.js';
 import { Transaction } from './transaction';
 import { CID } from 'multiformats/cid';
-import { SKDB } from 'lib/ipfs/ipfs.interface';
+import { SKDB } from '../lib/ipfs/ipfs.interface';
 
 export interface createBlockOpt {
   transactions: Transaction[];

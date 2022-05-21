@@ -1,8 +1,8 @@
 import BigNumber from 'bignumber.js';
 import { SKDB } from '../lib/ipfs/ipfs.interface';
-import { Address } from './types';
 import { CID } from 'multiformats/cid';
 import { BlockHeaderData } from './block';
+import { Address } from './address';
 
 export interface transMeta {
   from: Transaction['from'];

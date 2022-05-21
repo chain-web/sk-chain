@@ -1,7 +1,6 @@
 import { SKChainLibBase } from './../base';
 import BigNumber from 'bignumber.js';
 import { Transaction, transMeta } from '../../mate/transaction';
-import { Message } from 'ipfs-core-types/src/pubsub';
 import { peerEvent } from '../events/peer';
 import { bytes } from 'multiformats';
 import { genetateDid, verifyById } from '../p2p/did';
@@ -14,6 +13,7 @@ import { newAccount } from 'mate/account';
 import { createEmptyStorageRoot } from 'lib/ipld/util';
 import { UpdateAccountI } from 'lib/ipld';
 import { genTransactionClass, genTransMeta, runContract } from './trans.pure';
+import { Message } from 'ipfs-core-types/src/pubsub';
 
 // 处理交易活动
 export class TransactionAction extends SKChainLibBase {
@@ -111,7 +111,7 @@ export class TransactionAction extends SKChainLibBase {
       // 依次执行交易的合约
       if (trans.payload) {
         // 调用合约
-        const account = await this.chain.ipld.getAccount(trans.recipient);
+        const account = await this.chain.ipld.getAccount(trans.recipient.address);
         const res = await runContract(
           account,
           trans,
@@ -123,8 +123,8 @@ export class TransactionAction extends SKChainLibBase {
         // 普通转账
         update = await transDemoFn(
           {
-            from: trans.from,
-            recipient: trans.recipient,
+            from: trans.from.address,
+            recipient: trans.recipient.address,
             amount: trans.amount,
           },
           this.chain.ipld.getAccount,
@@ -169,13 +169,13 @@ export class TransactionAction extends SKChainLibBase {
 
   private add = async (trans: Transaction) => {
     await this.chain.ipld.preLoadByTrans(trans);
-    const hasedTrans = this.waitTransMap.get(trans.from);
+    const hasedTrans = this.waitTransMap.get(trans.from.address);
     if (hasedTrans) {
       hasedTrans.set(trans.ts, trans);
     } else {
       const transMap = new Map();
       transMap.set(trans.ts, trans);
-      this.waitTransMap.set(trans.from, transMap);
+      this.waitTransMap.set(trans.from.address, transMap);
     }
   };
 
@@ -226,7 +226,7 @@ export class TransactionAction extends SKChainLibBase {
     if (
       signature &&
       (await verifyById(
-        tm.from,
+        tm.from.address,
         signature,
         // 删掉signature验证签名
         bytes.fromString(JSON.stringify({ ...tm, signature: undefined })),

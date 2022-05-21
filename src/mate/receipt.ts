@@ -1,8 +1,8 @@
 import BigNumber from 'bignumber.js';
 import { SKDB } from 'lib/ipfs/ipfs.interface';
 import { UpdateAccountI } from 'lib/ipld';
+import { Address } from './address';
 import { BlockHeaderData } from './block';
-import { Address, CID } from './types';
 
 interface ReceiptData {
   blockNumber: BlockHeaderData['number'];

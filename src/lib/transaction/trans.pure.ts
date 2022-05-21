@@ -1,3 +1,4 @@
+import { Address } from './../../mate/address';
 import { Account } from './../../mate/account';
 import { SKChain } from './../../skChain';
 import { Transaction, transMeta } from 'mate/transaction';
@@ -27,7 +28,7 @@ export const genTransMeta = async (
   }
   const signMeta = {
     ...tm,
-    from: chain.did,
+    from: new Address(chain.did),
     ts: Date.now(),
     cu: new BigNumber(100), // todo
   };
@@ -92,7 +93,7 @@ export const runContract = async (
   }
   console.log('res', res);
   return {
-    account: trans.recipient,
+    account: trans.recipient.address,
     opCode: accountOpCodes.updateState,
     value: JSON.stringify(res),
   };

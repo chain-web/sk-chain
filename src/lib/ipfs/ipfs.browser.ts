@@ -81,7 +81,7 @@ export const createIpfs = async (opts: {
     name: CID,
     options: Parameters<typeof ipfs.dag.get>[1],
   ) => ipfs.dag.get(name, { ...options, timeout: 30000 });
-  return {
+  const skdb = {
     ...ipfs,
     cache,
     CID: IPFSGl.CID,
@@ -89,5 +89,6 @@ export const createIpfs = async (opts: {
       ...ipfs.dag,
       get: dagGet,
     },
-  };
+  }
+  return skdb;
 };

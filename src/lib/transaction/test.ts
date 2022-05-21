@@ -50,8 +50,8 @@ export class TransactionTest extends SKChainLibBase {
       // 普通转账
       update = await transDemoFn(
         {
-          from: trans.from,
-          recipient: trans.recipient,
+          from: trans.from.address,
+          recipient: trans.recipient.address,
           amount: trans.amount,
         },
         this.chain.ipld.getAccount,

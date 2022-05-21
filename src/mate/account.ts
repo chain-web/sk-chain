@@ -1,6 +1,7 @@
 import { SKDB } from '../lib/ipfs/ipfs.interface';
 import { CID } from 'multiformats';
 import BigNumber from 'bignumber.js';
+import { Address } from './address';
 
 interface AccountMeta {
   codeCid?: Account['codeCid'];
@@ -24,7 +25,7 @@ export class Account {
     this.codeCid = meta.codeCid;
     this.owner = meta.owner;
   }
-  account: string;
+  account: Address;
   // 当前账户交易次数
   nonce: BigNumber;
 
@@ -55,7 +56,7 @@ export class Account {
       bl[ele[0]] = new BigNumber(ele[1]);
     });
     const accountMeta: AccountMeta = {
-      account: accountData[0],
+      account: new Address(accountData[0]),
       balance: bl,
       contribute: new BigNumber(accountData[3]),
       owner: accountData[4],
@@ -127,7 +128,7 @@ export class Account {
   // 数据从内存提交到ipfs
   commit = async (db: SKDB) => {
     return db.dag.put([
-      this.account,
+      this.account.address,
       Object.keys(this.balance).map((key) => {
         return [key, this.balance[key].toString()];
       }),
@@ -147,7 +148,7 @@ export const newAccount = (
   owner?: string,
 ) => {
   return new Account({
-    account: did,
+    account: new Address(did),
     contribute: new BigNumber(0),
     nonce: new BigNumber(0),
     balance: {},

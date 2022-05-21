@@ -81,7 +81,7 @@ export class Genesis extends SKChainLibBase {
     await initStateRoot.initRootTree();
     for (const account of accounts) {
       await initStateRoot.updateKey(
-        account.account,
+        account.account.address,
         await account.commit(this.chain.db),
       );
     }
