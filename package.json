@@ -1,7 +1,7 @@
 {
   "name": "sk-chain",
-  "version": "0.0.2",
-  "description": "单独可以供浏览器端和node端使用的主链",
+  "version": "0.0.6",
+  "description": "A blockchain that can run on the Browser and the nodeJs",
   "type": "module",
   "module": "es/src/index.js",
   "main": "es/src/index.js",
@@ -18,7 +18,7 @@
     "dev": "rollup -c -w"
   },
   "files": [
-    "dist"
+    "es"
   ],
   "author": "scc",
   "license": "ISC",
@@ -53,12 +53,13 @@
     "chalk": "^5.0.1",
     "cwjsr": "^0.2.4",
     "debug": "^4.3.4",
-    "ipfs": "^0.62.1",
+    "ipfs": "^0.62.3",
     "ipfs-bitswap": "^11.0.1",
-    "ipfs-core": "^0.14.1",
+    "ipfs-core": "^0.14.3",
+    "ipfs-core-types": "^0.10.3",
     "ipns": "^1.0.0",
     "it-pipe": "^2.0.3",
-    "libp2p": "^0.36.3",
+    "libp2p": "^0.37.0",
     "libp2p-gossipsub": "^0.13.0",
     "libp2p-kad-dht": "^0.28.6",
     "libp2p-tcp": "^0.17.2",
