@@ -21,6 +21,7 @@ export enum LifecycleStap {
   'initingSlice' = 'initingSlice', // 开始初始化分片共识模块
   'initedSlice' = 'initedSlice', // 分片共识初始化成功
   'initedContract' = 'initedContract', // 智能合约模块初始化成功
+  'newBlock' = 'newBlock', // 更新本地块头
 }
 
 export const lifecycleEvents = new EventBus(LifecycleStap);

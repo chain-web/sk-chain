@@ -23,8 +23,8 @@ export class TransactionAction extends SKChainLibBase {
   }
 
   MAX_TRANS_LIMIT = 50; // 每个block能打包的交易上限
-  WAIT_TIME_LIMIT = 6 * 1000; // 每个交易从被发出到能进行打包的最短时间间隔 ms
-  BLOCK_INTERVAL_TIME_LIMIT = 10 * 1000; // 两个块之间打包的最短时间间隔 ms
+  WAIT_TIME_LIMIT = 4 * 1000; // 每个交易从被发出到能进行打包的最短时间间隔 ms
+  BLOCK_INTERVAL_TIME_LIMIT = 8 * 1000; // 两个块之间打包的最短时间间隔 ms
   private waitTransMap: Map<string, Map<number, Transaction>> = new Map(); // 等待执行的交易
   private transQueue: Transaction[] = []; // 当前块可执行的交易队列
 

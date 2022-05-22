@@ -57,6 +57,8 @@ export class SKChain {
   transaction;
   deploy;
 
+  lifecycleEvents = lifecycleEvents;
+
   init = async () => {
     try {
       await this.blockService.init();

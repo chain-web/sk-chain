@@ -1,3 +1,4 @@
+import { lifecycleEvents, LifecycleStap } from './../events/lifecycle';
 import { message } from './../../utils/message';
 import { SKChainLibBase } from './../base';
 import { SKChain } from './../../skChain';
@@ -69,6 +70,11 @@ export class Consensus extends SKChainLibBase {
       blockCid.toString(),
       nextBlock.header.number,
     );
+    lifecycleEvents.emit(
+      LifecycleStap.newBlock,
+      blockCid.toString(),
+      nextBlock,
+    );
   };
 
   // 接收其他节点广播的新区块
@@ -105,7 +111,9 @@ export class Consensus extends SKChainLibBase {
         } else {
           // 收到的块是比自己节点存储的更新的
           message.info('receive block: new');
-          if (headerBlock.header.number.plus(1).isEqualTo(newBlock.header.number)) {
+          if (
+            headerBlock.header.number.plus(1).isEqualTo(newBlock.header.number)
+          ) {
             // 收到的是下一个块
             if (newBlock.header.parent === headerBlock.hash) {
               // 验证通过是下一个块
