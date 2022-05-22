@@ -1,7 +1,7 @@
 import { configMap } from './config/index';
 import { SKChain } from './skChain';
 import { networkid } from './config/testnet.config';
-import { lifecycleEvents, lifecycleStap } from './lib/events/lifecycle';
+import { lifecycleEvents, LifecycleStap } from './lib/events/lifecycle';
 import type { SKChainOption } from './skChain';
 import { createIpfs } from './lib/ipfs/ipfs';
 import type { DidJson } from './lib/p2p/did';
@@ -16,7 +16,7 @@ export const create = async (
   cfg: Partial<CreateNodeConfig>,
 ): Promise<any> => {
   const allCfg = await initCreateOption(cfg);
-  lifecycleEvents.emit(lifecycleStap.creatingIpfs);
+  lifecycleEvents.emit(LifecycleStap.creatingIpfs);
 
   const ipfs = await createIpfs({
     did: allCfg.account,
@@ -33,7 +33,7 @@ export const create = async (
   await skc.init();
   return skc;
 
-  // lifecycleEvents.emit(lifecycleStap.initConfig);
+  // lifecycleEvents.emit(LifecycleStap.initConfig);
   // const skc = new SKChain(opts);
   // await skc.init();
   // return skc;

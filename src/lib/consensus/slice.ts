@@ -1,7 +1,7 @@
 import { SKChain } from './../../skChain';
 import { SKChainLibBase } from './../base';
 import type { MessageHandlerFn } from 'ipfs-core-types/src/pubsub';
-import { lifecycleEvents, lifecycleStap } from '../events/lifecycle';
+import { lifecycleEvents, LifecycleStap } from '../events/lifecycle';
 import { SKDB } from '../ipfs/ipfs.interface';
 import { message } from '../../utils/message';
 import { CID, bytes } from 'multiformats';
@@ -69,7 +69,7 @@ export class Slice extends SKChainLibBase {
   };
 
   public init = async () => {
-    lifecycleEvents.emit(lifecycleStap.initingSlice);
+    lifecycleEvents.emit(LifecycleStap.initingSlice);
 
     // 把缓存里的当前节点peers拿出来
     const cid = this.chain.db.cache.get(this.slicePeersCacheName);
@@ -106,7 +106,7 @@ export class Slice extends SKChainLibBase {
     this.initSliceSubscribe();
     this.pubSlice();
 
-    lifecycleEvents.emit(lifecycleStap.initedSlice);
+    lifecycleEvents.emit(LifecycleStap.initedSlice);
   };
   private initSliceSubscribe = async () => {
     // 监听当前分片

@@ -1,6 +1,6 @@
 import { Ipld } from './../ipld/index';
 import init, { evaluate } from 'cwjsr';
-import { lifecycleEvents, lifecycleStap } from 'lib/events/lifecycle';
+import { lifecycleEvents, LifecycleStap } from 'lib/events/lifecycle';
 import { bytes } from 'multiformats';
 import { message } from 'utils/message';
 import { Transaction } from 'mate/transaction';
@@ -24,7 +24,7 @@ export class Contract {
       await (init as any)();
     }
     this.ready = true;
-    lifecycleEvents.emit(lifecycleStap.initedContract);
+    lifecycleEvents.emit(LifecycleStap.initedContract);
   };
 
   /**

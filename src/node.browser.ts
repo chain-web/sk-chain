@@ -2,7 +2,7 @@ import { configMap } from './config/index';
 import { networkidType } from './config/types';
 import { SKChain } from './skChain';
 import { networkid } from './config/testnet.config';
-import { lifecycleEvents, lifecycleStap } from './lib/events/lifecycle';
+import { lifecycleEvents, LifecycleStap } from './lib/events/lifecycle';
 import type { SKChainOption } from './skChain';
 import type { DidJson } from './lib/p2p/did';
 import { createIpfs } from 'lib/ipfs/ipfs.browser';
@@ -21,7 +21,7 @@ export const create = async (
   cfg: Partial<CreateBrowserNodeConfig>,
 ): Promise<any> => {
   const allCfg = await initCreateOption(cfg);
-  lifecycleEvents.emit(lifecycleStap.creatingIpfs);
+  lifecycleEvents.emit(LifecycleStap.creatingIpfs);
 
   const ipfs = await createIpfs({
     did: allCfg.account,
@@ -32,7 +32,7 @@ export const create = async (
     genesis: config.genesis,
     db: ipfs,
   };
-  lifecycleEvents.emit(lifecycleStap.initConfig);
+  lifecycleEvents.emit(LifecycleStap.initConfig);
   const skc = new SKChain(opts);
   await skc.init();
   return skc;

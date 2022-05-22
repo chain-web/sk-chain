@@ -1,5 +1,5 @@
 // import Libp2p, { HandlerProps, MuxedStream } from 'libp2p';
-// import { lifecycleEvents, lifecycleStap } from '../events/lifecycle';
+// import { lifecycleEvents, LifecycleStap } from '../events/lifecycle';
 // import { SKDB } from '../ipfs/ipfs';
 // import { pipe } from 'it-pipe';
 // import { encode, decode } from 'it-length-prefixed';
@@ -31,7 +31,7 @@
 //   };
 //   filterPeers = async () => {
 //     // 找到稳定的sk节点
-//     lifecycleEvents.emit(lifecycleStap.startFilterPeers);
+//     lifecycleEvents.emit(LifecycleStap.startFilterPeers);
 //     const peers = await this.db.swarm.peers();
 //     message.info(peers.length);
 //     const badPeerInfos = [];
@@ -51,7 +51,7 @@
 //     }
 //     message.info(badPeerInfos);
 
-//     lifecycleEvents.emit(lifecycleStap.filterPeersDone);
+//     lifecycleEvents.emit(LifecycleStap.filterPeersDone);
 //     setTimeout(this.filterPeers, 20000);
 //   };
 //   _onConnection = async ({ protocol, stream, connection }: HandlerProps) => {

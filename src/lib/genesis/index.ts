@@ -1,8 +1,7 @@
 import BigNumber from 'bignumber.js';
 import { GenesisConfig } from 'config/types';
 import { SKChainLibBase } from 'lib/base';
-import { lifecycleEvents, lifecycleStap } from 'lib/events/lifecycle';
-import { skCacheKeys } from 'lib/ipfs/key';
+import { lifecycleEvents, LifecycleStap } from 'lib/events/lifecycle';
 import { Mpt } from 'lib/ipld/mpt';
 import { createEmptyNode } from 'lib/ipld/util';
 import { Account, newAccount } from 'mate/account';
@@ -17,11 +16,11 @@ export class Genesis extends SKChainLibBase {
   // 创世配置
   genesis: GenesisConfig;
   checkGenesisBlock = async () => {
-    lifecycleEvents.emit(lifecycleStap.checkingGenesisBlock);
+    lifecycleEvents.emit(LifecycleStap.checkingGenesisBlock);
     if (!this.chain.blockService.needGenseis()) {
       // 不是完全冷启动
       // this.checkGenesis();
-      lifecycleEvents.emit(lifecycleStap.checkedGenesisBlock);
+      lifecycleEvents.emit(LifecycleStap.checkedGenesisBlock);
     } else {
       // 完全冷启动
 
@@ -57,7 +56,7 @@ export class Genesis extends SKChainLibBase {
         genesisBlock.header.number,
       );
 
-      lifecycleEvents.emit(lifecycleStap.checkedGenesisBlock);
+      lifecycleEvents.emit(LifecycleStap.checkedGenesisBlock);
     }
   };
 

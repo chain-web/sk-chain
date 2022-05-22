@@ -5,7 +5,7 @@ import { skCacheKeys } from 'lib/ipfs/key';
 import BigNumber from 'bignumber.js';
 import { SKChain } from './../../skChain';
 import { SKChainLibBase } from './../base';
-import { lifecycleEvents, lifecycleStap } from 'lib/events/lifecycle';
+import { lifecycleEvents, LifecycleStap } from 'lib/events/lifecycle';
 import { message } from 'utils/message';
 
 // 管理、已经存储的块索引
@@ -30,7 +30,7 @@ export class BlockService extends SKChainLibBase {
   };
 
   init = async () => {
-    lifecycleEvents.emit(lifecycleStap.initingBlockService);
+    lifecycleEvents.emit(LifecycleStap.initingBlockService);
     const rootCid = this.chain.db.cache.get(skCacheKeys['sk-block']);
     if (!rootCid) {
       await this.initGenseis();
@@ -39,7 +39,7 @@ export class BlockService extends SKChainLibBase {
       await this.checkBlockRoot();
     }
 
-    lifecycleEvents.emit(lifecycleStap.initedBlockService);
+    lifecycleEvents.emit(LifecycleStap.initedBlockService);
   };
 
   initGenseis = async () => {
@@ -57,7 +57,7 @@ export class BlockService extends SKChainLibBase {
     let checked = false;
     while (!checked) {
       lifecycleEvents.emit(
-        lifecycleStap.checkingBlockIndex,
+        LifecycleStap.checkingBlockIndex,
         `${this.checkedBlockHeight.toString()}/${headerBlockNumber}`,
       );
       const checkBlock = await this.blockRoot.getBlockByNumber(
@@ -72,7 +72,7 @@ export class BlockService extends SKChainLibBase {
           await this.blockRoot.deleteFromStartNUmber(this.checkedBlockHeight);
 
           lifecycleEvents.emit(
-            lifecycleStap.checkedBlockIndex,
+            LifecycleStap.checkedBlockIndex,
             'checkedBlockHeight: ',
             'delete after',
             this.checkedBlockHeight.toString(),
@@ -83,7 +83,7 @@ export class BlockService extends SKChainLibBase {
       prevBlock = checkBlock;
     }
     lifecycleEvents.emit(
-      lifecycleStap.checkedBlockIndex,
+      LifecycleStap.checkedBlockIndex,
       'checkedBlockHeight: ',
       this.checkedBlockHeight.toString(),
     );
@@ -125,7 +125,7 @@ export class BlockService extends SKChainLibBase {
 
   // 检查收到的blockRoot与自己本地的是否一致
   syncFromBlockRoot = async (blockRoot: string) => {
-    lifecycleEvents.emit(lifecycleStap.syncingHeaderBlock, blockRoot);
+    lifecycleEvents.emit(LifecycleStap.syncingHeaderBlock, blockRoot);
     const newBlockRoot = new BlockRoot(this.chain.db);
     await newBlockRoot.init(blockRoot);
     const newHeaderBlock = await newBlockRoot.getHeaderBlock();
@@ -150,7 +150,7 @@ export class BlockService extends SKChainLibBase {
             await this.addBlockCidByNumber(blockCid, this.checkedBlockHeight);
             prevBlock = checkBlock;
             lifecycleEvents.emit(
-              lifecycleStap.syncingHeaderBlock,
+              LifecycleStap.syncingHeaderBlock,
               this.checkedBlockHeight.toString(),
               '/',
               newHeaderBlock.header.number.toString(),
