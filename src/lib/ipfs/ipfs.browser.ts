@@ -1,5 +1,5 @@
 import { networkidType } from 'config/types';
-import type { IPFS } from 'ipfs';
+import type { IPFS } from 'ipfs-core';
 import type { DidJson } from 'lib/p2p/did';
 import type { SKDB } from './ipfs.interface';
 import { Cache } from './cache.browser';
