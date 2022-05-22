@@ -42,15 +42,16 @@ const skContractTsPlugin = (): Plugin => {
                   set: (key: string, value: T) => void;
               };
           }
-          declare class BaseContract {
-              msg: {
-                  sender: string;
-                  ts: number;
-              };
-          }
           declare class Address {
             did: string;
         }
+          declare class BaseContract {
+              msg: {
+                  sender: Address;
+                  ts: number;
+              };
+          }
+        
           declare var __sk__: {
               constractHelper: {
                 createSliceDb: <T = any>(keyType: KeyType) => ConstractHelper.SliceDb<T>;
