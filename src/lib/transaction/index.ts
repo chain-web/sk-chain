@@ -56,7 +56,10 @@ export class TransactionAction extends SKChainLibBase {
       }
       const headerBlock = await this.chain.blockService.getHeaderBlock();
       // TODO 这里用Date.now()是否会有问题？
-      if (headerBlock.header.ts + TransactionAction.BLOCK_INTERVAL_TIME_LIMIT > Date.now()) {
+      if (
+        headerBlock.header.ts + TransactionAction.BLOCK_INTERVAL_TIME_LIMIT >
+        Date.now()
+      ) {
         // 当前块还未到达下一个块的时间
         return;
       }
@@ -254,6 +257,7 @@ export class TransactionAction extends SKChainLibBase {
     if (transMeta) {
       const trans = await genTransactionClass(transMeta, this.chain);
       await this.handelTransaction(trans);
+      return trans;
     }
   };
 
@@ -271,7 +275,7 @@ export class TransactionAction extends SKChainLibBase {
       this.chain.did,
     );
     await account.commit(this.chain.db);
-    await this.transaction({
+    return await this.transaction({
       amount: new BigNumber(0),
       recipient: account.account,
       payload: {
@@ -279,7 +283,5 @@ export class TransactionAction extends SKChainLibBase {
         args: [meta.payload],
       },
     });
-
-    return account;
   };
 }

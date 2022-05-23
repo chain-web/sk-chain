@@ -71,7 +71,8 @@ export class TransactionTest extends SKChainLibBase {
   ) => {
     const transMeta = await genTransMeta(tm, this.chain);
     const trans = await genTransactionClass(transMeta!, this.chain);
-    return await this.handelTransaction(trans);
+    await this.handelTransaction(trans);
+    return trans;
   };
 
   // deploy contract
@@ -88,7 +89,7 @@ export class TransactionTest extends SKChainLibBase {
     );
     await account.commit(this.chain.db);
     this.account = account;
-    await this.transaction({
+    return await this.transaction({
       amount: new BigNumber(0),
       recipient: account.account,
       payload: {
@@ -96,7 +97,5 @@ export class TransactionTest extends SKChainLibBase {
         args: [meta.payload],
       },
     });
-
-    return account;
   };
 }
