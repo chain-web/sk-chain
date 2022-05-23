@@ -1,12 +1,12 @@
 import { BlockRoot } from './blockRoot';
 import { Block } from './../../mate/block';
 import { createEmptyNode } from './util';
-import { skCacheKeys } from 'lib/ipfs/key';
 import BigNumber from 'bignumber.js';
 import { SKChain } from './../../skChain';
 import { SKChainLibBase } from './../base';
-import { lifecycleEvents, LifecycleStap } from 'lib/events/lifecycle';
-import { message } from 'utils/message';
+import { lifecycleEvents, LifecycleStap } from '../events/lifecycle';
+import { skCacheKeys } from '../ipfs/key';
+import { message } from '../../utils/message';
 
 // 管理、已经存储的块索引
 export class BlockService extends SKChainLibBase {

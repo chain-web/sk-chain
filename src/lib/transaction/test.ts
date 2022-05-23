@@ -1,17 +1,16 @@
-import { Account } from './../../mate/account';
+import { Account, newAccount } from './../../mate/account';
 import { SKChainLibBase } from './../base';
 import BigNumber from 'bignumber.js';
 import { Transaction, transMeta } from '../../mate/transaction';
 import { genetateDid } from '../p2p/did';
 
-import { Contract } from 'lib/contract';
-import { transDemoFn } from 'lib/contracts/transaction_demo';
 import { SKChain } from '../../skChain';
-import { newAccount } from 'mate/account';
-import { createEmptyStorageRoot } from 'lib/ipld/util';
-import { UpdateAccountI } from 'lib/ipld';
-import { accountOpCodes } from 'lib/contract/code';
 import { genTransactionClass, genTransMeta, runContract } from './trans.pure';
+import { Contract } from '../contract';
+import { accountOpCodes } from '../contract/code';
+import { transDemoFn } from '../contracts/transaction_demo';
+import { UpdateAccountI } from '../ipld';
+import { createEmptyStorageRoot } from '../ipld/util';
 
 // 处理交易活动
 export class TransactionTest extends SKChainLibBase {

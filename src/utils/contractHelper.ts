@@ -1,5 +1,5 @@
-import { Address } from 'mate/address';
 import {ContractResultItem as CRI} from '../lib/contract'
+import { Address } from '../mate/address';
 
 export type SliceKeyType = 'base58' | 'base32';
 

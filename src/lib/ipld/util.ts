@@ -1,4 +1,3 @@
-import { SKDB } from 'lib/ipfs/ipfs.interface';
 import {
   createLink,
   createNode,
@@ -8,6 +7,7 @@ import {
   ByteView,
 } from '@ipld/dag-pb';
 import { bytes } from 'multiformats';
+import { SKDB } from '../ipfs/ipfs.interface';
 
 export const createEmptyNode = (name: string) => {
   return createNode(bytes.fromString(name), []);

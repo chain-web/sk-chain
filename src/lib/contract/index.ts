@@ -1,10 +1,10 @@
 import { Ipld } from './../ipld/index';
 import init, { evaluate } from 'cwjsr';
-import { lifecycleEvents, LifecycleStap } from 'lib/events/lifecycle';
 import { bytes } from 'multiformats';
-import { message } from 'utils/message';
-import { Transaction } from 'mate/transaction';
-import { SliceKeyType } from 'utils/contractHelper';
+import { SliceKeyType } from '../../utils/contractHelper';
+import { Transaction } from '../../mate/transaction';
+import { message } from '../../utils/message';
+import { lifecycleEvents, LifecycleStap } from '../events/lifecycle';
 
 export interface ContractResultItem {
   key: string;

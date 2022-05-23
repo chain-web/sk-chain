@@ -1,11 +1,11 @@
-import { networkidType } from 'config/types';
 import type { IPFS } from 'ipfs-core';
-import type { DidJson } from 'lib/p2p/did';
 import type { SKDB } from './ipfs.interface';
 import { Cache } from './cache.browser';
 import { skCacheKeys } from './key';
-import { message } from 'utils/message';
 import { bytes, CID } from 'multiformats';
+import { networkidType } from '../../config/types';
+import { DidJson } from '../p2p/did';
+import { message } from '../../utils/message';
 
 const IPFSGl = (window as any).Ipfs;
 

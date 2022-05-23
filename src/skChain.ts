@@ -8,8 +8,8 @@ import { Ipld } from './lib/ipld';
 import * as packageJson from '../package.json';
 import { Consensus } from './lib/consensus';
 import { Genesis } from './lib/genesis';
-import { message } from 'utils/message';
 import { TransactionTest } from './lib/transaction/test';
+import { message } from './utils/message';
 
 export interface SKChainOption {
   genesis: GenesisConfig;

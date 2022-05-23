@@ -1,16 +1,15 @@
 import { SKChainLibBase } from './../base';
 import { SKChain } from './../../skChain';
-import { message } from 'utils/message';
-import { newAccount } from './../../mate/account';
+import { Account, newAccount } from './../../mate/account';
 import BigNumber from 'bignumber.js';
-import { Account } from 'mate/account';
-import { Block } from 'mate/block';
 import { Mpt } from './mpt';
-import { Transaction } from 'mate/transaction';
-import { Receipt } from 'mate/receipt';
-import { ValueOf } from 'global';
-import { accountOpCodes, errorCodes } from 'lib/contract/code';
 import { createEmptyStorageRoot } from './util';
+import { ValueOf } from '../../global';
+import { Block } from '../../mate/block';
+import { Receipt } from '../../mate/receipt';
+import { Transaction } from '../../mate/transaction';
+import { message } from '../../utils/message';
+import { errorCodes, accountOpCodes } from '../contract/code';
 
 export type UpdateOpCode =
   | ValueOf<typeof errorCodes>

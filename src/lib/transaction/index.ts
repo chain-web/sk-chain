@@ -6,12 +6,12 @@ import { bytes } from 'multiformats';
 import { genetateDid, verifyById } from '../p2p/did';
 import { message } from '../../utils/message';
 
-import { Contract } from 'lib/contract';
-import { transDemoFn } from 'lib/contracts/transaction_demo';
+import { Contract } from '../contract';
+import { transDemoFn } from '../contracts/transaction_demo';
 import { SKChain } from '../../skChain';
-import { newAccount } from 'mate/account';
-import { createEmptyStorageRoot } from 'lib/ipld/util';
-import { UpdateAccountI } from 'lib/ipld';
+import { newAccount } from '../../mate/account';
+import { createEmptyStorageRoot } from '../ipld/util';
+import { UpdateAccountI } from '../ipld';
 import { genTransactionClass, genTransMeta, runContract } from './trans.pure';
 import { Message } from 'ipfs-core-types/src/pubsub';
 
@@ -22,9 +22,9 @@ export class TransactionAction extends SKChainLibBase {
     this.contract = new Contract();
   }
 
-  MAX_TRANS_LIMIT = 50; // 每个block能打包的交易上限
-  WAIT_TIME_LIMIT = 4 * 1000; // 每个交易从被发出到能进行打包的最短时间间隔 ms
-  BLOCK_INTERVAL_TIME_LIMIT = 8 * 1000; // 两个块之间打包的最短时间间隔 ms
+  static MAX_TRANS_LIMIT = 50; // 每个block能打包的交易上限
+  static WAIT_TIME_LIMIT = 4 * 1000; // 每个交易从被发出到能进行打包的最短时间间隔 ms
+  static BLOCK_INTERVAL_TIME_LIMIT = 8 * 1000; // 两个块之间打包的最短时间间隔 ms
   private waitTransMap: Map<string, Map<number, Transaction>> = new Map(); // 等待执行的交易
   private transQueue: Transaction[] = []; // 当前块可执行的交易队列
 
@@ -56,7 +56,7 @@ export class TransactionAction extends SKChainLibBase {
       }
       const headerBlock = await this.chain.blockService.getHeaderBlock();
       // TODO 这里用Date.now()是否会有问题？
-      if (headerBlock.header.ts + this.BLOCK_INTERVAL_TIME_LIMIT > Date.now()) {
+      if (headerBlock.header.ts + TransactionAction.BLOCK_INTERVAL_TIME_LIMIT > Date.now()) {
         // 当前块还未到达下一个块的时间
         return;
       }
@@ -83,12 +83,12 @@ export class TransactionAction extends SKChainLibBase {
     // console.log(sortedArr);
     // 在 sortedArr 按发起交易者的 contribute 来排序，加到当前块打包队列中
     sortedArr.forEach((ele) => {
-      if (waitTransArr.length < this.MAX_TRANS_LIMIT) {
+      if (waitTransArr.length < TransactionAction.MAX_TRANS_LIMIT) {
         const trans = this.waitTransMap.get(ele.did);
         Array.from(trans!.keys()).forEach((one) => {
           // 为防止分叉，交易被发出WAIT_TIME_LIMIT时间后才会被打包
           // TODO 这里用Date.now()是否会有问题？
-          if (Date.now() - one >= this.WAIT_TIME_LIMIT) {
+          if (Date.now() - one >= TransactionAction.WAIT_TIME_LIMIT) {
             // 此处必定有one这个trans
             waitTransArr.push(trans!.get(one)!);
 

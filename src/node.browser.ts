@@ -5,7 +5,7 @@ import { networkid } from './config/testnet.config';
 import { lifecycleEvents, LifecycleStap } from './lib/events/lifecycle';
 import type { SKChainOption } from './skChain';
 import type { DidJson } from './lib/p2p/did';
-import { createIpfs } from 'lib/ipfs/ipfs.browser';
+import { createIpfs } from './lib/ipfs/ipfs.browser';
 
 export interface CreateBrowserNodeConfig {
   // 网络id

@@ -7,7 +7,7 @@ import { createIpfs } from './lib/ipfs/ipfs';
 import type { DidJson } from './lib/p2p/did';
 import { resolve } from 'path';
 import { homedir } from 'os';
-import { CreateNodeConfig } from 'index';
+import { CreateNodeConfig } from './index';
 
 const config = configMap.testnet;
 

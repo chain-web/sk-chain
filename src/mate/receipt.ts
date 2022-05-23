@@ -1,6 +1,6 @@
 import BigNumber from 'bignumber.js';
-import { SKDB } from 'lib/ipfs/ipfs.interface';
-import { UpdateAccountI } from 'lib/ipld';
+import { SKDB } from '../lib/ipfs/ipfs.interface';
+import { UpdateAccountI } from '../lib/ipld';
 import { Address } from './address';
 import { BlockHeaderData } from './block';
 

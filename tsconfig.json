@@ -16,7 +16,6 @@
     ],
     "lib": ["ESNext", "DOM"],
     "outDir": "./dist",
-    "baseUrl": "./src",
   },
   "include": [
     "./src/**/*.ts",

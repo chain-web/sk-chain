@@ -1,14 +1,14 @@
 import { Address } from './../../mate/address';
 import { Account } from './../../mate/account';
 import { SKChain } from './../../skChain';
-import { Transaction, transMeta } from 'mate/transaction';
-import { message } from 'utils/message';
 import BigNumber from 'bignumber.js';
-import { signById } from 'lib/p2p/did';
-import { skCacheKeys } from 'lib/ipfs/key';
 import { bytes, CID } from 'multiformats';
-import { Contract } from 'lib/contract';
-import { accountOpCodes } from 'lib/contract/code';
+import { transMeta, Transaction } from '../../mate/transaction';
+import { message } from '../../utils/message';
+import { Contract } from '../contract';
+import { accountOpCodes } from '../contract/code';
+import { skCacheKeys } from '../ipfs/key';
+import { signById } from '../p2p/did';
 
 export const genTransMeta = async (
   tm: Pick<transMeta, 'amount' | 'recipient'> & {

@@ -3,9 +3,9 @@ import { message } from './../../utils/message';
 import { SKChainLibBase } from './../base';
 import { SKChain } from './../../skChain';
 import BigNumber from 'bignumber.js';
-import { Block } from 'mate/block';
-import { bytes, CID } from 'multiformats';
+import { bytes } from 'multiformats';
 import { Slice } from './slice';
+import { Block } from '../../mate/block';
 
 interface ConsensusNewBlockData {
   cid: string;

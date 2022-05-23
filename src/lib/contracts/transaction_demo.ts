@@ -1,5 +1,5 @@
 import BigNumber from 'bignumber.js';
-import { accountOpCodes, errorCodes } from 'lib/contract/code';
+import { accountOpCodes, errorCodes } from '../contract/code';
 import { Ipld, UpdateAccountI } from './../ipld/index';
 export interface TransactionContractParam {
   from: string;

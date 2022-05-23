@@ -1,5 +1,5 @@
 import BigNumber from 'bignumber.js';
-import { skSdk } from 'lib/contract/skSdk';
+import { skSdk } from '../contract/skSdk';
 
 export interface TransactionContractParam {
   from: string;

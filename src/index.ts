@@ -1,7 +1,7 @@
 import { networkidType } from './config/types';
 import { NetworkConfig } from './lib/ipfs/ipfs';
 import type { DidJson } from './lib/p2p/did';
-import { create } from 'node';
+import { create } from './node';
 export type { SKChain, SKChainOption } from './skChain';
 export type { DidJson } from './lib/p2p/did';
 export { skCacheKeys } from './lib/ipfs/key';
