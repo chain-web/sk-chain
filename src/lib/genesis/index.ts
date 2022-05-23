@@ -4,6 +4,7 @@ import { Account, newAccount } from '../../mate/account';
 import { BlockHeaderData, Block } from '../../mate/block';
 import { SKChainLibBase } from '../base';
 import { lifecycleEvents, LifecycleStap } from '../events/lifecycle';
+import { BloomFilter } from '../ipld/logsBloom/bloomFilter';
 import { Mpt } from '../ipld/mpt';
 import { createEmptyNode } from '../ipld/util';
 import { SKChain } from './../../skChain';
@@ -28,6 +29,8 @@ export class Genesis extends SKChainLibBase {
       const stateRoot = await this.initAlloc(this.genesis.alloc);
 
       // 创建创世区块
+      const logsBloom = new BloomFilter();
+      logsBloom.loadData(this.genesis.logsBloom);
       const genesisBlockHeader: BlockHeaderData = {
         parent: this.genesis.parent,
         stateRoot,
@@ -37,7 +40,7 @@ export class Genesis extends SKChainLibBase {
         receiptsRoot: (
           await this.chain.db.dag.put(createEmptyNode('receipts-root'))
         ).toString(),
-        logsBloom: this.genesis.logsBloom,
+        logsBloom,
         difficulty: this.genesis.difficulty,
         number: this.genesis.number,
         cuLimit: this.genesis.cuLimit,

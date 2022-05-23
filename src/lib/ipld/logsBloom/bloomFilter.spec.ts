@@ -1,5 +1,5 @@
-import { TransactionAction } from './../transaction/index';
 import { equal } from 'assert';
+import { TransactionAction } from '../../transaction';
 import { BloomFilter } from './bloomFilter';
 
 describe('BloomFilter', async () => {

@@ -2,6 +2,7 @@ import BigNumber from 'bignumber.js';
 import { Transaction } from './transaction';
 import { CID } from 'multiformats/cid';
 import { SKDB } from '../lib/ipfs/ipfs.interface';
+import { BloomFilter } from '../lib/ipld/logsBloom/bloomFilter';
 
 export interface createBlockOpt {
   transactions: Transaction[];
@@ -13,7 +14,7 @@ export interface BlockHeaderData {
   stateRoot: string; // 全账户状态树根节点hash
   transactionsRoot: string; // 当前块的交易树根节点hash
   receiptsRoot: string; // 当前块的收据树根节点hash
-  logsBloom: Uint8Array; // 当前块交易接收者的bloom，用于快速查找
+  logsBloom: BloomFilter; // 当前块交易接收者的bloom，用于快速查找
   difficulty: BigNumber; // 难度，用来调整出块时间，由于不挖矿，具体实现待定
   number: BigNumber; // 当前块序号
   cuLimit: BigNumber; // 当前块，计算量上限
@@ -79,6 +80,11 @@ export class Block {
     const header: Partial<BlockHeaderData> = {};
     blockHeaderKeys.map((key, i) => {
       header[key] = headerData[i];
+      if (key === 'logsBloom') {
+        // load BloomFilter data
+        header[key] = new BloomFilter();
+        header[key]?.loadData(headerData[i]);
+      }
       if (bnHeaderKeys.includes(key)) {
         // 恢复bignumber
         (header[key] as any) = new BigNumber(headerData[i]);
@@ -87,14 +93,14 @@ export class Block {
 
     const newBlock = new Block(header as BlockHeaderData);
     newBlock.hash = blockData.hash;
-    return newBlock
+    return newBlock;
   };
 
   /**
    * 从已有cid，读取一个区块,包含块头、body
    */
   public static fromCid = async (cid: string, db: SKDB): Promise<Block> => {
-    const block = await Block.fromCidOnlyHeader(cid, db) as Block;
+    const block = (await Block.fromCidOnlyHeader(cid, db)) as Block;
     block.body = (await db.dag.get(CID.parse(block.header.body!))).value;
     return block;
   };
@@ -102,6 +108,7 @@ export class Block {
   genHash = async (db: SKDB) => {
     const obj = {
       ...this.header,
+      logsBloom: this.header.logsBloom.getData(),
       body: this.body,
     };
     // ts，hash 不参与生成块hash
@@ -123,6 +130,9 @@ export class Block {
         if (bnHeaderKeys.includes(ele)) {
           // bigNumber转为string存储
           return (val as BigNumber).toString();
+        }
+        if (ele === 'logsBloom') {
+          val = this.header.logsBloom.getData();
         }
         return val;
       }),

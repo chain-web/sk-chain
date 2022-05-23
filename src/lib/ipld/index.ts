@@ -10,6 +10,7 @@ import { Receipt } from '../../mate/receipt';
 import { Transaction } from '../../mate/transaction';
 import { message } from '../../utils/message';
 import { errorCodes, accountOpCodes } from '../contract/code';
+import { BloomFilter } from './logsBloom/bloomFilter';
 
 export type UpdateOpCode =
   | ValueOf<typeof errorCodes>
@@ -50,7 +51,7 @@ export class Ipld extends SKChainLibBase {
       stateRoot: '',
       receiptsRoot: '',
       transactionsRoot: '',
-      logsBloom: new Uint8Array([]), // TODO
+      logsBloom: new BloomFilter(),
       difficulty: new BigNumber(0), // TODO
       cuLimit: new BigNumber(0), // TODO ,应该在此时根据上一个块的信息生成
       ts: Date.now(),
@@ -131,6 +132,7 @@ export class Ipld extends SKChainLibBase {
     index: number,
   ) => {
     const tx = await this.addTransaction(trans);
+    this.nextBlock.header.logsBloom.add(tx);
     this.nextBlock.header.ts === trans.ts;
     this.nextBlockBodyTrans.push(tx);
 

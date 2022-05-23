@@ -46,7 +46,7 @@
     "@libp2p/webrtc-star": "^1.0.6",
     "@rollup/plugin-commonjs": "^22.0.0",
     "bignumber.js": "^9.0.2",
-    "bloom.js": "^0.1.1",
+    "bitset": "^5.1.1",
     "cac": "^6.7.12",
     "chalk": "^5.0.1",
     "cwjsr": "^0.2.4",

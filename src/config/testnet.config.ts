@@ -6,7 +6,7 @@ export const networkid: networkidType = 'testnet';
 export const genesis: GenesisConfig = {
   hash: '0000000000000000000000000000000000000000000000',
   parent: '0000000000000000000000000000000000000000000000',
-  logsBloom: new Uint8Array([]),
+  logsBloom: '0',
   difficulty: new BigNumber(10),
   number: new BigNumber(0),
   cuLimit: new BigNumber(1000),
