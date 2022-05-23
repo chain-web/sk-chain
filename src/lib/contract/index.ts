@@ -45,7 +45,7 @@ export class Contract {
     const __sk__ = {
       log: cwjsrSk.log,
       transMsg: {
-        sender: '${trans.from}',
+        sender: {did: '${trans.from.did}'},
         ts: ${trans.ts}
       },
       constractHelper: {
