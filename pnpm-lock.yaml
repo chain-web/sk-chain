@@ -17,6 +17,7 @@ specifiers:
   '@types/mocha': ^9.1.0
   '@types/node': ^17.0.14
   bignumber.js: ^9.0.2
+  bloom.js: ^0.1.1
   cac: ^6.7.12
   chalk: ^5.0.1
   cwjsr: ^0.2.4
@@ -59,6 +60,7 @@ dependencies:
   '@libp2p/webrtc-star': 1.0.6
   '@rollup/plugin-commonjs': 22.0.0_rollup@2.74.1
   bignumber.js: 9.0.2
+  bloom.js: 0.1.1
   cac: 6.7.12
   chalk: 5.0.1
   cwjsr: 0.2.5
@@ -1315,6 +1317,11 @@ packages:
     engines: {node: '>=8'}
     dev: true
 
+  /bit-array/0.2.2:
+    resolution: {integrity: sha512-0eELqUHEFe9fSQ4afM8qqQiLo1kBSXgbkNdlG+ZubT9AKeuE1MrFG9lvN5YKW6/V63G/F/pbXDEvSz0z4nQQWg==}
+    deprecated: Please use BitSet.js (https://github.com/infusion/BitSet.js)
+    dev: false
+
   /bl/5.0.0:
     resolution: {integrity: sha512-8vxFNZ0pflFfi0WXA3WQXlj6CaMEwsmh63I1CNp0q+wWv8sD0ARx1KovSQd0l2GkwrMIOyedq0EF1FxI+RCZLQ==}
     dependencies:
@@ -1352,6 +1359,13 @@ packages:
       it-drain: 1.0.5
       it-pushable: 1.4.2
       multiformats: 9.6.4
+    dev: false
+
+  /bloom.js/0.1.1:
+    resolution: {integrity: sha512-FxBupGgko43P+fKWa9bKEDuW9sXoxE80WC5PxUy+z7npgxcL2muVVqykZFzJC4cJjtAZHhVt4RYvmAyDu0TDGw==}
+    engines: {node: '>=0.6.13'}
+    dependencies:
+      bit-array: 0.2.2
     dev: false
 
   /brace-expansion/1.1.11:
