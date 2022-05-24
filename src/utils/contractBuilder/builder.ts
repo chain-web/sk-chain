@@ -80,7 +80,7 @@ const skContractJsPlugin = (input: string): Plugin => {
   return {
     name: 'sk-chain-resolve-js',
     transform: (code, id) => {
-      // console.log(code)
+      // console.log(code);
       if (id.match(input) && !id.match('commonjs-entry')) {
         // delete calss extend
         code = code.replace(/Contract extends(\s*)(\S*)(\s*){/, 'Contract {');
@@ -136,14 +136,15 @@ const skContractTerserCodePlugin = (): Plugin => {
   };
 };
 
-const createTsPlugin = () =>
+const createTsPlugin = (input: string) =>
   typescript({
     clean: true,
     tsconfigOverride: {
       compilerOptions: {
-        declaration: false,
+        declaration: true,
         target: 'es2022',
       },
+      include: [input],
     },
   });
 
@@ -153,7 +154,7 @@ const createContractConfig = (input: string): RollupOptions => ({
   plugins: [
     skContractTsPlugin(),
     commonjs({}),
-    createTsPlugin(),
+    createTsPlugin(input),
     skContractJsPlugin(input),
     terser({ ecma: 2020, keep_classnames: true }),
     skContractTerserCodePlugin(),
@@ -180,6 +181,14 @@ export const builder = async (input: string, opts: BuildOption) => {
       if (file.type === 'chunk') {
         if (file.isEntry) {
           code = file.code;
+        }
+      }
+      if (file.fileName.match('.d.ts') && file.type === 'asset') {
+        const filePath = resolve(input, `../${file.fileName}`);
+        if (filePath.match(input.replace('.ts', '.d.ts'))) {
+          writeFileSync(filePath, file.source, {
+            flag: 'w+',
+          });
         }
       }
     }
