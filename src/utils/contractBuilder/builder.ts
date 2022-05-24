@@ -185,8 +185,10 @@ export const builder = async (input: string, opts: BuildOption) => {
       }
       if (file.fileName.match('.d.ts') && file.type === 'asset') {
         const filePath = resolve(input, `../${file.fileName}`);
+        // TODO 重写 function return type
+        let code = file.source;
         if (filePath.match(input.replace('.ts', '.d.ts'))) {
-          writeFileSync(filePath, file.source, {
+          writeFileSync(filePath, code, {
             flag: 'w+',
           });
         }
