@@ -193,7 +193,7 @@ export const builder = async (input: string, opts: BuildOption) => {
           let mainClass = code.match(mainClassReg);
           if (mainClass?.length === 1) {
             const mainClassCode = mainClass[0];
-            const sreg = /(=>\s*)([a-z]+);/gim; // 单行返回类型函数
+            const sreg = /(=>\s*)([a-z]+|\{[\s\S]*?\});/mgi; // 单行返回类型函数
             const sreg2 = /(=>\s*)(\{[\s\S]*\});/gim; // 多行返回类型函数
             const r = mainClassCode
               .replace(sreg, '$1ConstractHelper.ContractFuncReruen<$2>;')
