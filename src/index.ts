@@ -10,7 +10,7 @@ export { Account } from './mate/account';
 export { Transaction } from './mate/transaction';
 export { CID, bytes } from 'multiformats';
 export type { SkJsrInterface as SkGlobal } from './global';
-export { constractHelper } from './utils/contractHelper';
+export { constractHelper, BaseContract } from './utils/contractHelper';
 export type { ConstractHelper } from './utils/contractHelper';
 export { Address } from './mate/address';
 export { LifecycleStap } from './lib/events/lifecycle';

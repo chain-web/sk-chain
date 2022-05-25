@@ -1,3 +1,4 @@
+import { Transaction } from './../mate/transaction';
 import {ContractResultItem as CRI} from '../lib/contract'
 import { Address } from '../mate/address';
 
@@ -11,6 +12,10 @@ export namespace ConstractHelper {
     set: (key: string, value: T) => void;
   };
   export type ContractResultItem = CRI;
+  export type ContractFuncReruen<T> = {
+    origin: T;
+    trans: Transaction;
+  }
 }
 
 class SliceDb<T> implements ConstractHelper.SliceDb<T> {
@@ -35,7 +40,7 @@ const hash = (str: string) => {
   return sk.genCidString(str);
 };
 
-class BaseContract {
+export class BaseContract {
   msg = {
     sender: new Address(''),
     ts: 0,
@@ -43,7 +48,6 @@ class BaseContract {
 }
 export const constractHelper = {
   createSliceDb,
-  BaseContract,
   hash,
   log: console.log,
 };

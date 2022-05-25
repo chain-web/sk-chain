@@ -30,6 +30,7 @@ const skContractTsPlugin = (): Plugin => {
           let globalSkStr = impStr.replace('import', 'const');
           globalSkStr = globalSkStr.replace(/from(([\s\S])+)/, '= __sk__');
           globalSkStr = globalSkStr.replace(/ConstractHelper(\s*)(,?)/, '');
+          globalSkStr = globalSkStr.replace(/BaseContract(\s*)(,?)/, '');
           globalSkStr = globalSkStr.replace(/Address(\s*)(,?)/, '');
           code = code.replace(impStr, globalSkStr);
 
@@ -185,9 +186,28 @@ export const builder = async (input: string, opts: BuildOption) => {
       }
       if (file.fileName.match('.d.ts') && file.type === 'asset') {
         const filePath = resolve(input, `../${file.fileName}`);
-        // TODO 重写 function return type
-        let code = file.source;
+        let code = file.source as string;
         if (filePath.match(input.replace('.ts', '.d.ts'))) {
+          // thanks to [zhigang]
+          const mainClassReg = /export declare[\s\S]*?(?=declare)/gim;
+          let mainClass = code.match(mainClassReg);
+          if (mainClass?.length === 1) {
+            const mainClassCode = mainClass[0];
+            const sreg = /(=>\s*)([a-z]+);/gim; // 单行返回类型函数
+            const sreg2 = /(=>\s*)(\{[\s\S]*\});/gim; // 多行返回类型函数
+            const r = mainClassCode
+              .replace(sreg, '$1ConstractHelper.ContractFuncReruen<$2>;')
+              .replace(sreg2, '$1ConstractHelper.ContractFuncReruen<$2>;');
+            code = code.replace(mainClassReg, r);
+          } else if (mainClass && mainClass?.length > 1) {
+            console.error('more then one main contract class');
+          } else if (!mainClass) {
+            console.error('no main contract class');
+          }
+
+          code = `
+          import { ConstractHelper, BaseContract } from 'sk-chain';
+          ${code}`;
           writeFileSync(filePath, code, {
             flag: 'w+',
           });
