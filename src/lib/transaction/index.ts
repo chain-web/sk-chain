@@ -14,6 +14,14 @@ import { createEmptyStorageRoot } from '../ipld/util';
 import { UpdateAccountI } from '../ipld';
 import { genTransactionClass, genTransMeta, runContract } from './trans.pure';
 import { Message } from 'ipfs-core-types/src/pubsub';
+import { BlockHeaderData } from '../../mate/block';
+
+export enum TransStatus {
+  'transing' = 'transing',
+  'waiting' = 'waiting',
+  'transed' = 'transed',
+  'err_tx' = 'err_tx',
+}
 
 // 处理交易活动
 export class TransactionAction extends SKChainLibBase {
@@ -26,6 +34,7 @@ export class TransactionAction extends SKChainLibBase {
   static WAIT_TIME_LIMIT = 4 * 1000; // 每个交易从被发出到能进行打包的最短时间间隔 ms
   static BLOCK_INTERVAL_TIME_LIMIT = 8 * 1000; // 两个块之间打包的最短时间间隔 ms
   private waitTransMap: Map<string, Map<number, Transaction>> = new Map(); // 等待执行的交易
+  private transingArr: Transaction[] = []; // 正在执行打包的交易
   private transQueue: Transaction[] = []; // 当前块可执行的交易队列
 
   private contract: Contract;
@@ -72,7 +81,7 @@ export class TransactionAction extends SKChainLibBase {
   doTransTask = async () => {
     // 执行打包任务
     const cArr: { contribute: BigNumber; did: string }[] = [];
-    const waitTransArr: Transaction[] = [];
+    this.transingArr = [];
     for (const did of this.waitTransMap.keys()) {
       const account = await this.chain.ipld.getAccount(did);
       cArr.push({
@@ -86,14 +95,14 @@ export class TransactionAction extends SKChainLibBase {
     // console.log(sortedArr);
     // 在 sortedArr 按发起交易者的 contribute 来排序，加到当前块打包队列中
     sortedArr.forEach((ele) => {
-      if (waitTransArr.length < TransactionAction.MAX_TRANS_LIMIT) {
+      if (this.transingArr.length < TransactionAction.MAX_TRANS_LIMIT) {
         const trans = this.waitTransMap.get(ele.did);
         Array.from(trans!.keys()).forEach((one) => {
           // 为防止分叉，交易被发出WAIT_TIME_LIMIT时间后才会被打包
           // TODO 这里用Date.now()是否会有问题？
           if (Date.now() - one >= TransactionAction.WAIT_TIME_LIMIT) {
             // 此处必定有one这个trans
-            waitTransArr.push(trans!.get(one)!);
+            this.transingArr.push(trans!.get(one)!);
 
             // GC
             trans!.delete(one);
@@ -104,12 +113,12 @@ export class TransactionAction extends SKChainLibBase {
         });
       }
     });
-    if (!waitTransArr.length) {
+    if (!this.transingArr.length) {
       // 如果没有可打包的交易，退出
       return;
     }
-    for (let index = 0; index < waitTransArr.length; index++) {
-      const trans = waitTransArr[index];
+    for (let index = 0; index < this.transingArr.length; index++) {
+      const trans = this.transingArr[index];
       let update: UpdateAccountI[] = [];
       // 依次执行交易的合约
       if (trans.payload) {
@@ -180,6 +189,29 @@ export class TransactionAction extends SKChainLibBase {
       transMap.set(trans.ts, trans);
       this.waitTransMap.set(trans.from.did, transMap);
     }
+  };
+
+  /**
+   * @description 查询一个tx的状态
+   * @param tx
+   * @param deep 从块头向下查询的区块数，默认为0，如果传Infinity会一直查到创世块
+   * @returns
+   */
+  transStatus = async (
+    tx: string,
+    deep: number = 0,
+  ): Promise<{ status: TransStatus; block?: BlockHeaderData }> => {
+    if (this.waitTransMap.get(tx)) {
+      return { status: TransStatus.waiting };
+    }
+    if (this.transingArr.find((ele) => ele.hash === tx)) {
+      return { status: TransStatus.transing };
+    }
+    const block = await this.chain.blockService.findTxBlockWidthDeep(tx, deep);
+    if (block?.header) {
+      return { status: TransStatus.transed, block: block.header };
+    }
+    return { status: TransStatus.err_tx };
   };
 
   // 检查是否要继续执行打包操作

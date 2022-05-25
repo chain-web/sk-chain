@@ -14,6 +14,7 @@ export { constractHelper, BaseContract } from './utils/contractHelper';
 export type { ConstractHelper } from './utils/contractHelper';
 export { Address } from './mate/address';
 export { LifecycleStap } from './lib/events/lifecycle';
+export { TransStatus } from './lib/transaction/index';
 export interface CreateNodeConfig {
   // 网络id
   networkid: networkidType;

@@ -1,12 +1,15 @@
 import { BlockRoot } from './blockRoot';
-import { Block } from './../../mate/block';
-import { createEmptyNode } from './util';
+import { Block } from '../../../mate/block';
+import { createEmptyNode } from '../util';
 import BigNumber from 'bignumber.js';
-import { SKChain } from './../../skChain';
-import { SKChainLibBase } from './../base';
-import { lifecycleEvents, LifecycleStap } from '../events/lifecycle';
-import { skCacheKeys } from '../ipfs/key';
-import { message } from '../../utils/message';
+import { SKChain } from '../../../skChain';
+import { SKChainLibBase } from '../../base';
+import { lifecycleEvents, LifecycleStap } from '../../events/lifecycle';
+import { skCacheKeys } from '../../ipfs/key';
+import { message } from '../../../utils/message';
+import { CID } from 'multiformats';
+import { Mpt } from '../mpt';
+import { isTxInBlock } from './util';
 
 // 管理、已经存储的块索引
 export class BlockService extends SKChainLibBase {
@@ -157,7 +160,7 @@ export class BlockService extends SKChainLibBase {
             );
           } else {
             message.info('next block is not prev block + 1');
-            this.checkedBlockHeight = this.checkedBlockHeight.minus(1)
+            this.checkedBlockHeight = this.checkedBlockHeight.minus(1);
             if (this.checkedBlockHeight.isEqualTo(0)) {
               return;
             }
@@ -168,6 +171,19 @@ export class BlockService extends SKChainLibBase {
           }
         }
       }
+    }
+  };
+
+  // 从块头向下查询某个交易发生的块
+  findTxBlockWidthDeep = async (tx: string, deep: number) => {
+    let headerNumber = this.checkedBlockHeight;
+    while (deep > 0 && headerNumber.isGreaterThanOrEqualTo(0)) {
+      const currBlock = await this.blockRoot.getBlockByNumber(headerNumber);
+      if (currBlock && isTxInBlock(tx, currBlock.header, this.chain.db)) {
+        return currBlock;
+      }
+      headerNumber = headerNumber.minus(1);
+      deep--;
     }
   };
 

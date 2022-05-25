@@ -1,4 +1,3 @@
-import { BlockService } from './lib/ipld/blockService';
 import { GenesisConfig } from './config/types';
 import { lifecycleEvents, LifecycleStap } from './lib/events/lifecycle';
 import { skCacheKeys } from './lib/ipfs/key';
@@ -10,6 +9,7 @@ import { Consensus } from './lib/consensus';
 import { Genesis } from './lib/genesis';
 import { TransactionTest } from './lib/transaction/test';
 import { message } from './utils/message';
+import { BlockService } from './lib/ipld/blockService/blockService';
 
 export interface SKChainOption {
   genesis: GenesisConfig;
