@@ -1,5 +1,5 @@
 import { Transaction } from './../mate/transaction';
-import { ContractResultItem as CRI } from '../lib/contract';
+import { ContractResultSaveItem as CRI } from '../lib/contract';
 import { Address } from '../mate/address';
 
 export type SliceKeyType = 'base58' | 'base32';
@@ -13,7 +13,7 @@ export namespace ConstractHelper {
   };
   export type ContractResultItem = CRI;
   export type ContractFuncReruen<T> = Promise<{
-    origin: T;
+    // origin: T;
     trans: Transaction;
   }>;
 }

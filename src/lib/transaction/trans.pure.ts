@@ -78,10 +78,14 @@ export const runContract = async (
     }
   }
   const code = await chain.db.block.get(account.codeCid!);
-  const res = contract.runFunction(code, trans, JSON.stringify(storeObj));
-  console.log('res', res);
-  for (let i = 0; i < res.length; i++) {
-    const ele = res[i];
+  const { saves, funcReturn } = contract.runFunction(
+    code,
+    trans,
+    JSON.stringify(storeObj),
+  );
+  console.log('res', saves);
+  for (let i = 0; i < saves.length; i++) {
+    const ele = saves[i];
     if (ele.type === 'sk_slice_db') {
       for (let j = 0; j < Object.keys(ele.value).length; j++) {
         const key = Object.keys(ele.value)[j];
@@ -91,10 +95,11 @@ export const runContract = async (
       }
     }
   }
-  console.log('res', res);
+  console.log('res', saves);
   return {
     account: trans.recipient.did,
     opCode: accountOpCodes.updateState,
-    value: JSON.stringify(res),
+    value: JSON.stringify(saves),
+    funcReturn: funcReturn || null,
   };
 };

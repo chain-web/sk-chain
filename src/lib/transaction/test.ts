@@ -72,7 +72,7 @@ export class TransactionTest extends SKChainLibBase {
     const transMeta = await genTransMeta(tm, this.chain);
     const trans = await genTransactionClass(transMeta!, this.chain);
     await this.handelTransaction(trans);
-    return trans;
+    return { trans };
   };
 
   // deploy contract

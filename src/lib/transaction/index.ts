@@ -289,8 +289,9 @@ export class TransactionAction extends SKChainLibBase {
     if (transMeta) {
       const trans = await genTransactionClass(transMeta, this.chain);
       await this.handelTransaction(trans);
-      return trans;
+      return { trans };
     }
+    return {};
   };
 
   // deploy contract

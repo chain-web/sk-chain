@@ -6,14 +6,18 @@ import { Transaction } from '../../mate/transaction';
 import { message } from '../../utils/message';
 import { lifecycleEvents, LifecycleStap } from '../events/lifecycle';
 
-export interface ContractResultItem {
+export interface ContractResult {
+  saves: ContractResultSaveItem[];
+  funcReturn: any;
+}
+
+export interface ContractResultSaveItem {
   key: string;
   value: { [key: string]: any };
   type: 'object' | 'sk_slice_db';
   keyType?: SliceKeyType;
 }
 
-export type ContractResult = ContractResultItem[];
 export class Contract {
   constructor() {}
 
@@ -71,6 +75,7 @@ export class Contract {
     }
     ${codeStr}
     const run = () => {
+      let funcReturn;
       ${(() => {
         if (mothed !== 'constructor' && storage) {
           let loadDataCode = `let savedData = JSON.parse('${storage}')`;
@@ -85,7 +90,7 @@ export class Contract {
           })
           `;
           loadDataCode += `
-          __sk__contract.${mothed}(${trans.payload?.args
+          funcReturn = __sk__contract.${mothed}(${trans.payload?.args
             .map((ele) => `'${ele}'`)
             .join(',')})
           `;
@@ -113,7 +118,7 @@ export class Contract {
           value: ele
         }
       }).filter(ele => !!ele)
-      return JSON.stringify(saves);
+      return JSON.stringify({saves, funcReturn});
     };
     run();
     `;
