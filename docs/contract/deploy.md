@@ -2,7 +2,7 @@
 
 ```TypeScript
 import { createNode } from 'sk-chain';
-import contractCode from './contractCode';
+import contractCode from './index.contract';
 
 const account = {
   id: '12D3KooWL1NF6fdTJ9cucEuwvuX8V8KtpJZZnUE4umdLBuK15eUZ',

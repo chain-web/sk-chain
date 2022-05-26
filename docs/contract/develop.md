@@ -39,3 +39,18 @@ export class CoinContract extends constractHelper.BaseContract {
 #### constructor
 
 合约class的 constructor 方法，只会在部署合约时执行一次，后续调用合约时不会再被执行
+
+### 编译合约
+
+可以调用sk-chain的cli命令来编译合约
+```bash
+npx sk-chain build ./src/contract/index.ts
+```
+
+##### 编译产物
+`index.contract.js` 合约产物
+`index.d.ts` 合约产物类型定义
+`indexContractService.ts` 调用合约的工具类
+
+##### 调用合约
+
