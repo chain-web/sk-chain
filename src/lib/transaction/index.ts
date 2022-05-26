@@ -202,12 +202,23 @@ export class TransactionAction extends SKChainLibBase {
     tx: string,
     deep: number = 0,
   ): Promise<{ status: TransStatus; block?: BlockHeaderData }> => {
-    if (this.waitTransMap.get(tx)) {
+    let isWait = false;
+    // search from waitTransMap
+    this.waitTransMap.forEach((ele) => {
+      ele.forEach((trans) => {
+        if (trans.hash === tx) {
+          isWait = true;
+        }
+      });
+    });
+    if (isWait) {
       return { status: TransStatus.waiting };
     }
+    // search from transingArr
     if (this.transingArr.find((ele) => ele.hash === tx)) {
       return { status: TransStatus.transing };
     }
+    // search from blocks
     const block = await this.chain.blockService.findTxBlockWidthDeep(tx, deep);
     if (block?.header) {
       return { status: TransStatus.transed, block: block.header };

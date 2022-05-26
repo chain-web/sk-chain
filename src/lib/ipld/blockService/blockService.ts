@@ -179,7 +179,7 @@ export class BlockService extends SKChainLibBase {
     let headerNumber = this.checkedBlockHeight;
     while (deep >= 0 && headerNumber.isGreaterThanOrEqualTo(0)) {
       const currBlock = await this.blockRoot.getBlockByNumber(headerNumber);
-      if (currBlock && isTxInBlock(tx, currBlock.header, this.chain.db)) {
+      if (currBlock && await isTxInBlock(tx, currBlock.header, this.chain.db)) {
         return currBlock;
       }
       headerNumber = headerNumber.minus(1);
