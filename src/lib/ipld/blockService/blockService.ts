@@ -177,7 +177,7 @@ export class BlockService extends SKChainLibBase {
   // 从块头向下查询某个交易发生的块
   findTxBlockWidthDeep = async (tx: string, deep: number) => {
     let headerNumber = this.checkedBlockHeight;
-    while (deep > 0 && headerNumber.isGreaterThanOrEqualTo(0)) {
+    while (deep >= 0 && headerNumber.isGreaterThanOrEqualTo(0)) {
       const currBlock = await this.blockRoot.getBlockByNumber(headerNumber);
       if (currBlock && isTxInBlock(tx, currBlock.header, this.chain.db)) {
         return currBlock;

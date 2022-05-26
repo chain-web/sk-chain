@@ -81,7 +81,6 @@ export class TransactionAction extends SKChainLibBase {
   doTransTask = async () => {
     // 执行打包任务
     const cArr: { contribute: BigNumber; did: string }[] = [];
-    this.transingArr = [];
     for (const did of this.waitTransMap.keys()) {
       const account = await this.chain.ipld.getAccount(did);
       cArr.push({
@@ -173,6 +172,8 @@ export class TransactionAction extends SKChainLibBase {
       );
       return;
     }
+    // 清理当前打包中的交易
+    this.transingArr = [];
     // 广播新块
     await this.chain.consensus.pubNewBlock(nextBlock);
     // 初始化下一个区块的ipld
