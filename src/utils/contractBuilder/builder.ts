@@ -113,8 +113,8 @@ const skContractTerserCodePlugin = (): Plugin => {
       // console.log(code)
       // remove模块相关的代码，只剩下 纯js
       code = code.replace(
-        /Object.defineProperty\(exports,"__esModule",\{value:!0\}\);/,
-        '',
+        /Object.defineProperty\(exports,"__esModule",\{value:!0\}\)(;|,)/,
+        'Object.defineProperty({},"__esModule",{value:!0})$1',
       );
       let className: any =
         code.match(/(,)?exports.(\S*)=(\S*)/) ||
