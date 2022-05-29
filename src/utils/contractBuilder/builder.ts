@@ -166,6 +166,7 @@ export const builder = async (input: string, opts: BuildOption) => {
   try {
     console.log(chalk.green('starting build contract...'));
     await init;
+    input = resolve(input, './');
     const bundle = await rollup(createContractConfig(input));
     if (!bundle) {
       console.log('no build file');
@@ -185,15 +186,16 @@ export const builder = async (input: string, opts: BuildOption) => {
         }
       }
       if (file.fileName.match('.d.ts') && file.type === 'asset') {
-        const filePath = resolve(input, `../${file.fileName}`);
+        const filePath = resolve(input, `../../${file.fileName}`);
         let code = file.source as string;
         if (filePath.match(input.replace('.ts', '.d.ts'))) {
+          console.log(chalk.green('starting build contract declaration'));
           // thanks to [zhigang]
           const mainClassReg = /export declare[\s\S]*?(?=declare)/gim;
           let mainClass = code.match(mainClassReg);
           if (mainClass?.length === 1) {
             const mainClassCode = mainClass[0];
-            const sreg = /(=>\s*)([a-z]+|\{[\s\S]*?\});/mgi; // 单行返回类型函数
+            const sreg = /(=>\s*)([a-z]+|\{[\s\S]*?\});/gim; // 单行返回类型函数
             const sreg2 = /(=>\s*)(\{[\s\S]*\});/gim; // 多行返回类型函数
             const r = mainClassCode
               .replace(sreg, '$1ConstractHelper.ContractFuncReruen<$2>;')
