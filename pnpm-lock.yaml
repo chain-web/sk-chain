@@ -20,7 +20,7 @@ specifiers:
   bitset: ^5.1.1
   cac: ^6.7.12
   chalk: ^5.0.1
-  cwjsr: ^0.2.4
+  cwjsr: ^0.2.6
   debug: ^4.3.4
   es-module-lexer: ^0.10.5
   ipfs-bitswap: ^11.0.1
@@ -63,7 +63,7 @@ dependencies:
   bitset: 5.1.1
   cac: 6.7.12
   chalk: 5.0.1
-  cwjsr: 0.2.5
+  cwjsr: 0.2.6
   debug: 4.3.4
   es-module-lexer: 0.10.5
   ipfs-bitswap: 11.0.1
@@ -1677,8 +1677,8 @@ packages:
       which: 2.0.2
     dev: false
 
-  /cwjsr/0.2.5:
-    resolution: {integrity: sha512-IK2V+RT8xJDUI1xr4ISdAnLhIzP34yCHp4rBL6KL99w/pg+hQREG1afDvKaHG4viUtfWcX6Pf3XE10wzMXK4Ew==}
+  /cwjsr/0.2.6:
+    resolution: {integrity: sha512-39Jp06PlTCHSEBUvr4EGx7eqPbqbb7T7o25K5tVlcDhGK5yKmmjaFjMKshxUlu5tK0wLPH6PG25Chs+6v9gdjg==}
     dev: false
 
   /dag-jose/1.0.0:
