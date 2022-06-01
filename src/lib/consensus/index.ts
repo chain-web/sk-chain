@@ -49,7 +49,7 @@ export class Consensus extends SKChainLibBase {
   init = async () => {
     await this.slice.init();
     await this.subNewBlock();
-    (window as any).db = this.chain.db as any;
+    lifecycleEvents.emit(LifecycleStap.initedConsensus);
   };
 
   /**

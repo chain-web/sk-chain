@@ -20,6 +20,7 @@ export enum LifecycleStap {
   'initedTransaction' = 'initedTransaction', // 交易模块初始化成功
   'initingSlice' = 'initingSlice', // 开始初始化分片共识模块
   'initedSlice' = 'initedSlice', // 分片共识初始化成功
+  'initedConsensus' = 'initedConsensus', // 分片共识初始化成功
   'initedContract' = 'initedContract', // 智能合约模块初始化成功
   'newBlock' = 'newBlock', // 更新本地块头
 }

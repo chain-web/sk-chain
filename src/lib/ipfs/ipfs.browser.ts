@@ -84,7 +84,6 @@ export const createIpfs = async (opts: {
   const skdb = {
     ...ipfs,
     cache,
-    CID: IPFSGl.CID,
     dag: {
       ...ipfs.dag,
       get: dagGet,

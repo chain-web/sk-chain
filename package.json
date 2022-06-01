@@ -8,7 +8,8 @@
   "types": "es/src/index.d.ts",
   "bin": "es/cli/src/utils/contractBuilder/index.js",
   "browser": {
-    "./es/src/node.js": "./es/src/node.browser.js"
+    "./es/src/node.js": "./es/src/node.browser.js",
+    "./es/src/lib/contract/cwjsr/node.js": "./es/src/lib/contract/cwjsr/browser.js"
   },
   "directories": {
     "lib": "lib"
@@ -53,7 +54,7 @@
     "debug": "^4.3.4",
     "es-module-lexer": "^0.10.5",
     "ipfs-bitswap": "^11.0.1",
-    "ipfs-core": "^0.14.3",
+    "ipfs-core": "^0.15.0",
     "ipfs-core-types": "^0.10.3",
     "ipns": "^1.0.0",
     "it-pipe": "^2.0.3",

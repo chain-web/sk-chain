@@ -216,13 +216,14 @@ export class Slice extends SKChainLibBase {
   private refreshCurrPeers = async () => {
     const keys = [];
     for (const key of this.curPeers.keys()) {
+      const keyString = key.toString();
       if (
-        Date.now() - (this.curPeers.get(key)?.ts || 0) >
+        Date.now() - (this.curPeers.get(keyString)?.ts || 0) >
         Slice.peerOfflineTimeout
       ) {
-        this.curPeers.delete(key);
+        this.curPeers.delete(keyString);
       } else {
-        keys.push(key);
+        keys.push(keyString);
       }
     }
 

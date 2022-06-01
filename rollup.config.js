@@ -8,20 +8,33 @@ const cwjsrPlugin = () => {
   return {
     name: 'cwjsr-resolve',
     resolveId: (id) => {
-      if (id.match('cwjsr')) {
+      if (id.match('cwjsr/web/cwjsr')) {
         return 'cwjsr/web/cwjsr.js';
+      }
+      if (id.match('cwjsr/node/cwjsr')) {
+        return 'cwjsr/node/cwjsr.js';
       }
     },
     load: (id) => {
-      if (id.match('cwjsr')) {
+      if (id.match('cwjsr/web/cwjsr')) {
         let fileStr = readFileSync(
-          resolve(rootDir, `./node_modules/${id}`),
+          resolve(rootDir, `./node_modules/cwjsr/web/cwjsr.js`),
         ).toString();
         // 写死的bad code，但有用
         // TODO， build时可能会有问题
         fileStr = fileStr.replace(
           'cwjsr_bg.wasm',
-          '../../node_modules/cwjsr/web/cwjsr_bg.wasm',
+          '../../../../../../node_modules/cwjsr/web/cwjsr_bg.wasm',
+        );
+        return fileStr;
+      }
+      if (id.match('cwjsr/node/cwjsr')) {
+        let fileStr = readFileSync(
+          resolve(rootDir, `./node_modules/cwjsr/node/cwjsr_bg.js`),
+        ).toString();
+        fileStr = fileStr.replace(
+          './cwjsr_bg.wasm',
+          '../../../../node_modules/cwjsr/node/cwjsr_bg.wasm',
         );
         return fileStr;
       }
@@ -131,6 +144,17 @@ export default [
       },
     ],
   }),
+
+  createWebConfig({
+    input: 'src/lib/contract/cwjsr/browser.ts',
+    output: [
+      {
+        dir: 'es/src/lib/contract/cwjsr',
+        format: 'esm',
+      },
+    ],
+  }),
+
   // createUmdConfig({
   //   input: 'src/index.ts',
   //   output: {

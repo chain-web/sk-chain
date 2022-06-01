@@ -1,5 +1,5 @@
 // import { AbortSignal } from 'abort-controller';
-import { create, CID } from 'ipfs-core';
+import { create } from 'ipfs-core';
 import { resolve } from 'path';
 import { Cache } from './cache';
 import { DidJson } from '../p2p/did';
@@ -8,6 +8,7 @@ import { networkidType } from '../../config/types';
 import { skCacheKeys } from './key';
 import { message } from '../../utils/message';
 import { SKDB } from './ipfs.interface';
+import { CID } from 'multiformats';
 
 export interface NetworkConfig {
   tcp: number;
@@ -28,7 +29,8 @@ export const createIpfs = async ({
 }): Promise<SKDB> => {
   // Create the repo
   const repo = storePath.main;
-  const ipfs = await create({
+  // 不知道为什么，ipfs与SKDB ipfs不符
+  const ipfs: any = await create({
     // repo: ossRepo,
     init: {
       // 首次创建repo，用这个账户私钥
@@ -91,7 +93,7 @@ export const createIpfs = async ({
       Pubsub: { Enabled: true },
     },
     EXPERIMENTAL: { ipnsPubsub: true },
-    libp2p: libp2pBundle,
+    // libp2p: libp2pBundle,
   });
   // console.log('ipfs created');
   // const obj = {
@@ -107,22 +109,31 @@ export const createIpfs = async ({
   // const httpGateway = new HttpGateway(ipfs);
   // await httpGateway.start();
   // console.log('isonline', ipfs.isOnline());
-  message.info('bitswap stats', await ipfs.stats.bitswap());
-  // console.log('repo stats', await ipfs.stats.repo());
-  // console.log('id: ', await ipfs.id());
-  //// swarm
-  setInterval(async () => {
-    const peerInfos = await ipfs.swarm.addrs();
-    // console.log(await ipfs.swarm.peers());
-    peerInfos.forEach((info) => {
-      message.info(info);
-      // info.addrs.forEach((addr) => console.log(addr.toString()));
-    });
-  }, 10000);
 
   const cache = new Cache(resolve(repo, `./sk_cache_${networkid}`));
   cache.put(skCacheKeys.accountId, did.id);
   cache.put(skCacheKeys.accountPublicKey, did.pubKey || '');
   cache.put(skCacheKeys.accountPrivKey, did.privKey);
-  return { ...ipfs, cache, CID };
+  // 添加默认的超时时间
+  const dagGet = async (
+    name: CID,
+    options: Parameters<typeof ipfs.dag.get>[1],
+  ) => ipfs.dag.get(name, { ...(options as Object), timeout: 30000 });
+  const dagPut = async (
+    name: CID,
+    val: Parameters<typeof ipfs.dag.put>[1],
+    options: Parameters<typeof ipfs.dag.put>[2],
+  ) => {
+    return ipfs.dag.put(name, val, { ...(options as Object), timeout: 30000 });
+  };
+  const skdb = {
+    ...ipfs,
+    cache,
+    dag: {
+      ...ipfs.dag,
+      put: dagPut,
+      get: dagGet,
+    },
+  };
+  return skdb;
 };

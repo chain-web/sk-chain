@@ -1,5 +1,5 @@
-import { Ipld } from './../ipld/index';
-import init, { evaluate } from 'cwjsr';
+import { getEval } from './cwjsr/node';
+import { evaluate } from 'cwjsr';
 import { bytes } from 'multiformats';
 import { SliceKeyType } from '../../utils/contractHelper';
 import { Transaction } from '../../mate/transaction';
@@ -22,11 +22,11 @@ export class Contract {
   constructor() {}
 
   ready = false;
+  evaluate!: typeof evaluate;
 
   public init = async () => {
-    if (init) {
-      await (init as any)();
-    }
+    const evalFunc = await getEval();
+    this.evaluate = evalFunc;
     this.ready = true;
     lifecycleEvents.emit(LifecycleStap.initedContract);
   };
@@ -123,7 +123,7 @@ export class Contract {
     run();
     `;
     console.log(runCode);
-    let result = evaluate(runCode, BigInt(trans.cuLimit.toString()), {});
+    let result = this.evaluate(runCode, BigInt(trans.cuLimit.toString()), {});
     result = result.replace(/(\"$)|(^\")/g, '');
     return JSON.parse(result);
   };
@@ -141,6 +141,6 @@ export class Contract {
     // 这里是把js代码字符串给到wasm 的运行时
     // TODO 省去Uint8Array 转 string的过程，直接传递Uint8Array，减少两次解码消耗
     const jscode = bytes.toString(code);
-    return evaluate(jscode, 10000n, {});
+    return this.evaluate(jscode, 10000n, {});
   };
 }
