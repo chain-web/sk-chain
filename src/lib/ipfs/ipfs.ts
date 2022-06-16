@@ -56,44 +56,22 @@ export const createIpfs = async ({
         // '/dns4/node2.preload.ipfs.io/tcp/443/wss/p2p/QmV7gnbW5VTcJ3oyM2Xk1rdFBJ3kTkvxc87UFGsun29STS',
         // '/dns4/node3.preload.ipfs.io/tcp/443/wss/p2p/QmY7JB6MQXhxHvq7dBDh4HpbH29v4yE9JRadAVpndvzySN',
         // '/ip4/47.99.47.82/tcp/4002/p2p/12D3KooWDd6gAZ1Djtt4bhAG7djGKM32ETxiiiJCCWnH5ypK2csa',
-        '/ip4/0.0.0.0/tcp/24642/ws/p2p-webrtc-star',
+        // '/ip4/0.0.0.0/tcp/24642/ws/p2p-webrtc-star',
       ],
       API: {
-        HTTPHeaders: {
-          'Access-Control-Allow-Origin': ['*'],
-          // 其他三个设置不了，server没处理这几个参数
-          // 'Access-Control-Allow-Methods': ['*'],
-          // 'Access-Control-Allow-Headers': ['*'],
-          // 'Access-Control-Max-Age': ['86400'],
-          'Access-Control-Allow-Credentials': ['true'],
-        },
+        // HTTPHeaders: {
+        //   'Access-Control-Allow-Origin': ['*'],
+        //   'Access-Control-Allow-Credentials': ['true'],
+        // },
       },
       Swarm: {},
       Addresses: {
-        // Announce: [
-        //   // 对外网暴露的地址
-        //   `/ip4/${ip}/tcp/${network.tcp}`,
-        //   `/ip4/${ip}/tcp/${network.ws}/ws`,
-        // ],
-        // docker 内需要监听0.0.0.0
-        API: `/ip4/0.0.0.0/tcp/${network.api}`,
-        Gateway: `/ip4/0.0.0.0/tcp/${network.geteway}`,
-        Swarm: [
-          `/ip4/0.0.0.0/tcp/${network.tcp}`,
-          `/ip4/0.0.0.0/tcp/${network.ws}/ws`,
-          // `/ip4/0.0.0.0/udp/4004/quic`,
-        ],
-        Delegates: [
-          '/dns4/node0.delegate.ipfs.io/tcp/443/https',
-          '/dns4/node1.delegate.ipfs.io/tcp/443/https',
-          '/dns4/node2.delegate.ipfs.io/tcp/443/https',
-          '/dns4/node3.delegate.ipfs.io/tcp/443/https',
-        ],
+        Swarm: [`/dns4/wrtc-star1.zicui.net/tcp/443/wss/p2p-webrtc-star/`],
       },
       Pubsub: { Enabled: true },
     },
     EXPERIMENTAL: { ipnsPubsub: true },
-    // libp2p: libp2pBundle,
+    libp2p: libp2pBundle,
   });
   // console.log('ipfs created');
   // const obj = {

@@ -7,17 +7,18 @@ import { TCP } from '@libp2p/tcp';
 import { KadDHT } from '@libp2p/kad-dht';
 import { Noise } from '@chainsafe/libp2p-noise';
 import { FloodSub } from '@libp2p/floodsub';
-import GossipSub from 'libp2p-gossipsub'
+import { GossipSub } from '@chainsafe/libp2p-gossipsub';
 
 import { WebRTCStar } from '@libp2p/webrtc-star';
 import * as wrtc from 'wrtc';
+import { Libp2pFactoryFn } from 'ipfs-core';
 
 export let network: Promise<Libp2p>;
 // const WRTC = new WebRTCStar({ wrtc: wrtc })
 const transportKey = WebRTCStar.prototype[Symbol.toStringTag];
-export const libp2pBundle = (opts: any) => {
+export const libp2pBundle: Libp2pFactoryFn = (opts) => {
   // Set convenience variables to clearly showcase some of the useful things that are available
-  const peerId = opts.peerId as any;
+  const peerId = opts.peerId;
   const bootstrapList = opts.config.Bootstrap || [];
   const announce = opts.config.Addresses?.Announce || [];
   const listen = opts.config.Addresses?.Swarm || [];
@@ -34,8 +35,8 @@ export const libp2pBundle = (opts: any) => {
       maxConnections: 200,
       autoDialInterval: 5000,
     },
-    transports: [new WebRTCStar({wrtc: wrtc}) as any, new TCP()],
-    pubsub: GossipSub as any,
+    transports: [new WebRTCStar({ wrtc: wrtc })],
+    pubsub: new GossipSub(),
     connectionEncryption: [new Noise()],
     peerDiscovery: [
       new MulticastDNS({
