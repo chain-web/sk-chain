@@ -46,6 +46,7 @@
     "@libp2p/mplex": "^1.1.0",
     "@libp2p/tcp": "^1.0.8",
     "@libp2p/webrtc-star": "^1.0.12",
+    "@noble/ed25519": "^1.6.0",
     "@rollup/plugin-commonjs": "^22.0.0",
     "bignumber.js": "^9.0.2",
     "bitset": "^5.1.1",
@@ -67,6 +68,7 @@
     "rollup": "^2.74.1",
     "rollup-plugin-terser": "^7.0.2",
     "rollup-plugin-typescript2": "^0.31.2",
+    "tweetnacl": "^1.0.3",
     "typescript": "^4.6.4",
     "wrtc": "^0.4.7"
   }
