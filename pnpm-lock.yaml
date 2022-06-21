@@ -44,6 +44,7 @@ specifiers:
   ts-node: ^10.4.0
   tweetnacl: ^1.0.3
   typescript: ^4.6.4
+  uint8arrays: ^3.0.0
   wrtc: ^0.4.7
 
 dependencies:
@@ -83,6 +84,7 @@ dependencies:
   rollup-plugin-typescript2: 0.31.2_lq4dy2bb4fhoyaf2vwyb4geyfa
   tweetnacl: 1.0.3
   typescript: 4.6.4
+  uint8arrays: 3.0.0
   wrtc: 0.4.7
 
 devDependencies:
