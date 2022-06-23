@@ -24,6 +24,7 @@ export const create = async (
     network: allCfg.network!,
     networkid,
   });
+  lifecycleEvents.emit(LifecycleStap.createdIpfs);
   const opts: SKChainOption = {
     ...allCfg,
     genesis: config.genesis,
