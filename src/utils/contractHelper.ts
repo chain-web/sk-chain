@@ -42,7 +42,7 @@ const hash = (str: string) => {
 
 export class BaseContract {
   msg = {
-    sender: new Address(''),
+    sender: {} as Address,
     ts: 0,
   };
 }

@@ -71,7 +71,7 @@ export const parseBoxPubKey = (bid: string) => {
 // 从 did 解析出libp2p peerID 和 nacl public id
 export const parseSKDid = (did: string) => {
   if (did.substring(0, 4) !== 'SKw3') {
-    throw new Error('invalid did');
+    throw new Error(`invalid did: ${did}`);
   }
   const byte = base58btc.decode(`z${did}`);
   const pubKey = byte.slice(4, 36);
@@ -88,6 +88,14 @@ export const parseSKDid = (did: string) => {
 
 // const newNonce = () => randomBytes(secretbox.nonceLength);
 (async () => {
+  // gen dids
+  // const dids: DidJson[] = []
+  // for (let index = 0; index < 5; index++) {
+  //   const did = await genetateDid();
+  //   dids.push(did)
+  // }
+  // console.log(JSON.stringify(dids))
+
   // keys, messages & other inputs can be Uint8Arrays or hex strings
   // Uint8Array.from([0xde, 0xad, 0xbe, 0xef]) === 'deadbeef'
   // const did = await genetateDid();
@@ -117,7 +125,6 @@ export const parseSKDid = (did: string) => {
   //   bk.secretKey,
   // );
   // console.log('boxed', boxed)
-
   // const unboxed = box.open(boxed, nonce, bk.publicKey, bk2.secretKey)
   // console.log('unboxed', bytes.toString(unboxed!))
 })();
