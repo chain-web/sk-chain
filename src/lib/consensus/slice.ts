@@ -1,10 +1,10 @@
 import { SKChain } from './../../skChain';
 import { SKChainLibBase } from './../base';
-import type { MessageHandlerFn } from 'ipfs-core-types/src/pubsub';
 import { lifecycleEvents, LifecycleStap } from '../events/lifecycle';
 import { SKDB } from '../ipfs/ipfs.interface';
 import { message } from '../../utils/message';
 import { CID, bytes } from 'multiformats';
+import { Message } from '@libp2p/interfaces/pubsub';
 
 type SlicePubData =
   | {
@@ -116,12 +116,13 @@ export class Slice extends SKChainLibBase {
     );
   };
 
-  private handelSubSliceMessage: MessageHandlerFn = async (data) => {
+  private handelSubSliceMessage: any = async (data: Message) => {
     const slicePubData: SlicePubData = JSON.parse(bytes.toString(data.data));
-    if (data.from !== this.chain.did) {
+    message.info(data)
+    if (data.from.toString() !== this.chain.did) {
       this.addToBlockRootMap(slicePubData);
     }
-    this.curPeers.set(data.from, {
+    this.curPeers.set(data.from.toString(), {
       ts: slicePubData.ts,
       ready: Boolean(slicePubData.ready),
     });
