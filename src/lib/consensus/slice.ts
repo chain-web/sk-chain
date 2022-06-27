@@ -118,7 +118,6 @@ export class Slice extends SKChainLibBase {
 
   private handelSubSliceMessage: any = async (data: Message) => {
     const slicePubData: SlicePubData = JSON.parse(bytes.toString(data.data));
-    message.info(data)
     if (data.from.toString() !== this.chain.did) {
       this.addToBlockRootMap(slicePubData);
     }
