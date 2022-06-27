@@ -4,7 +4,7 @@ import { Cache } from './cache.browser';
 import { skCacheKeys } from './key';
 import { bytes, CID } from 'multiformats';
 import { networkidType } from '../../config/types';
-import { DidJson, parseSKDid } from '../p2p/did';
+import { DidJson } from '../p2p/did';
 import { message } from '../../utils/message';
 import { browserNetwork } from '../p2p/libp2p.browser';
 
@@ -12,19 +12,18 @@ export const createIpfs = async (opts: {
   did: DidJson;
   networkid: networkidType;
 }): Promise<SKDB> => {
-  const peerid = parseSKDid(opts.did.id);
   const ipfs = await create({
     init: {
       // 首次创建repo，用这个账户私钥
       privateKey: opts.did.privKey,
     },
-    repo: peerid.peerId,
+    repo: opts.did.id,
     preload: { enabled: true, addresses: [] },
     config: {
       // 非首次创建的repo，用这个
       Identity: {
         PrivKey: opts.did.privKey,
-        PeerID: peerid.peerId,
+        PeerID: opts.did.id,
       },
       Bootstrap: [],
       Swarm: {},
