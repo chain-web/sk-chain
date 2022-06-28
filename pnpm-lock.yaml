@@ -33,7 +33,6 @@ specifiers:
   ipns: ^1.0.0
   it-pipe: ^2.0.3
   libp2p: ^0.37.2
-  libp2p-webrtc-star: ^0.25.0
   libsodium-wrappers: ^0.7.10
   libsodium-wrappers-sumo: ^0.7.10
   mocha: ^9.2.0
@@ -80,7 +79,6 @@ dependencies:
   ipns: 1.0.0
   it-pipe: 2.0.3
   libp2p: 0.37.2_fuazrwkmrmp4ltbmuiqdjxifey
-  libp2p-webrtc-star: 0.25.0
   libsodium-wrappers: 0.7.10
   libsodium-wrappers-sumo: 0.7.10
   multiformats: 9.6.4
@@ -97,8 +95,8 @@ dependencies:
 
 devDependencies:
   '@rollup/plugin-json': 4.1.0_rollup@2.74.1
-  '@types/libsodium-wrappers-sumo': 0.7.5
   '@types/libsodium-wrappers': 0.7.9
+  '@types/libsodium-wrappers-sumo': 0.7.5
   '@types/mocha': 9.1.0
   '@types/node': 17.0.14
   mocha: 9.2.0
@@ -1197,10 +1195,11 @@ packages:
     resolution: {integrity: sha512-CL7rmLxw28H/FpFUnMu5BzzRsE+ICxHBpRoaY8ks+3HMsCJdA/Vp809sj+qNhw64Ht0OEnfoN3BC1sHwagoVaw==}
     dependencies:
       '@types/libsodium-wrappers': 0.7.9
-    dev: false
+    dev: true
 
   /@types/libsodium-wrappers/0.7.9:
     resolution: {integrity: sha512-LisgKLlYQk19baQwjkBZZXdJL0KbeTpdEnrAfz5hQACbklCY0gVFnsKUyjfNWF1UQsCSjw93Sj5jSbiO8RPfdw==}
+    dev: true
 
   /@types/long/4.0.1:
     resolution: {integrity: sha512-5tXH6Bx/kNGd3MgffdmP4dy2Z+G4eaXw0SE81Tq3BNadtnMR5/ySMzX4SLEzHJzSmPNn4HIdpQsBvXMUykr58w==}
@@ -1239,12 +1238,6 @@ packages:
 
   /abbrev/1.1.1:
     resolution: {integrity: sha512-nne9/IiQ/hzIhY6pdDnbBtz7DjPTKrY00P/zvPSm5pOFkl6xuGrGnXn/VtTNNfNtAfZ9/1RtehkszU9qcTii0Q==}
-    dev: false
-
-  /abortable-iterator/3.0.2:
-    resolution: {integrity: sha512-qVP8HFfTpUQI2F+f1tpTriKDIZ4XrmwCrBCrQeRKO7DKWF3kgoT6NXiNDv2krrGcHxPwmI63eGQiec81sEaWIw==}
-    dependencies:
-      get-iterator: 1.0.2
     dev: false
 
   /abortable-iterator/4.0.2:
@@ -2047,10 +2040,6 @@ packages:
       '@socket.io/base64-arraybuffer': 1.0.2
     dev: false
 
-  /err-code/2.0.3:
-    resolution: {integrity: sha512-2bmlRpNKBxT/CRmPOlyISQpNj+qSeYvcym/uT0Jx2bMOlKLtSy1ZmLuVxSEKKyor/N5yhvp/ZiG1oE3DEYMSFA==}
-    dev: false
-
   /err-code/3.0.1:
     resolution: {integrity: sha512-GiaH0KJUewYok+eeY05IIgjtAe4Yltygk9Wqp1V5yVWLdhf0hYZchRjNIT9bb0mSwRcIusT3cx7PJUf3zEIfUA==}
     dev: false
@@ -2278,10 +2267,6 @@ packages:
       wide-align: 1.1.5
     dev: false
 
-  /get-browser-rtc/1.1.0:
-    resolution: {integrity: sha512-MghbMJ61EJrRsDe7w1Bvqt3ZsBuqhce5nrn/XAwgwOXhcsz53/ltdxOse1h/8eKXj5slzxdsz56g5rzOFSGwfQ==}
-    dev: false
-
   /get-caller-file/2.0.5:
     resolution: {integrity: sha512-DyFP3BM/3YHTQOCUL/w0OZHR0lpKeGrxotcHWcqNEdnltqFwXVfhEBQ94eIo34AfQpo0rGki4cyIiftY06h2Fg==}
     engines: {node: 6.* || 8.* || >= 10.*}
@@ -2501,14 +2486,6 @@ packages:
       get-intrinsic: 1.1.2
       has: 1.0.3
       side-channel: 1.0.4
-    dev: false
-
-  /ip-address/8.1.0:
-    resolution: {integrity: sha512-Wz91gZKpNKoXtqvY8ScarKYwhXoK4r/b5QuT+uywe/azv0/nUCo7Bh0IRRI7F9DHR06kJNWtzMGLIbXavngbKA==}
-    engines: {node: '>= 12'}
-    dependencies:
-      jsbn: 1.1.0
-      sprintf-js: 1.1.2
     dev: false
 
   /ip-regex/4.3.0:
@@ -2868,25 +2845,6 @@ packages:
       protobufjs: 6.11.2
     dev: false
 
-  /ipfs-utils/9.0.4:
-    resolution: {integrity: sha512-cfLKk004KLoEWJhBx4zg3mCro6mkiNhyGIlT7OZX9zxO1UqvLWpvW7cSZ1b1fbUIZ8qI7X2B7PeKlXC7jSfZ7g==}
-    dependencies:
-      any-signal: 3.0.0
-      buffer: 6.0.3
-      electron-fetch: 1.7.4
-      err-code: 3.0.1
-      is-electron: 2.2.1
-      iso-url: 1.2.1
-      it-glob: 1.0.2
-      it-to-stream: 1.0.0
-      merge-options: 3.0.4
-      nanoid: 3.2.0
-      native-fetch: 3.0.0_hmwa7nplpltavckpkeobtw6pv4
-      node-fetch: /@achingbrain/node-fetch/2.6.7
-      react-native-fetch-api: 2.0.0
-      stream-to-it: 0.2.4
-    dev: false
-
   /ipfs-utils/9.0.6:
     resolution: {integrity: sha512-/WfdwOIiJVb3uqfKRQ9Eo+vCEKsDgp7h4Pdc37MRwAiFciZ7xKAkEqsfXubV0VQi8x5jWTifeHn8WEPBLL451w==}
     dependencies:
@@ -3043,10 +3001,6 @@ packages:
     transitivePeerDependencies:
       - node-fetch
       - supports-color
-    dev: false
-
-  /is-loopback-addr/1.0.1:
-    resolution: {integrity: sha512-DhWU/kqY7X2F6KrrVTu7mHlbd2Pbo4D1YkAzasBMjQs6lJAoefxaA6m6CpSX0K6pjt9D0b9PNFI5zduy/vzOYw==}
     dev: false
 
   /is-loopback-addr/2.0.1:
@@ -3514,58 +3468,6 @@ packages:
       node-forge: 1.2.1
       protobufjs: 6.11.2
       uint8arrays: 3.0.0
-    dev: false
-
-  /libp2p-utils/0.4.1:
-    resolution: {integrity: sha512-kq/US2unamiyY+YwP47dO1uqpAdcbdYI2Fzi9JIEhjfPBaD1MR/uyQ/YP7ABthl3EaxAjIQYd1TVp85d6QKAtQ==}
-    dependencies:
-      abortable-iterator: 3.0.2
-      debug: 4.3.4
-      err-code: 3.0.1
-      ip-address: 8.1.0
-      is-loopback-addr: 1.0.1
-      multiaddr: 10.0.1
-      private-ip: 2.3.3
-    transitivePeerDependencies:
-      - node-fetch
-      - supports-color
-    dev: false
-
-  /libp2p-webrtc-peer/10.0.1:
-    resolution: {integrity: sha512-Qi/YVrSI5sjU+iBvr1iAjGrakIEvzCS8S76v4q43jjlDb6Wj+S4OnFLH/uRlt7eLXcx4vlaI6huMzYrUAoopMg==}
-    dependencies:
-      debug: 4.3.4
-      err-code: 2.0.3
-      get-browser-rtc: 1.1.0
-      queue-microtask: 1.2.3
-      randombytes: 2.1.0
-      readable-stream: 3.6.0
-    transitivePeerDependencies:
-      - supports-color
-    dev: false
-
-  /libp2p-webrtc-star/0.25.0:
-    resolution: {integrity: sha512-SyXjHDrm+qlKQE5HIddrUCSwkxCIJ30PAH4ZVNNADkC0F5IVQY9EoVJ+/rrzZuDDqccnS15TgxW13vmybX96bQ==}
-    dependencies:
-      abortable-iterator: 3.0.2
-      class-is: 1.1.0
-      debug: 4.3.4
-      err-code: 3.0.1
-      ipfs-utils: 9.0.4
-      it-pipe: 1.1.0
-      libp2p-utils: 0.4.1
-      libp2p-webrtc-peer: 10.0.1
-      mafmt: 10.0.0
-      multiaddr: 10.0.1
-      p-defer: 3.0.0
-      peer-id: 0.16.0
-      socket.io-client: 4.4.1
-      stream-to-it: 0.2.4
-    transitivePeerDependencies:
-      - bufferutil
-      - node-fetch
-      - supports-color
-      - utf-8-validate
     dev: false
 
   /libp2p/0.37.2_fuazrwkmrmp4ltbmuiqdjxifey:

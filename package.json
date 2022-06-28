@@ -63,7 +63,6 @@
     "ipns": "^1.0.0",
     "it-pipe": "^2.0.3",
     "libp2p": "^0.37.2",
-    "libp2p-webrtc-star": "^0.25.0",
     "libsodium-wrappers": "^0.7.10",
     "libsodium-wrappers-sumo": "^0.7.10",
     "multiformats": "^9.6.4",
