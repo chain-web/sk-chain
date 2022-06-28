@@ -38,3 +38,8 @@ export class SkChain {
   };
 }
 ```
+
+
+### Tips
+
+use `node_extra_ca_certs_mozilla_bundle` in NodeJs sk-chain node to connect https
