@@ -4,7 +4,6 @@ import { lifecycleEvents, LifecycleStap } from '../events/lifecycle';
 import { SKDB } from '../ipfs/ipfs.interface';
 import { message } from '../../utils/message';
 import { CID, bytes } from 'multiformats';
-import { Message } from '@libp2p/interfaces/pubsub';
 
 type SlicePubData =
   | {
@@ -116,7 +115,7 @@ export class Slice extends SKChainLibBase {
     );
   };
 
-  private handelSubSliceMessage: any = async (data: Message) => {
+  private handelSubSliceMessage: any = async (data: any) => {
     const slicePubData: SlicePubData = JSON.parse(bytes.toString(data.data));
     if (data.from.toString() !== this.chain.did) {
       this.addToBlockRootMap(slicePubData);

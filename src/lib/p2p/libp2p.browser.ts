@@ -1,4 +1,4 @@
-import { createLibp2p, Libp2pOptions } from 'libp2p';
+import { createLibp2p, Libp2p, Libp2pOptions } from 'libp2p';
 // @ts-expect-error - no types
 import WS from 'libp2p-websockets';
 import { KadDHT } from '@libp2p/kad-dht';
@@ -11,8 +11,27 @@ import { Mplex } from '@libp2p/mplex'
 import { Bootstrap } from '@libp2p/bootstrap'
 
 export class Network {
-  private libp2p: any;
+  private libp2p!: Promise<Libp2p>;
   webRtcStar = new WebRTCStar();
+
+  constructor () {
+    this.checkNetwork();
+  }
+
+  checkNetwork = async () => {
+    if (this.libp2p) {
+      const lp = await this.libp2p
+      const ps = await lp.getPeers()
+      console.log('ps',ps)
+      setTimeout(() => {
+        this.checkNetwork()
+      }, 10000);
+    } else {
+      setTimeout(() => {
+        this.checkNetwork()
+      }, 10000);
+    }
+  }
 
   genlibp2p = async () => {
     // this.libp2p = createLibp2p(this.config);
@@ -21,11 +40,7 @@ export class Network {
 
   createLibp2p: Libp2pFactoryFn = (opts) => {
     const peerId = opts.peerId;
-    const bootstrapList = opts.config.Bootstrap || [];
-    const announce = opts.config.Addresses?.Announce || [];
-    const listen = opts.config.Addresses?.Swarm || [];
     const ds = opts.datastore
-    console.log(opts)
     const config: Libp2pOptions = {
       ...opts.libp2pOptions,
       peerId,
@@ -47,7 +62,8 @@ export class Network {
         enabled: true,
       },
     };
-    return createLibp2p(config);
+    this.libp2p = createLibp2p(config);
+    return this.libp2p;
   };
 }
 

@@ -3,7 +3,7 @@ import { create } from 'ipfs-core';
 import { resolve } from 'path';
 import { Cache } from './cache';
 import { DidJson } from '../p2p/did';
-import { libp2pBundle } from '../p2p/libp2p';
+import { nodeNetwork } from '../p2p/libp2p';
 import { networkidType } from '../../config/types';
 import { skCacheKeys } from './key';
 import { message } from '../../utils/message';
@@ -39,25 +39,11 @@ export const createIpfs = async ({
     repo,
     config: {
       // // 非首次创建的repo，用这个
-      // Identity: {
-      //   PrivKey:
-      //     'CAESQOu2tC61UCD6utWQpWndm8HSVWxi88P7cP29ydv6iHaOmVBTlFvfBXPpjZJeFi/Ult6HUOcVd9OOkyDg5TDibdk=',
-      //   PeerID: '12D3KooWL8qb3L8nKPjDtQmJU8jge5Qspsn6YLSBei9MsbTjJDr8',
-      // },
-      Bootstrap: [
-        // '/dns4/wrtc-star1.par.dwebops.pub/tcp/443/wss/p2p-webrtc-star/p2p/12D3KooWCGXedZZsaSNLmpQKXewHKuqzU8ZzfXymQnZsUvwreiXL',
-        // '/dnsaddr/bootstrap.libp2p.io/p2p/QmNnooDu7bfjPFoTZYxMNLWUQJyrVwtbZg5gBMjTezGAJN',
-        // '/dnsaddr/bootstrap.libp2p.io/p2p/QmbLHAnMoJPWSCR5Zhtx6BHJX9KiKNN6tpvbUcqanj75Nb',
-        // '/dnsaddr/bootstrap.libp2p.io/p2p/QmZa1sAxajnQjVM8WjWXoMbmPd7NsWhfKsPkErzpm9wGkp',
-        // '/dnsaddr/bootstrap.libp2p.io/p2p/QmQCU2EcMqAqQPR2i9bChDtGNJchTbq5TbXJJ16u19uLTa',
-        // '/dnsaddr/bootstrap.libp2p.io/p2p/QmcZf59bWwK5XFi76CZX8cbJ4BhTzzA3gU1ZjYZcYW3dwt',
-        // '/dns4/node0.preload.ipfs.io/tcp/443/wss/p2p/QmZMxNdpMkewiVZLMRxaNxUeZpDUb34pWjZ1kZvsd16Zic',
-        // '/dns4/node1.preload.ipfs.io/tcp/443/wss/p2p/Qmbut9Ywz9YEDrz8ySBSgWyJk41Uvm2QJPhwDJzJyGFsD6',
-        // '/dns4/node2.preload.ipfs.io/tcp/443/wss/p2p/QmV7gnbW5VTcJ3oyM2Xk1rdFBJ3kTkvxc87UFGsun29STS',
-        // '/dns4/node3.preload.ipfs.io/tcp/443/wss/p2p/QmY7JB6MQXhxHvq7dBDh4HpbH29v4yE9JRadAVpndvzySN',
-        // '/ip4/47.99.47.82/tcp/4002/p2p/12D3KooWDd6gAZ1Djtt4bhAG7djGKM32ETxiiiJCCWnH5ypK2csa',
-        // '/ip4/0.0.0.0/tcp/24642/ws/p2p-webrtc-star',
-      ],
+      Identity: {
+        PrivKey: did.privKey,
+        PeerID: did.id,
+      },
+      Bootstrap: [],
       API: {
         // HTTPHeaders: {
         //   'Access-Control-Allow-Origin': ['*'],
@@ -71,22 +57,9 @@ export const createIpfs = async ({
       Pubsub: { Enabled: true },
     },
     EXPERIMENTAL: { ipnsPubsub: true },
-    libp2p: libp2pBundle,
+    libp2p: nodeNetwork.createLibp2p,
   });
-  // console.log('ipfs created');
-  // const obj = {
-  //   a: 1,
-  //   b: {
-  //     c: [1, 2, 3],
-  //   },
-  // };
-  // const httpApi = new HttpApi(ipfs);
-  // await httpApi.start();
-  // console.log(httpApi.apiAddr.toString() + '-');
-
-  // const httpGateway = new HttpGateway(ipfs);
-  // await httpGateway.start();
-  // console.log('isonline', ipfs.isOnline());
+  message.info('id: ', await ipfs.id());
 
   const cache = new Cache(resolve(repo, `./sk_cache_${networkid}`));
   cache.put(skCacheKeys.accountId, did.id);

@@ -1,18 +1,18 @@
 lockfileVersion: 5.4
 
 specifiers:
-  '@chainsafe/libp2p-gossipsub': ^1.0.1
+  '@chainsafe/libp2p-gossipsub': ^2.0.0
   '@chainsafe/libp2p-noise': ^6.0.1
   '@ipld/dag-pb': ^2.1.16
   '@libp2p/bootstrap': ^1.0.3
   '@libp2p/crypto': ^0.22.14
   '@libp2p/floodsub': ^1.0.6
-  '@libp2p/interfaces': ^1.3.24
+  '@libp2p/interface-transport': ^1.0.2
+  '@libp2p/interfaces': 3.0.3
   '@libp2p/kad-dht': ^1.0.15
   '@libp2p/mdns': ^1.0.7
   '@libp2p/mplex': ^1.1.0
-  '@libp2p/tcp': ^1.0.8
-  '@libp2p/webrtc-star': ^1.0.12
+  '@libp2p/webrtc-star': ^3.0.0
   '@noble/ed25519': ^1.6.0
   '@rollup/plugin-commonjs': ^22.0.0
   '@rollup/plugin-json': ^4.1.0
@@ -28,11 +28,11 @@ specifiers:
   debug: ^4.3.4
   es-module-lexer: ^0.10.5
   ipfs-bitswap: ^11.0.1
-  ipfs-core: ^0.15.0
-  ipfs-core-types: ^0.10.3
+  ipfs-core: ^0.15.4
+  ipfs-core-types: ^0.11.1
   ipns: ^1.0.0
   it-pipe: ^2.0.3
-  libp2p: ^0.37.2
+  libp2p: ^0.37.3
   libsodium-wrappers: ^0.7.10
   libsodium-wrappers-sumo: ^0.7.10
   mocha: ^9.2.0
@@ -45,25 +45,25 @@ specifiers:
   rollup-plugin-hashbang: ^3.0.0
   rollup-plugin-terser: ^7.0.2
   rollup-plugin-typescript2: ^0.31.2
-  ts-node: ^10.4.0
+  ts-node: ^10.8.1
   tweetnacl: ^1.0.3
   typescript: ^4.6.4
   uint8arrays: ^3.0.0
   wrtc: ^0.4.7
 
 dependencies:
-  '@chainsafe/libp2p-gossipsub': 1.0.1_fuazrwkmrmp4ltbmuiqdjxifey
+  '@chainsafe/libp2p-gossipsub': 2.0.0
   '@chainsafe/libp2p-noise': 6.0.1
   '@ipld/dag-pb': 2.1.16
   '@libp2p/bootstrap': 1.0.3
   '@libp2p/crypto': 0.22.14
   '@libp2p/floodsub': 1.0.6
-  '@libp2p/interfaces': 1.3.24
+  '@libp2p/interface-transport': 1.0.2
+  '@libp2p/interfaces': 3.0.3
   '@libp2p/kad-dht': 1.0.15
   '@libp2p/mdns': 1.0.7
   '@libp2p/mplex': 1.1.0
-  '@libp2p/tcp': 1.0.8
-  '@libp2p/webrtc-star': 1.0.12_fuazrwkmrmp4ltbmuiqdjxifey
+  '@libp2p/webrtc-star': 3.0.0
   '@noble/ed25519': 1.6.0
   '@rollup/plugin-commonjs': 22.0.0_rollup@2.74.1
   bignumber.js: 9.0.2
@@ -74,11 +74,11 @@ dependencies:
   debug: 4.3.4
   es-module-lexer: 0.10.5
   ipfs-bitswap: 11.0.1
-  ipfs-core: 0.15.0_fuazrwkmrmp4ltbmuiqdjxifey
-  ipfs-core-types: 0.10.3
+  ipfs-core: 0.15.4_fuazrwkmrmp4ltbmuiqdjxifey
+  ipfs-core-types: 0.11.1
   ipns: 1.0.0
   it-pipe: 2.0.3
-  libp2p: 0.37.2_fuazrwkmrmp4ltbmuiqdjxifey
+  libp2p: 0.37.3_fuazrwkmrmp4ltbmuiqdjxifey
   libsodium-wrappers: 0.7.10
   libsodium-wrappers-sumo: 0.7.10
   multiformats: 9.6.4
@@ -102,7 +102,7 @@ devDependencies:
   mocha: 9.2.0
   multicast-dns: 7.2.4
   rollup-plugin-hashbang: 3.0.0_rollup@2.74.1
-  ts-node: 10.4.0_mugk4nb34cgyfwd4f3jfnst2qi
+  ts-node: 10.8.1_mugk4nb34cgyfwd4f3jfnst2qi
 
 packages:
 
@@ -119,7 +119,7 @@ packages:
     engines: {node: '>=16.0.0', npm: '>=7.0.0'}
     dependencies:
       '@achingbrain/ssdp': 4.0.0
-      '@libp2p/logger': 1.1.4
+      '@libp2p/logger': 1.1.6
       default-gateway: 6.0.3
       err-code: 3.0.1
       it-first: 1.0.7
@@ -176,9 +176,9 @@ packages:
     resolution: {integrity: sha512-xzXbQAU41q+e3wJjbBnApENaP0XJ0m+x4/mslX858wLMPFudqK6vc7zAEfSAd689RdgBfb/vlVqrdgFzbnEZ/Q==}
     dependencies:
       '@libp2p/crypto': 0.22.14
-      '@libp2p/interfaces': 2.0.2
-      '@libp2p/logger': 1.1.4
-      '@libp2p/peer-id': 1.1.11
+      '@libp2p/interfaces': 2.0.4
+      '@libp2p/logger': 1.1.6
+      '@libp2p/peer-id': 1.1.13
       '@libp2p/peer-record': 1.0.12_fuazrwkmrmp4ltbmuiqdjxifey
       '@libp2p/pubsub': 1.3.0
       '@libp2p/topology': 1.1.7
@@ -196,6 +196,33 @@ packages:
       - mocha
       - supports-color
       - typescript
+      - undici
+    dev: false
+
+  /@chainsafe/libp2p-gossipsub/2.0.0:
+    resolution: {integrity: sha512-9tnxXdYbYEA7s4OuC/Ff5XHiKAPsfjSPdbcsdRrIanri0WI7rrwrj7xpOB60IvFIDmGRb2qQjs9qPQcy//670g==}
+    dependencies:
+      '@libp2p/components': 1.0.0
+      '@libp2p/crypto': 1.0.0
+      '@libp2p/interface-keys': 1.0.3
+      '@libp2p/interface-peer-id': 1.0.4
+      '@libp2p/interface-pubsub': 1.0.4
+      '@libp2p/interface-registrar': 1.1.0
+      '@libp2p/interfaces': 3.0.3
+      '@libp2p/logger': 2.0.0
+      '@libp2p/peer-id': 1.1.13
+      '@libp2p/peer-record': 2.0.2
+      '@libp2p/pubsub': 2.0.0
+      '@libp2p/topology': 2.0.0
+      denque: 1.5.1
+      err-code: 3.0.1
+      iso-random-stream: 2.0.2
+      it-pipe: 2.0.3
+      multiformats: 9.6.4
+      protons-runtime: 1.0.4
+      uint8arrays: 3.0.0
+    transitivePeerDependencies:
+      - supports-color
       - undici
     dev: false
 
@@ -222,20 +249,16 @@ packages:
       - undici
     dev: false
 
-  /@cspotcode/source-map-consumer/0.8.0:
-    resolution: {integrity: sha512-41qniHzTU8yAGbCp04ohlmSrZf8bkf/iJsl3V0dRGsQN/5GFfx+LbCSsCpp2gqrqjTVg/K6O8ycoV35JIwAzAg==}
-    engines: {node: '>= 12'}
-
-  /@cspotcode/source-map-support/0.7.0:
-    resolution: {integrity: sha512-X4xqRHqN8ACt2aHVe51OxeA2HjbcL4MqFqXkrmQszJ1NOUuUu5u6Vqx/0lZSVNku7velL5FC/s5uEAj1lsBMhA==}
+  /@cspotcode/source-map-support/0.8.1:
+    resolution: {integrity: sha512-IchNf6dN4tHoMFIn/7OE8LWZ19Y6q/67Bmf6vnGREv8RSbBVb9LPJxEcnwrcwX6ixSvaiGoomAUvu4YSxXrVgw==}
     engines: {node: '>=12'}
     dependencies:
-      '@cspotcode/source-map-consumer': 0.8.0
+      '@jridgewell/trace-mapping': 0.3.9
 
   /@ipld/car/4.1.2:
     resolution: {integrity: sha512-VaeFFqrBWxPgTuHNuk0k5niWT82C51Y2uvju8lQkpOpSPzCW2hPKoR73dZ1i7MXB8zmOlxkjd3BG8oeJovAXtw==}
     dependencies:
-      '@ipld/dag-cbor': 7.0.1
+      '@ipld/dag-cbor': 7.0.2
       cborg: 1.9.3
       multiformats: 9.6.4
       varint: 6.0.0
@@ -243,13 +266,6 @@ packages:
 
   /@ipld/dag-cbor/6.0.15:
     resolution: {integrity: sha512-Vm3VTSTwlmGV92a3C5aeY+r2A18zbH2amehNhsX8PBa3muXICaWrN8Uri85A5hLH7D7ElhE8PdjxD6kNqUmTZA==}
-    dependencies:
-      cborg: 1.9.3
-      multiformats: 9.6.4
-    dev: false
-
-  /@ipld/dag-cbor/7.0.1:
-    resolution: {integrity: sha512-XqG8VEzHjQDC/Qcy5Gyf1kvAav5VuAugc6c7VtdaRLI+3d8lJrUP3F76GYJNNXuEnRZ58cCBnNNglkIGTdg1+A==}
     dependencies:
       cborg: 1.9.3
       multiformats: 9.6.4
@@ -275,6 +291,19 @@ packages:
       multiformats: 9.6.4
     dev: false
 
+  /@jridgewell/resolve-uri/3.0.8:
+    resolution: {integrity: sha512-YK5G9LaddzGbcucK4c8h5tWFmMPBvRZ/uyWmN1/SbBdIvqGUdWGkJ5BAaccgs6XbzVLsqbPJrBSFwKv3kT9i7w==}
+    engines: {node: '>=6.0.0'}
+
+  /@jridgewell/sourcemap-codec/1.4.14:
+    resolution: {integrity: sha512-XPSJHWmi394fuUuzDnGz1wiKqWfo1yXecHQMRf2l6hztTO+nPru658AyDngaBe7isIxEkRsPR3FZh+s7iVa4Uw==}
+
+  /@jridgewell/trace-mapping/0.3.9:
+    resolution: {integrity: sha512-3Belt6tdc8bPgAtbcmdtNJlirVoTmEb5e2gC94PnkwEW9jI6CAHUeoG85tjWP5WquqfavoMtMwiG4P926ZKKuQ==}
+    dependencies:
+      '@jridgewell/resolve-uri': 3.0.8
+      '@jridgewell/sourcemap-codec': 1.4.14
+
   /@leichtgewicht/ip-codec/2.0.3:
     resolution: {integrity: sha512-nkalE/f1RvRGChwBnEIoBfSEYOXnCRdleKuv6+lePbMDrMZXeDQnqak5XDOeBgrPPyPfAdcCu/B5z+v3VhplGg==}
 
@@ -292,13 +321,61 @@ packages:
       - undici
     dev: false
 
+  /@libp2p/components/1.0.0:
+    resolution: {integrity: sha512-FksZm+bboEWAqHmw6GBRn+ppQEUwyt7TDTEn4J6nsA8OAXRi4R0bQc9KrdTrzomdaWjBTyAtA4hA1DYxQmmEmg==}
+    engines: {node: '>=16.0.0', npm: '>=7.0.0'}
+    dependencies:
+      '@libp2p/interface-address-manager': 1.0.2
+      '@libp2p/interface-connection': 1.0.1
+      '@libp2p/interface-connection-manager': 1.0.2
+      '@libp2p/interface-content-routing': 1.0.2
+      '@libp2p/interface-dht': 1.0.1
+      '@libp2p/interface-metrics': 1.0.3
+      '@libp2p/interface-peer-id': 1.0.4
+      '@libp2p/interface-peer-routing': 1.0.1
+      '@libp2p/interface-peer-store': 1.2.0
+      '@libp2p/interface-pubsub': 1.0.4
+      '@libp2p/interface-registrar': 1.1.0
+      '@libp2p/interface-transport': 1.0.2
+      '@libp2p/interfaces': 3.0.3
+      err-code: 3.0.1
+      interface-datastore: 6.1.0
+    transitivePeerDependencies:
+      - supports-color
+      - undici
+    dev: false
+
+  /@libp2p/components/2.0.0:
+    resolution: {integrity: sha512-7PrbrfDvaOHKtvkiUBWPAFQX6X57YhZpYh5oKFYYMzh485IO3Bum0xuyUwQOOPmBzWrIuP7QsbmOtyycAux/7w==}
+    engines: {node: '>=16.0.0', npm: '>=7.0.0'}
+    dependencies:
+      '@libp2p/interface-address-manager': 1.0.2
+      '@libp2p/interface-connection': 2.1.1
+      '@libp2p/interface-connection-manager': 1.0.2
+      '@libp2p/interface-content-routing': 1.0.2
+      '@libp2p/interface-dht': 1.0.1
+      '@libp2p/interface-metrics': 1.0.3
+      '@libp2p/interface-peer-id': 1.0.4
+      '@libp2p/interface-peer-routing': 1.0.1
+      '@libp2p/interface-peer-store': 1.2.0
+      '@libp2p/interface-pubsub': 1.0.4
+      '@libp2p/interface-registrar': 2.0.2
+      '@libp2p/interface-transport': 1.0.2
+      '@libp2p/interfaces': 3.0.3
+      err-code: 3.0.1
+      interface-datastore: 6.1.0
+    transitivePeerDependencies:
+      - supports-color
+      - undici
+    dev: false
+
   /@libp2p/connection/2.0.3:
     resolution: {integrity: sha512-anzB0bZ0SA8+WiIkypZeTeh6V5gEtaE7RutGWOP3O1jroFXvQgkXyYxXm58ZnSIHhV6sKc6HWRPvb37fCtyT2Q==}
     engines: {node: '>=16.0.0', npm: '>=7.0.0'}
     dependencies:
       '@libp2p/interfaces': 2.0.2
-      '@libp2p/logger': 1.1.4
-      '@multiformats/multiaddr': 10.1.8
+      '@libp2p/logger': 1.1.6
+      '@multiformats/multiaddr': 10.2.1
       err-code: 3.0.1
     transitivePeerDependencies:
       - supports-color
@@ -323,14 +400,29 @@ packages:
       - undici
     dev: false
 
+  /@libp2p/crypto/1.0.0:
+    resolution: {integrity: sha512-oV/KaHE8XaJQDH+iDq4Kn4GaVWRsEXJnLXTpN+8hz00tuxxsE3+4g0OYaFCauAYeX1IcGPwMvUhdgujnKzpAbg==}
+    engines: {node: '>=16.0.0', npm: '>=7.0.0'}
+    dependencies:
+      '@libp2p/interface-keys': 1.0.3
+      '@noble/ed25519': 1.6.0
+      '@noble/secp256k1': 1.5.5
+      err-code: 3.0.1
+      iso-random-stream: 2.0.2
+      multiformats: 9.6.4
+      node-forge: 1.2.1
+      protons-runtime: 1.0.4
+      uint8arrays: 3.0.0
+    dev: false
+
   /@libp2p/delegated-content-routing/1.0.4:
     resolution: {integrity: sha512-9S6903Ki7HivKths31t58K8Ooft1s6kDPgSUo+du+/rSjQUQ2o0o1QFGJbCvLToBj77eB36mLJphZMO4MeR3IQ==}
     engines: {node: '>=16.0.0', npm: '>=7.0.0'}
     dependencies:
-      '@libp2p/interfaces': 2.0.2
-      '@libp2p/logger': 1.1.4
-      '@libp2p/peer-id': 1.1.11
-      '@multiformats/multiaddr': 10.1.8
+      '@libp2p/interfaces': 2.0.4
+      '@libp2p/logger': 1.1.6
+      '@libp2p/peer-id': 1.1.13
+      '@multiformats/multiaddr': 10.2.1
       any-signal: 3.0.1
       err-code: 3.0.1
       it-drain: 1.0.5
@@ -345,10 +437,10 @@ packages:
     resolution: {integrity: sha512-GyI5g8ApwqHVGP5eaD3albwAhBNqhZXIEBVLuSLD035/MZwqjD7UbUGopyBMnIh4LfEDwnsVRry9V8BNP9nwrw==}
     engines: {node: '>=16.0.0', npm: '>=7.0.0'}
     dependencies:
-      '@libp2p/interfaces': 2.0.2
-      '@libp2p/logger': 1.1.4
-      '@libp2p/peer-id': 1.1.11
-      '@multiformats/multiaddr': 10.1.8
+      '@libp2p/interfaces': 2.0.4
+      '@libp2p/logger': 1.1.6
+      '@libp2p/peer-id': 1.1.13
+      '@multiformats/multiaddr': 10.2.1
       any-signal: 3.0.1
       err-code: 3.0.1
       multiformats: 9.6.4
@@ -373,21 +465,206 @@ packages:
       - undici
     dev: false
 
-  /@libp2p/interfaces/1.3.24:
-    resolution: {integrity: sha512-LPM4Bb5zUBYcmcwVLAfDN0GaIoNghhbkgJAg50IVYWuEtAh+9ZdlY69y9IiLTiARI4LeEJlSnEEy2bWMrM6YRw==}
+  /@libp2p/interface-address-manager/1.0.2:
+    resolution: {integrity: sha512-YUZzuY3yySXaeYd/LXkEDV/aKp6eJBsropXypwqeP3ErmEvkN06nbShQQAyNvRnloecYVAeLt2IZW2N9ImlRFg==}
     engines: {node: '>=16.0.0', npm: '>=7.0.0'}
     dependencies:
-      '@multiformats/multiaddr': 10.1.8
-      err-code: 3.0.1
-      interface-datastore: 6.1.0
+      '@libp2p/interfaces': 3.0.3
+      '@multiformats/multiaddr': 10.2.1
+    transitivePeerDependencies:
+      - supports-color
+      - undici
+    dev: false
+
+  /@libp2p/interface-connection-manager/1.0.2:
+    resolution: {integrity: sha512-92gM7sZhVidD+vsQbc+LbI4MMvxgRjFy9kUrrsOosbtCt0nl68rIeRFKRpfX92/4QY40tL41VXT69ijCUskEwg==}
+    engines: {node: '>=16.0.0', npm: '>=7.0.0'}
+    dependencies:
+      '@libp2p/interface-connection': 2.1.1
+      '@libp2p/interface-peer-id': 1.0.4
+      '@libp2p/interfaces': 3.0.3
+    transitivePeerDependencies:
+      - supports-color
+      - undici
+    dev: false
+
+  /@libp2p/interface-connection/1.0.1:
+    resolution: {integrity: sha512-4MP+RvqR5xu6EWgrebLo34HWm/X+hGXtzsCKmNfmLN9bpaYhEobzL4Rm3RYi/0ICrgAZmoU8n+x8widiuwERew==}
+    engines: {node: '>=16.0.0', npm: '>=7.0.0'}
+    dependencies:
+      '@libp2p/interface-peer-id': 1.0.4
+      '@libp2p/interfaces': 3.0.3
+      '@multiformats/multiaddr': 10.2.1
+      it-stream-types: 1.0.4
+    transitivePeerDependencies:
+      - supports-color
+      - undici
+    dev: false
+
+  /@libp2p/interface-connection/2.1.1:
+    resolution: {integrity: sha512-gjugaMsZvfo3r4tCc/yPifVQsfLogmEmJtW+eXMNiNDna3ZfmwWD9Z+KyEwuVsXKs0C4GESXei2y4SJSCEfkbA==}
+    engines: {node: '>=16.0.0', npm: '>=7.0.0'}
+    dependencies:
+      '@libp2p/interface-peer-id': 1.0.4
+      '@libp2p/interfaces': 3.0.3
+      '@multiformats/multiaddr': 10.2.1
+      it-stream-types: 1.0.4
+    transitivePeerDependencies:
+      - supports-color
+      - undici
+    dev: false
+
+  /@libp2p/interface-content-routing/1.0.2:
+    resolution: {integrity: sha512-Ue1X8XrZ4ymTMQk/GWom/EKfPB5Lu7zy33ohjSix26Da/HbBvkXBdnYGDj485vxSOZGZRqeBhh21nCVjD/yLyg==}
+    engines: {node: '>=16.0.0', npm: '>=7.0.0'}
+    dependencies:
+      '@libp2p/interface-peer-info': 1.0.2
+      '@libp2p/interfaces': 3.0.3
       multiformats: 9.6.4
     transitivePeerDependencies:
       - supports-color
       - undici
     dev: false
 
-  /@libp2p/interfaces/2.0.0:
-    resolution: {integrity: sha512-pE99X3rk2rp1YbvLIfxgBCv7U4Ko/CGdC4M3mdAGYX0MAmcrVX2yMkneDaHv1N8W2bTP/6mo/e2DG6Fws0itiw==}
+  /@libp2p/interface-dht/1.0.1:
+    resolution: {integrity: sha512-EToxQznHUnD9frWoHwq8DUaOa7RZ2qoo6beb1aWdQrEJsEdUBi62FHh9qrLkrL+E4W3rkl2+WrhSP6/iHxZZwQ==}
+    engines: {node: '>=16.0.0', npm: '>=7.0.0'}
+    dependencies:
+      '@libp2p/interface-peer-discovery': 1.0.1
+      '@libp2p/interface-peer-id': 1.0.4
+      '@libp2p/interface-peer-info': 1.0.2
+      '@libp2p/interfaces': 3.0.3
+      multiformats: 9.6.4
+    transitivePeerDependencies:
+      - supports-color
+      - undici
+    dev: false
+
+  /@libp2p/interface-keys/1.0.3:
+    resolution: {integrity: sha512-K8/HlRl/swbVTWuGHNHF28EytszYfUhKgUHfv8CdbMk9ZA/bgO4uU+d9rcrg/Dhw3511U3aRz2bwl2psn6rJfg==}
+    engines: {node: '>=16.0.0', npm: '>=7.0.0'}
+    dev: false
+
+  /@libp2p/interface-metrics/1.0.3:
+    resolution: {integrity: sha512-kPSQY/dJqeJ92YeldismoIAxWn0z13kOz0UJY7M5QE7KcW5tJAYDNzDw6sIKKbbWN7bU6KJydnYBSRzhXpLlDw==}
+    engines: {node: '>=16.0.0', npm: '>=7.0.0'}
+    dependencies:
+      '@libp2p/interface-peer-id': 1.0.4
+      it-stream-types: 1.0.4
+    dev: false
+
+  /@libp2p/interface-peer-discovery/1.0.1:
+    resolution: {integrity: sha512-ZqBhpX7fR3ROYQaGYV47YhyTJJzFDzyyEIsQ7NnDuG3KhcQb2PtocnN0sy1Ozm784M0oYveM/HjfuNxxcOwdYg==}
+    engines: {node: '>=16.0.0', npm: '>=7.0.0'}
+    dependencies:
+      '@libp2p/interface-peer-info': 1.0.2
+      '@libp2p/interfaces': 3.0.3
+    transitivePeerDependencies:
+      - supports-color
+      - undici
+    dev: false
+
+  /@libp2p/interface-peer-id/1.0.4:
+    resolution: {integrity: sha512-VRnE0MqmS1kN43hyKCEdkhz0gciuDML7hpL3p8zDm0LnveNMLJsR+/VSUaugCi/muOzLaLk26WffKWbMYfnGfA==}
+    engines: {node: '>=16.0.0', npm: '>=7.0.0'}
+    dependencies:
+      multiformats: 9.6.4
+    dev: false
+
+  /@libp2p/interface-peer-info/1.0.2:
+    resolution: {integrity: sha512-8dGBj8+6PdBDsMAASxX2sECnWhK7zAnv8iCFgYXY5Z6fbQwA+7iVAea9FdjgyLapdIzDarttPt3Gdou8tXZdGg==}
+    engines: {node: '>=16.0.0', npm: '>=7.0.0'}
+    dependencies:
+      '@libp2p/interface-peer-id': 1.0.4
+      '@multiformats/multiaddr': 10.2.1
+    transitivePeerDependencies:
+      - supports-color
+      - undici
+    dev: false
+
+  /@libp2p/interface-peer-routing/1.0.1:
+    resolution: {integrity: sha512-MKx2g0mIUI6qNuLv3xApKXR2ZrO9CUTT9ZPL0gvRlhpFCXovEkdWJ1h8KnmkR7tGPxKHt2bsCCJ8gqUaFeNstA==}
+    engines: {node: '>=16.0.0', npm: '>=7.0.0'}
+    dependencies:
+      '@libp2p/interface-peer-id': 1.0.4
+      '@libp2p/interface-peer-info': 1.0.2
+      '@libp2p/interfaces': 3.0.3
+    transitivePeerDependencies:
+      - supports-color
+      - undici
+    dev: false
+
+  /@libp2p/interface-peer-store/1.2.0:
+    resolution: {integrity: sha512-4244DmDppLf6Av6gALoO7iMPVhBO6Hx3dbkUy7Vb3OfxS//Ix+uDUib2hypIK2Q2rKmn3dfzvDBt0GwlkSMJCg==}
+    engines: {node: '>=16.0.0', npm: '>=7.0.0'}
+    dependencies:
+      '@libp2p/interface-peer-id': 1.0.4
+      '@libp2p/interface-peer-info': 1.0.2
+      '@libp2p/interface-record': 1.0.2
+      '@libp2p/interfaces': 3.0.3
+      '@multiformats/multiaddr': 10.2.1
+    transitivePeerDependencies:
+      - supports-color
+      - undici
+    dev: false
+
+  /@libp2p/interface-pubsub/1.0.4:
+    resolution: {integrity: sha512-BSkt0h4fbBBHcr3LCF7fTtAoCdQBjKbTGxCa4tIJpI3m5suxC5h6OrLC2rmrexOxR9aZRkr9da4VShRyOfRLag==}
+    engines: {node: '>=16.0.0', npm: '>=7.0.0'}
+    dependencies:
+      '@libp2p/interface-connection': 2.1.1
+      '@libp2p/interface-peer-id': 1.0.4
+      '@libp2p/interfaces': 3.0.3
+      it-pushable: 3.0.0
+    transitivePeerDependencies:
+      - supports-color
+      - undici
+    dev: false
+
+  /@libp2p/interface-record/1.0.2:
+    resolution: {integrity: sha512-bYNxKtsUOsNucHeAXCZbAQxFXwR7JvoOmodwEByriMvTWYRbd6d8rm8VHZ/17QgdRFlIwNnpIPuoyyLQ8Wn1rQ==}
+    engines: {node: '>=16.0.0', npm: '>=7.0.0'}
+    dependencies:
+      '@libp2p/interface-peer-id': 1.0.4
+    dev: false
+
+  /@libp2p/interface-registrar/1.1.0:
+    resolution: {integrity: sha512-1Uoyn3KAecklXhsit7ANrc0FP8+mh8pVXB7c8LwGpVwKHK4IPAAfB+beUZSrHHEabp16T87FokaVYRLrGYUqRQ==}
+    engines: {node: '>=16.0.0', npm: '>=7.0.0'}
+    dependencies:
+      '@libp2p/interface-connection': 1.0.1
+      '@libp2p/interface-peer-id': 1.0.4
+    transitivePeerDependencies:
+      - supports-color
+      - undici
+    dev: false
+
+  /@libp2p/interface-registrar/2.0.2:
+    resolution: {integrity: sha512-HqDQua9J6T9KzrdYA9EhYsI0oc4CeSR1sfi0qdk073/IB3SlP+XtD7RzzVuGeyXjssqZtqf3RwjV7C+zOlHYlw==}
+    engines: {node: '>=16.0.0', npm: '>=7.0.0'}
+    dependencies:
+      '@libp2p/interface-connection': 2.1.1
+      '@libp2p/interface-peer-id': 1.0.4
+    transitivePeerDependencies:
+      - supports-color
+      - undici
+    dev: false
+
+  /@libp2p/interface-transport/1.0.2:
+    resolution: {integrity: sha512-alOdxYfYQp/v2rMGc5V7GSfRUSJc4C38HfqI3CLEfSD9DJ3NFid804MvbOS/v4mP4yWtHyN/tfR5fmH8mmGqPw==}
+    engines: {node: '>=16.0.0', npm: '>=7.0.0'}
+    dependencies:
+      '@libp2p/interface-connection': 2.1.1
+      '@libp2p/interfaces': 3.0.3
+      '@multiformats/multiaddr': 10.2.1
+      it-stream-types: 1.0.4
+    transitivePeerDependencies:
+      - supports-color
+      - undici
+    dev: false
+
+  /@libp2p/interfaces/1.3.24:
+    resolution: {integrity: sha512-LPM4Bb5zUBYcmcwVLAfDN0GaIoNghhbkgJAg50IVYWuEtAh+9ZdlY69y9IiLTiARI4LeEJlSnEEy2bWMrM6YRw==}
     engines: {node: '>=16.0.0', npm: '>=7.0.0'}
     dependencies:
       '@multiformats/multiaddr': 10.1.8
@@ -403,13 +680,33 @@ packages:
     resolution: {integrity: sha512-JPruFX3jug8XSIrE6n65M+jWa7qQM+Z1P1/jK4+8dKkJqVHIKf095HDx5D1YpCMRVx9Gpk8jZ9alNS+JhRKprQ==}
     engines: {node: '>=16.0.0', npm: '>=7.0.0'}
     dependencies:
-      '@multiformats/multiaddr': 10.1.8
+      '@multiformats/multiaddr': 10.2.1
       err-code: 3.0.1
       interface-datastore: 6.1.0
       multiformats: 9.6.4
     transitivePeerDependencies:
       - supports-color
       - undici
+    dev: false
+
+  /@libp2p/interfaces/2.0.4:
+    resolution: {integrity: sha512-MfwkTFyHJtvwNxkjOjzkXyIVvKFtEW2Q3IGRJPyPQMrtB6ll0rGMTlyJ3BQS1bcD0YkNhggFm+8XiU2/0LCBhQ==}
+    engines: {node: '>=16.0.0', npm: '>=7.0.0'}
+    dependencies:
+      '@multiformats/multiaddr': 10.2.1
+      err-code: 3.0.1
+      interface-datastore: 6.1.1
+      it-pushable: 2.0.1
+      it-stream-types: 1.0.4
+      multiformats: 9.6.4
+    transitivePeerDependencies:
+      - supports-color
+      - undici
+    dev: false
+
+  /@libp2p/interfaces/3.0.3:
+    resolution: {integrity: sha512-8IIxw7TKpaYTtVfZN3jePLlm/E/VzqPpqerN+jhA+1s86akRSeyxVBYi3W9SWDSf0oIauHJSDE8KNxLceAfeag==}
+    engines: {node: '>=16.0.0', npm: '>=7.0.0'}
     dev: false
 
   /@libp2p/kad-dht/1.0.15:
@@ -493,6 +790,31 @@ packages:
       - undici
     dev: false
 
+  /@libp2p/logger/1.1.6:
+    resolution: {integrity: sha512-ZKoRUt7cyHlbxHYDZ1Fn3A+ByqGABdmd4z07+1TfVvpEQSpn2IVcV0mt6ff5kUUtGuVeSrqK1/ZDzWqhgg56vg==}
+    engines: {node: '>=16.0.0', npm: '>=7.0.0'}
+    dependencies:
+      '@libp2p/interfaces': 2.0.2
+      debug: 4.3.4
+      interface-datastore: 6.1.1
+      multiformats: 9.6.4
+    transitivePeerDependencies:
+      - supports-color
+      - undici
+    dev: false
+
+  /@libp2p/logger/2.0.0:
+    resolution: {integrity: sha512-aC1Yz4bni8Cui1tKCL5PzQSlS3BE/hhvyVnEHhcUz+GCo+MpbmyrZSPAb/m1e7bHrDDKkT1f9DSr7vgmS/NkuQ==}
+    engines: {node: '>=16.0.0', npm: '>=7.0.0'}
+    dependencies:
+      '@libp2p/interface-peer-id': 1.0.4
+      debug: 4.3.4
+      interface-datastore: 6.1.0
+      multiformats: 9.6.4
+    transitivePeerDependencies:
+      - supports-color
+    dev: false
+
   /@libp2p/mdns/1.0.7:
     resolution: {integrity: sha512-eSPaB5GQL7h9MnnVfweXjiS/oZ8GQCa7TZYqEBRlfmjOycKt63lIl9+ww9zmSIavHvqVY3T9FexSsJseQdbxpg==}
     engines: {node: '>=16.0.0', npm: '>=7.0.0'}
@@ -533,7 +855,7 @@ packages:
     engines: {node: '>=16.0.0', npm: '>=7.0.0'}
     dependencies:
       '@libp2p/interfaces': 2.0.2
-      '@libp2p/logger': 1.1.4
+      '@libp2p/logger': 1.1.6
       abortable-iterator: 4.0.2
       err-code: 3.0.1
       it-first: 1.0.7
@@ -577,7 +899,7 @@ packages:
     engines: {node: '>=16.0.0', npm: '>=7.0.0'}
     dependencies:
       '@libp2p/crypto': 0.22.14
-      '@libp2p/interfaces': 2.0.0
+      '@libp2p/interfaces': 2.0.2
       '@libp2p/peer-id': 1.1.11
       multiformats: 9.6.4
       protons-runtime: 1.0.4
@@ -591,13 +913,23 @@ packages:
     resolution: {integrity: sha512-E5BiXqKdlZFsPNutBqjrHl2o+2ZgvUg7V6+G4Hkqiq/DmvLbBw1aNO1Pj5RvFZwPUP9GpVBuGTg/6ChrnVXCyw==}
     engines: {node: '>=16.0.0', npm: '>=7.0.0'}
     dependencies:
-      '@libp2p/interfaces': 2.0.0
+      '@libp2p/interfaces': 2.0.2
       err-code: 3.0.1
       multiformats: 9.6.4
       uint8arrays: 3.0.0
     transitivePeerDependencies:
       - supports-color
       - undici
+    dev: false
+
+  /@libp2p/peer-id/1.1.13:
+    resolution: {integrity: sha512-yDNjAs7ciNT0APWHaSRUOJKH1JfjKvgABpMhJJvnh3tJXk1nEtimpNdYWZTLNmShWwmz7AO6c5z/dnWtadCDDg==}
+    engines: {node: '>=16.0.0', npm: '>=7.0.0'}
+    dependencies:
+      '@libp2p/interface-peer-id': 1.0.4
+      err-code: 3.0.1
+      multiformats: 9.6.4
+      uint8arrays: 3.0.0
     dev: false
 
   /@libp2p/peer-id/1.1.8:
@@ -632,12 +964,12 @@ packages:
     dependencies:
       '@libp2p/crypto': 0.22.14
       '@libp2p/interfaces': 2.0.2
-      '@libp2p/logger': 1.1.4
-      '@libp2p/peer-id': 1.1.11
+      '@libp2p/logger': 1.1.6
+      '@libp2p/peer-id': 1.1.13
       '@libp2p/utils': 1.0.10_fuazrwkmrmp4ltbmuiqdjxifey
-      '@multiformats/multiaddr': 10.1.8
+      '@multiformats/multiaddr': 10.2.1
       err-code: 3.0.1
-      interface-datastore: 6.1.0
+      interface-datastore: 6.1.1
       it-all: 1.0.6
       it-filter: 1.0.3
       it-foreach: 0.1.1
@@ -657,17 +989,44 @@ packages:
       - undici
     dev: false
 
+  /@libp2p/peer-record/2.0.2:
+    resolution: {integrity: sha512-JkH9fBpBpGQYqDMJP3+LNtXLyjNCf0fVcBkdjyfPTSwUXTPJ5NxsluJAH+MZkkrJG9YJG22NgrZO5784GSLAaA==}
+    engines: {node: '>=16.0.0', npm: '>=7.0.0'}
+    dependencies:
+      '@libp2p/crypto': 1.0.0
+      '@libp2p/interface-peer-id': 1.0.4
+      '@libp2p/interface-record': 1.0.2
+      '@libp2p/logger': 2.0.0
+      '@libp2p/peer-id': 1.1.13
+      '@libp2p/utils': 2.0.1
+      '@multiformats/multiaddr': 10.1.8
+      err-code: 3.0.1
+      interface-datastore: 6.1.0
+      it-all: 1.0.6
+      it-filter: 1.0.3
+      it-foreach: 0.1.1
+      it-map: 1.0.6
+      it-pipe: 2.0.3
+      multiformats: 9.6.4
+      protons-runtime: 1.0.4
+      uint8arrays: 3.0.0
+      varint: 6.0.0
+    transitivePeerDependencies:
+      - supports-color
+      - undici
+    dev: false
+
   /@libp2p/peer-store/1.0.16_fuazrwkmrmp4ltbmuiqdjxifey:
     resolution: {integrity: sha512-TSO4ARn7L+CKBp1+hLgW6N7Mn/o4d6mvjMm7zoxxdCFtxqnZa0385mZcjYRurvslwZzksiDflcLn+AKkXKdEhw==}
     engines: {node: '>=16.0.0', npm: '>=7.0.0'}
     dependencies:
       '@libp2p/interfaces': 2.0.2
-      '@libp2p/logger': 1.1.4
-      '@libp2p/peer-id': 1.1.11
+      '@libp2p/logger': 1.1.6
+      '@libp2p/peer-id': 1.1.13
       '@libp2p/peer-record': 1.0.12_fuazrwkmrmp4ltbmuiqdjxifey
-      '@multiformats/multiaddr': 10.1.8
+      '@multiformats/multiaddr': 10.2.1
       err-code: 3.0.1
-      interface-datastore: 6.1.0
+      interface-datastore: 6.1.1
       it-all: 1.0.6
       it-filter: 1.0.3
       it-foreach: 0.1.1
@@ -717,18 +1076,44 @@ packages:
     engines: {node: '>=16.0.0', npm: '>=7.0.0'}
     dependencies:
       '@libp2p/crypto': 0.22.14
-      '@libp2p/interfaces': 2.0.2
-      '@libp2p/logger': 1.1.4
+      '@libp2p/interfaces': 2.0.4
+      '@libp2p/logger': 1.1.6
       '@libp2p/peer-collections': 1.0.3
-      '@libp2p/peer-id': 1.1.11
+      '@libp2p/peer-id': 1.1.13
       '@libp2p/topology': 1.1.7
-      '@multiformats/multiaddr': 10.1.8
+      '@multiformats/multiaddr': 10.2.1
       abortable-iterator: 4.0.2
       err-code: 3.0.1
       iso-random-stream: 2.0.2
       it-length-prefixed: 7.0.1
       it-pipe: 2.0.3
       it-pushable: 2.0.1
+      multiformats: 9.6.4
+      p-queue: 7.2.0
+      uint8arrays: 3.0.0
+    transitivePeerDependencies:
+      - supports-color
+      - undici
+    dev: false
+
+  /@libp2p/pubsub/2.0.0:
+    resolution: {integrity: sha512-J10G3KMqKfnGnig1sLnLntcCVOu3wU9YqkKLFz10DqqsOFTFVXcYvvWFzCh1AAmo8jvrGBc0fBFLmT/B/fYfeA==}
+    engines: {node: '>=16.0.0', npm: '>=7.0.0'}
+    dependencies:
+      '@libp2p/components': 1.0.0
+      '@libp2p/crypto': 1.0.0
+      '@libp2p/interfaces': 3.0.3
+      '@libp2p/logger': 1.1.4
+      '@libp2p/peer-collections': 1.0.3
+      '@libp2p/peer-id': 1.1.13
+      '@libp2p/topology': 2.0.0
+      '@multiformats/multiaddr': 10.2.1
+      abortable-iterator: 4.0.2
+      err-code: 3.0.1
+      iso-random-stream: 2.0.2
+      it-length-prefixed: 7.0.1
+      it-pipe: 2.0.3
+      it-pushable: 3.0.0
       multiformats: 9.6.4
       p-queue: 7.2.0
       uint8arrays: 3.0.0
@@ -751,19 +1136,24 @@ packages:
       - undici
     dev: false
 
-  /@libp2p/tcp/1.0.8:
+  /@libp2p/tcp/1.0.8_fuazrwkmrmp4ltbmuiqdjxifey:
     resolution: {integrity: sha512-EvYYpjN2+7d1RWPUnfIn0Qol6tWXCJthLDkXCV+c/dPGzutvNgQBrG74TPBr2KpNt0D7kIbkEG6k7ZRopYjkzQ==}
     engines: {node: '>=16.0.0', npm: '>=7.0.0'}
     dependencies:
-      '@libp2p/logger': 1.1.4
-      '@libp2p/utils': 1.0.9
+      '@libp2p/logger': 1.1.6
+      '@libp2p/utils': 1.0.10_fuazrwkmrmp4ltbmuiqdjxifey
       '@multiformats/mafmt': 11.0.2
-      '@multiformats/multiaddr': 10.1.8
+      '@multiformats/multiaddr': 10.2.1
       abortable-iterator: 4.0.2
       err-code: 3.0.1
       stream-to-it: 0.2.4
     transitivePeerDependencies:
+      - '@swc/core'
+      - '@swc/wasm'
+      - '@types/node'
+      - mocha
       - supports-color
+      - typescript
       - undici
     dev: false
 
@@ -774,6 +1164,21 @@ packages:
       '@libp2p/interfaces': 1.3.24
       '@libp2p/logger': 1.1.4
       '@multiformats/multiaddr': 10.1.8
+      err-code: 3.0.1
+      it-all: 1.0.6
+    transitivePeerDependencies:
+      - supports-color
+      - undici
+    dev: false
+
+  /@libp2p/topology/2.0.0:
+    resolution: {integrity: sha512-BV6kIsDdChrjETwJsuvPf64BTScGgQEltJqZJGeEC6h12SnEX7Hh6bVPZqdIPSHzr97HpzXxP/f+fBEaLl/Ivg==}
+    engines: {node: '>=16.0.0', npm: '>=7.0.0'}
+    dependencies:
+      '@libp2p/interface-peer-id': 1.0.4
+      '@libp2p/interface-registrar': 1.1.0
+      '@libp2p/logger': 1.1.6
+      '@multiformats/multiaddr': 10.2.1
       err-code: 3.0.1
       it-all: 1.0.6
     transitivePeerDependencies:
@@ -796,15 +1201,15 @@ packages:
     engines: {node: '>=16.0.0', npm: '>=7.0.0'}
     dependencies:
       '@achingbrain/ip-address': 8.1.0
-      '@libp2p/logger': 1.1.4
-      '@multiformats/multiaddr': 10.1.8
+      '@libp2p/logger': 1.1.6
+      '@multiformats/multiaddr': 10.2.1
       abortable-iterator: 4.0.2
       err-code: 3.0.1
       is-loopback-addr: 2.0.1
       it-stream-types: 1.0.4
       private-ip: 2.3.3
       ts-mocha: 9.0.2_mocha@9.2.0
-      ts-node: 10.7.0_mugk4nb34cgyfwd4f3jfnst2qi
+      ts-node: 10.8.1_mugk4nb34cgyfwd4f3jfnst2qi
     transitivePeerDependencies:
       - '@swc/core'
       - '@swc/wasm'
@@ -815,13 +1220,15 @@ packages:
       - undici
     dev: false
 
-  /@libp2p/utils/1.0.9:
-    resolution: {integrity: sha512-ujxTQsQDtWoCNlwkQXdmoLMV9RQ0VGSfOiJC/ZFzslyNCOetI8r51xRZ3F1gJxJubRzmVXERtoZWNbXGcel2sA==}
+  /@libp2p/utils/2.0.1:
+    resolution: {integrity: sha512-R0r9fkskuTmm5jMrlRXWpTdYJeDYcNQ1KdfSEmoVlCs5AlTeWn31+cdaHQihSEbkpEKtVCExfsZkwa3f7C1l8A==}
     engines: {node: '>=16.0.0', npm: '>=7.0.0'}
     dependencies:
       '@achingbrain/ip-address': 8.1.0
-      '@libp2p/logger': 1.1.2
-      '@multiformats/multiaddr': 10.1.8
+      '@libp2p/interface-connection': 1.0.1
+      '@libp2p/interface-peer-store': 1.2.0
+      '@libp2p/logger': 2.0.0
+      '@multiformats/multiaddr': 10.2.1
       abortable-iterator: 4.0.2
       err-code: 3.0.1
       is-loopback-addr: 2.0.1
@@ -836,8 +1243,8 @@ packages:
     resolution: {integrity: sha512-K1mVGRLRhBdT5eqcs8RZwkkkzjRJHgu6g1t+yjyHZkes5vE9paHF2CaQxejMWRdqImOQpPY7c01wEI6cPsT6Cg==}
     engines: {node: '>=16.0.0', npm: '>=7.0.0'}
     dependencies:
-      '@libp2p/interfaces': 2.0.2
-      '@libp2p/logger': 1.1.4
+      '@libp2p/interfaces': 2.0.4
+      '@libp2p/logger': 1.1.6
       delay: 5.0.0
       err-code: 3.0.1
       iso-random-stream: 2.0.2
@@ -851,11 +1258,42 @@ packages:
       - undici
     dev: false
 
+  /@libp2p/webrtc-peer/2.0.0:
+    resolution: {integrity: sha512-HmU3BVkG1U1FlZTZk9vQO31U5L8N90/NIwo4rZv4og1YyBzdF9TzXFkB8BdZD2pwGB1mwDYF7Q+zKwDw6efxgw==}
+    engines: {node: '>=16.0.0', npm: '>=7.0.0'}
+    dependencies:
+      '@libp2p/interfaces': 3.0.3
+      '@libp2p/logger': 2.0.0
+      delay: 5.0.0
+      err-code: 3.0.1
+      iso-random-stream: 2.0.2
+      it-pushable: 3.0.0
+      it-stream-types: 1.0.4
+      p-defer: 4.0.0
+      p-event: 5.0.1
+      uint8arrays: 3.0.0
+    transitivePeerDependencies:
+      - supports-color
+    dev: false
+
   /@libp2p/webrtc-star-protocol/1.0.1:
     resolution: {integrity: sha512-KOCBQfm4Q1TkTqHte+qXflsiiAGNPXXnjUmRxmcrNsYGsp0u8Ejim6sYTWnGau+nZDBn4i9XQ+AhPsDFQsiZSA==}
     engines: {node: '>=16.0.0', npm: '>=7.0.0'}
     dependencies:
-      '@multiformats/multiaddr': 10.1.8
+      '@multiformats/multiaddr': 10.2.1
+      socket.io-client: 4.4.1
+    transitivePeerDependencies:
+      - bufferutil
+      - supports-color
+      - undici
+      - utf-8-validate
+    dev: false
+
+  /@libp2p/webrtc-star-protocol/2.0.0:
+    resolution: {integrity: sha512-fDBimLljueG9U5btoVRjoQpxfcwScSauix+cufNI+NwyY0wRwaC709n7mPPDJ7qQ1QptXqVBZsAJ2Xb5ANLGGg==}
+    engines: {node: '>=16.0.0', npm: '>=7.0.0'}
+    dependencies:
+      '@multiformats/multiaddr': 10.2.1
       socket.io-client: 4.4.1
     transitivePeerDependencies:
       - bufferutil
@@ -868,14 +1306,14 @@ packages:
     resolution: {integrity: sha512-1igTwDRg7ZvEVRzwFY4xbx8gqJDRR9XySFE6ME1SSxWOYjT5wCzT3z8ebJIQvC5GDdU2tG5f9Qsus1yRKqqeFg==}
     engines: {node: '>=16.0.0', npm: '>=7.0.0'}
     dependencies:
-      '@libp2p/interfaces': 2.0.2
-      '@libp2p/logger': 1.1.4
-      '@libp2p/peer-id': 1.1.11
+      '@libp2p/interfaces': 2.0.4
+      '@libp2p/logger': 1.1.6
+      '@libp2p/peer-id': 1.1.13
       '@libp2p/utils': 1.0.10_fuazrwkmrmp4ltbmuiqdjxifey
       '@libp2p/webrtc-peer': 1.0.9
       '@libp2p/webrtc-star-protocol': 1.0.1
       '@multiformats/mafmt': 11.0.2
-      '@multiformats/multiaddr': 10.1.8
+      '@multiformats/multiaddr': 10.2.1
       abortable-iterator: 4.0.2
       delay: 5.0.0
       err-code: 3.0.1
@@ -899,15 +1337,47 @@ packages:
       - utf-8-validate
     dev: false
 
+  /@libp2p/webrtc-star/3.0.0:
+    resolution: {integrity: sha512-uo+oFyqpNYRMEzaV80DSP8hOejp1upv1s1p3XxwaWBYZFMpE4Ki2gSLXU0XFLApi3CCk7A3ST0VT7tkGSoGU7Q==}
+    engines: {node: '>=16.0.0', npm: '>=7.0.0'}
+    dependencies:
+      '@libp2p/components': 2.0.0
+      '@libp2p/interface-connection': 2.1.1
+      '@libp2p/interface-peer-discovery': 1.0.1
+      '@libp2p/interface-peer-id': 1.0.4
+      '@libp2p/interface-transport': 1.0.2
+      '@libp2p/interfaces': 3.0.3
+      '@libp2p/logger': 2.0.0
+      '@libp2p/peer-id': 1.1.13
+      '@libp2p/utils': 2.0.1
+      '@libp2p/webrtc-peer': 2.0.0
+      '@libp2p/webrtc-star-protocol': 2.0.0
+      '@multiformats/mafmt': 11.0.2
+      '@multiformats/multiaddr': 10.2.1
+      abortable-iterator: 4.0.2
+      delay: 5.0.0
+      err-code: 3.0.1
+      iso-random-stream: 2.0.2
+      multiformats: 9.6.4
+      p-defer: 4.0.0
+      socket.io-client: 4.4.1
+      uint8arrays: 3.0.0
+    transitivePeerDependencies:
+      - bufferutil
+      - supports-color
+      - undici
+      - utf-8-validate
+    dev: false
+
   /@libp2p/websockets/1.0.9_fuazrwkmrmp4ltbmuiqdjxifey:
     resolution: {integrity: sha512-fKqTqzGXAcSIG2kFuDOgMyqjE8khTwE7+J1m+XvZRfz4b732wspg/3o/81dExN+T6F5wU60s2VeEYYyc1K++Vg==}
     engines: {node: '>=16.0.0', npm: '>=7.0.0'}
     dependencies:
-      '@libp2p/interfaces': 2.0.2
-      '@libp2p/logger': 1.1.4
+      '@libp2p/interfaces': 2.0.4
+      '@libp2p/logger': 1.1.6
       '@libp2p/utils': 1.0.10_fuazrwkmrmp4ltbmuiqdjxifey
       '@multiformats/mafmt': 11.0.2
-      '@multiformats/multiaddr': 10.1.8
+      '@multiformats/multiaddr': 10.2.1
       '@multiformats/multiaddr-to-uri': 9.0.1
       abortable-iterator: 4.0.2
       err-code: 3.0.1
@@ -939,7 +1409,7 @@ packages:
   /@multiformats/multiaddr-to-uri/9.0.1:
     resolution: {integrity: sha512-kSyHZ2lKjoEzHu/TM4ZVwFj4AWV1B9qFBFJjYb/fK1NqrnrNb/M3uhoyckJvP7WZvpDsnEc7fUCpmPipDY6LMw==}
     dependencies:
-      '@multiformats/multiaddr': 10.1.8
+      '@multiformats/multiaddr': 10.2.1
     transitivePeerDependencies:
       - supports-color
       - undici
@@ -947,6 +1417,21 @@ packages:
 
   /@multiformats/multiaddr/10.1.8:
     resolution: {integrity: sha512-Prc6xFfUZWJ43G7Ir1ZZOJxjCP++CA876eCl8WGuFTGoZj+x/BknpEXALevSpqhV7sNnblgJUQaGaXO4VFswaQ==}
+    engines: {node: '>=16.0.0', npm: '>=7.0.0'}
+    dependencies:
+      dns-over-http-resolver: 2.0.1
+      err-code: 3.0.1
+      is-ip: 4.0.0
+      multiformats: 9.6.4
+      uint8arrays: 3.0.0
+      varint: 6.0.0
+    transitivePeerDependencies:
+      - supports-color
+      - undici
+    dev: false
+
+  /@multiformats/multiaddr/10.2.1:
+    resolution: {integrity: sha512-i1l5tEmWgJ3bQYew3gL0yI5jy+8JfIpFcaBbjwbS7LyQSHYZLjDyfagFWMPEDdQB3/gxYpkddHlci4uJW/IMZw==}
     engines: {node: '>=16.0.0', npm: '>=7.0.0'}
     dependencies:
       dns-over-http-resolver: 2.0.1
@@ -1364,7 +1849,7 @@ packages:
     dev: false
 
   /backo2/1.0.2:
-    resolution: {integrity: sha1-MasayLEpNjRj41s+u2n038+6eUc=}
+    resolution: {integrity: sha512-zj6Z6M7Eq+PBZ7PQxl5NT665MvJdAkzp0f60nAJ+sLaSCBPMwVak5ZegFbgVCzFcCJTKFoMizvM5Ld7+JrRJHA==}
     dev: false
 
   /balanced-match/1.0.2:
@@ -1420,7 +1905,7 @@ packages:
       blockstore-core: 1.0.5
       err-code: 3.0.1
       interface-blockstore: 2.0.3
-      interface-datastore: 6.1.0
+      interface-datastore: 6.1.1
       it-drain: 1.0.5
       it-pushable: 1.4.2
       multiformats: 9.6.4
@@ -1775,7 +2260,7 @@ packages:
     dependencies:
       datastore-core: 7.0.1
       fast-write-atomic: 0.2.1
-      interface-datastore: 6.1.0
+      interface-datastore: 6.1.1
       it-glob: 1.0.2
       it-map: 1.0.6
       it-parallel-batch: 1.0.10
@@ -1789,7 +2274,7 @@ packages:
     engines: {node: '>=16.0.0', npm: '>=7.0.0'}
     dependencies:
       datastore-core: 7.0.1
-      interface-datastore: 6.1.0
+      interface-datastore: 6.1.1
       it-filter: 1.0.3
       it-map: 1.0.6
       it-sort: 1.0.1
@@ -1803,11 +2288,11 @@ packages:
     resolution: {integrity: sha512-a/sBssBoGlgd7CF3RVy3IifYS5SHbBwigsHURU+WvDN9BBBKFYjJAfy0tMkAwByPAo6q3uIN7GhgGeEpK86NLQ==}
     engines: {node: '>=16.0.0', npm: '>=7.0.0'}
     dependencies:
-      '@libp2p/logger': 1.1.4
+      '@libp2p/logger': 1.1.6
       datastore-core: 7.0.1
       debug: 4.3.4
       err-code: 3.0.1
-      interface-datastore: 6.1.0
+      interface-datastore: 6.1.1
       uint8arrays: 3.0.0
     transitivePeerDependencies:
       - supports-color
@@ -2475,6 +2960,14 @@ packages:
       uint8arrays: 3.0.0
     dev: false
 
+  /interface-datastore/6.1.1:
+    resolution: {integrity: sha512-AmCS+9CT34pp2u0QQVXjKztkuq3y5T+BIciuiHDDtDZucZD8VudosnSdUyXJV6IsRkN5jc4RFDhCk1O6Q3Gxjg==}
+    dependencies:
+      interface-store: 2.0.2
+      nanoid: 3.2.0
+      uint8arrays: 3.0.0
+    dev: false
+
   /interface-store/2.0.2:
     resolution: {integrity: sha512-rScRlhDcz6k199EkHqT8NpM87ebN89ICOzILoBHgaG36/WX50N32BnU/kpZgCGPLhARRAWUUX5/cyaIjt7Kipg==}
     dev: false
@@ -2531,14 +3024,14 @@ packages:
       - undici
     dev: false
 
-  /ipfs-core-config/0.4.0_fuazrwkmrmp4ltbmuiqdjxifey:
-    resolution: {integrity: sha512-zEsCEqGReUAyf6Syhun963KP9LbOn2mmw/EJc22VKz8uPdu+zodd3haKb5RVOtYbIgIESsWifh0n/La0Kex/Yw==}
+  /ipfs-core-config/0.4.1_fuazrwkmrmp4ltbmuiqdjxifey:
+    resolution: {integrity: sha512-U8rBt8OVJdzz//a3Evp2L/TtLh6fTI3nQ4XUdDPf1W7L0ie4IJaFnWaZ50HbtMlIpSQc76ygTygkaVG0tyDpMA==}
     dependencies:
       '@chainsafe/libp2p-gossipsub': 1.0.1_fuazrwkmrmp4ltbmuiqdjxifey
       '@libp2p/floodsub': 1.0.6
-      '@libp2p/logger': 1.1.4
+      '@libp2p/logger': 1.1.6
       '@libp2p/mdns': 1.0.7
-      '@libp2p/tcp': 1.0.8
+      '@libp2p/tcp': 1.0.8_fuazrwkmrmp4ltbmuiqdjxifey
       '@libp2p/webrtc-star': 1.0.12_fuazrwkmrmp4ltbmuiqdjxifey
       blockstore-datastore-adapter: 2.0.3
       datastore-core: 7.0.1
@@ -2546,7 +3039,7 @@ packages:
       datastore-level: 8.0.0
       err-code: 3.0.1
       hashlru: 2.3.0
-      interface-datastore: 6.1.0
+      interface-datastore: 6.1.1
       ipfs-repo: 14.0.1
       ipfs-utils: 9.0.6
       is-ipfs: 6.0.2
@@ -2568,25 +3061,12 @@ packages:
       - utf-8-validate
     dev: false
 
-  /ipfs-core-types/0.10.3:
-    resolution: {integrity: sha512-GNid2lRBjR5qgScCglgk7w9Hk3TZAwPHQXxOLQx72wgyc0jF2U5NXRoKW0GRvX8NPbHmsrFszForIqxd23I1Gw==}
+  /ipfs-core-types/0.11.1:
+    resolution: {integrity: sha512-K7ZSx9EPEvT4At2kExKyMCqY4Jo3Nb/VnC/iSWqFKRaqb0MTB4IJgvWrwwDuN541tn+dvUnTfOp2wWQSov1UAw==}
     dependencies:
       '@ipld/dag-pb': 2.1.16
-      interface-datastore: 6.1.0
-      ipfs-unixfs: 6.0.6
-      multiaddr: 10.0.1
-      multiformats: 9.6.4
-    transitivePeerDependencies:
-      - node-fetch
-      - supports-color
-    dev: false
-
-  /ipfs-core-types/0.11.0:
-    resolution: {integrity: sha512-HwhxvBEPKMNBGsD2PbvncwKynPKcZtEwSuBCEih6/tR7zCkV5YGi5WAj1fXVuDAfRU3Se41xqJ6FKU4KWrP4cw==}
-    dependencies:
-      '@ipld/dag-pb': 2.1.16
-      '@multiformats/multiaddr': 10.1.8
-      interface-datastore: 6.1.0
+      '@multiformats/multiaddr': 10.2.1
+      interface-datastore: 6.1.1
       ipfs-unixfs: 6.0.9
       multiformats: 9.6.4
     transitivePeerDependencies:
@@ -2594,17 +3074,17 @@ packages:
       - undici
     dev: false
 
-  /ipfs-core-utils/0.15.0:
-    resolution: {integrity: sha512-/ljV4PIjjWY9lpOnlDwIAMnRR0FudsiAv6ggQ/LxqQKhZmWKBGmcrBfIEPEBLBHX1yWL0yN4wcjg/+zVr6Qb/w==}
+  /ipfs-core-utils/0.15.1:
+    resolution: {integrity: sha512-nZmUiLctJWMFrEciVkKdDUO2xLpXWy7Ilt0VMJ35Y5+OJznCXxMHUQo1WUALATlo9ziHgDdHFrAUuyW0yB2rww==}
     dependencies:
-      '@libp2p/logger': 1.1.4
-      '@multiformats/multiaddr': 10.1.8
+      '@libp2p/logger': 1.1.6
+      '@multiformats/multiaddr': 10.2.1
       '@multiformats/multiaddr-to-uri': 9.0.1
       any-signal: 3.0.1
       blob-to-it: 1.0.4
       browser-readablestream-to-it: 1.0.3
       err-code: 3.0.1
-      ipfs-core-types: 0.11.0
+      ipfs-core-types: 0.11.1
       ipfs-unixfs: 6.0.9
       ipfs-utils: 9.0.6
       it-all: 1.0.6
@@ -2622,31 +3102,31 @@ packages:
       - undici
     dev: false
 
-  /ipfs-core/0.15.0_fuazrwkmrmp4ltbmuiqdjxifey:
-    resolution: {integrity: sha512-YVfv9gG6SvH6ee9V3QiIfSfj0KE6wlHOwO/A5Ku3LFZA1a1e45U91iB6qqiPZ+120VAvcr+WGlF/D8584ozoNw==}
+  /ipfs-core/0.15.4_fuazrwkmrmp4ltbmuiqdjxifey:
+    resolution: {integrity: sha512-4wZU76x4GjJGO5gtyHCk+1AjiSnWEUz/jynY5XRcz1bEus0otlUYTpm/B1Rw73Ixvyx1nKSQCSKh7gf36YDf3Q==}
     dependencies:
       '@chainsafe/libp2p-noise': 6.0.1
       '@ipld/car': 4.1.2
-      '@ipld/dag-cbor': 7.0.1
+      '@ipld/dag-cbor': 7.0.2
       '@ipld/dag-json': 8.0.9
       '@ipld/dag-pb': 2.1.16
       '@libp2p/bootstrap': 1.0.3
       '@libp2p/crypto': 0.22.14
       '@libp2p/delegated-content-routing': 1.0.4
       '@libp2p/delegated-peer-routing': 1.0.4
-      '@libp2p/interfaces': 2.0.2
+      '@libp2p/interfaces': 2.0.4
       '@libp2p/kad-dht': 1.0.15
-      '@libp2p/logger': 1.1.4
+      '@libp2p/logger': 1.1.6
       '@libp2p/mplex': 1.1.0
-      '@libp2p/peer-id': 1.1.11
+      '@libp2p/peer-id': 1.1.13
       '@libp2p/peer-id-factory': 1.0.11
       '@libp2p/record': 1.0.4
       '@libp2p/websockets': 1.0.9_fuazrwkmrmp4ltbmuiqdjxifey
       '@multiformats/mafmt': 11.0.2
-      '@multiformats/multiaddr': 10.1.8
+      '@multiformats/multiaddr': 10.2.1
       '@multiformats/multiaddr-to-uri': 9.0.1
       '@multiformats/murmur3': 1.1.3
-      any-signal: 3.0.0
+      any-signal: 3.0.1
       array-shuffle: 3.0.0
       blockstore-core: 1.0.5
       dag-jose: 1.0.0
@@ -2657,12 +3137,12 @@ packages:
       hamt-sharding: 2.0.1
       hashlru: 2.3.0
       interface-blockstore: 2.0.3
-      interface-datastore: 6.1.0
+      interface-datastore: 6.1.1
       ipfs-bitswap: 11.0.1
-      ipfs-core-config: 0.4.0_fuazrwkmrmp4ltbmuiqdjxifey
-      ipfs-core-types: 0.11.0
-      ipfs-core-utils: 0.15.0
-      ipfs-http-client: 57.0.0
+      ipfs-core-config: 0.4.1_fuazrwkmrmp4ltbmuiqdjxifey
+      ipfs-core-types: 0.11.1
+      ipfs-core-utils: 0.15.1
+      ipfs-http-client: 57.0.3
       ipfs-repo: 14.0.1
       ipfs-unixfs: 6.0.9
       ipfs-unixfs-exporter: 7.0.11
@@ -2684,7 +3164,7 @@ packages:
       it-tar: 5.0.0
       it-to-buffer: 2.0.2
       just-safe-set: 4.0.2
-      libp2p: 0.37.2_fuazrwkmrmp4ltbmuiqdjxifey
+      libp2p: 0.37.3_fuazrwkmrmp4ltbmuiqdjxifey
       merge-options: 3.0.4
       mortice: 3.0.0
       multiformats: 9.6.4
@@ -2706,21 +3186,21 @@ packages:
       - utf-8-validate
     dev: false
 
-  /ipfs-http-client/57.0.0:
-    resolution: {integrity: sha512-nXxj0QckRIG4ImXMC4XSB+JM0LsNMHExIMGB4DK/+ArzDij51A0NxeYGrJpBmSnaFKX5I4BHOoWL5M8jm6zOVg==}
+  /ipfs-http-client/57.0.3:
+    resolution: {integrity: sha512-IOqxcMei7Y2bxU2Se98YB+HEv2rZp9aTbkQjNY4XgoeG3eMp0zU/6tpguOHzC5a6SOCojZRrcAAZq2RAwdmrhg==}
     engines: {node: '>=15.0.0', npm: '>=3.0.0'}
     dependencies:
       '@ipld/dag-cbor': 7.0.2
       '@ipld/dag-json': 8.0.9
       '@ipld/dag-pb': 2.1.16
-      '@libp2p/logger': 1.1.4
-      '@libp2p/peer-id': 1.1.11
-      '@multiformats/multiaddr': 10.1.8
+      '@libp2p/logger': 1.1.6
+      '@libp2p/peer-id': 1.1.13
+      '@multiformats/multiaddr': 10.2.1
       any-signal: 3.0.1
       dag-jose: 1.0.0
       err-code: 3.0.1
-      ipfs-core-types: 0.11.0
-      ipfs-core-utils: 0.15.0
+      ipfs-core-types: 0.11.1
+      ipfs-core-utils: 0.15.1
       ipfs-utils: 9.0.6
       it-first: 1.0.7
       it-last: 1.0.6
@@ -2743,7 +3223,7 @@ packages:
       debug: 4.3.4
       fnv1a: 1.1.1
       interface-blockstore: 2.0.3
-      interface-datastore: 6.1.0
+      interface-datastore: 6.1.1
       it-length: 1.0.4
       multiaddr: 10.0.1
       multiformats: 9.6.4
@@ -2765,7 +3245,7 @@ packages:
       debug: 4.3.4
       err-code: 3.0.1
       interface-blockstore: 2.0.3
-      interface-datastore: 6.1.0
+      interface-datastore: 6.1.1
       ipfs-repo-migrations: 12.0.1
       it-drain: 1.0.5
       it-filter: 1.0.3
@@ -2827,14 +3307,6 @@ packages:
     transitivePeerDependencies:
       - encoding
       - supports-color
-    dev: false
-
-  /ipfs-unixfs/6.0.6:
-    resolution: {integrity: sha512-gTkjYKXuHnqIf6EFfS+ESaYEl3I3aaQQ0UX8MhpNzreMLEuMnuqpoI/uLLllTZa31WRplKixabbpRTSmTYRNwA==}
-    engines: {node: '>=14.0.0', npm: '>=6.0.0'}
-    dependencies:
-      err-code: 3.0.1
-      protobufjs: 6.11.2
     dev: false
 
   /ipfs-unixfs/6.0.9:
@@ -3248,6 +3720,10 @@ packages:
     resolution: {integrity: sha512-UVu0KRPovrUZrso7lue8LYBC29/egqxV6xCJkZ1E1F3zPgzs4C0MSv6eDigOQKbcPJTVemcM7nsu/XNV0lwl+w==}
     dev: false
 
+  /it-pushable/3.0.0:
+    resolution: {integrity: sha512-Lpo9Q6wghDDoX8RyA2vIkpNckd5E0EY7RzIKwgiTPakrTmwDw7tKMx6DDJ1ZXrunYnHdKHnKSHYJL3Csya5U2w==}
+    dev: false
+
   /it-reader/5.0.1:
     resolution: {integrity: sha512-Vj9TliHgCsIE21oqWDhrE1E5QALZw1n9QiaZg2EiWPFKSvCSm7lGDycy1OYs3LYhgvmTQDKJestlzVSHJ/YsJw==}
     dependencies:
@@ -3470,25 +3946,25 @@ packages:
       uint8arrays: 3.0.0
     dev: false
 
-  /libp2p/0.37.2_fuazrwkmrmp4ltbmuiqdjxifey:
-    resolution: {integrity: sha512-svamWXkXf5waLaw9JR6cbeZp1yyuMF0wulXqGmc3bGVp/76FcnwN4c9kIuEGBV44gx3BwWoxerbsVleF41h7qw==}
+  /libp2p/0.37.3_fuazrwkmrmp4ltbmuiqdjxifey:
+    resolution: {integrity: sha512-G+0tWT6jZr05XE9bG8Kw1SqFrkt1X3bM9TDDXkqWqHvUVjBHWGNDysOvTp7p3jxoSj4J/Z2w9wGbdDsz1kfPlw==}
     engines: {node: '>=16.0.0', npm: '>=7.0.0'}
     dependencies:
       '@achingbrain/nat-port-mapper': 1.0.5
       '@libp2p/connection': 2.0.3
       '@libp2p/crypto': 0.22.14
       '@libp2p/interfaces': 2.0.2
-      '@libp2p/logger': 1.1.4
+      '@libp2p/logger': 1.1.6
       '@libp2p/multistream-select': 1.0.5
       '@libp2p/peer-collections': 1.0.3
-      '@libp2p/peer-id': 1.1.11
+      '@libp2p/peer-id': 1.1.13
       '@libp2p/peer-id-factory': 1.0.11
       '@libp2p/peer-record': 1.0.12_fuazrwkmrmp4ltbmuiqdjxifey
       '@libp2p/peer-store': 1.0.16_fuazrwkmrmp4ltbmuiqdjxifey
       '@libp2p/tracked-map': 1.0.5
       '@libp2p/utils': 1.0.10_fuazrwkmrmp4ltbmuiqdjxifey
       '@multiformats/mafmt': 11.0.2
-      '@multiformats/multiaddr': 10.1.8
+      '@multiformats/multiaddr': 10.2.1
       abortable-iterator: 4.0.2
       any-signal: 3.0.1
       datastore-core: 7.0.1
@@ -4048,7 +4524,7 @@ packages:
     dev: false
 
   /p-finally/1.0.0:
-    resolution: {integrity: sha1-P7z7FbiZpEEjs0ttzBi3JDNqLK4=}
+    resolution: {integrity: sha512-LICb2p9CB7FS+0eR1oqWnHhp0FljGLZCWBE9aix0Uye9W8LTQPwMTYVGWQWIw9RdQiDg4+epXQODwIYJtSJaow==}
     engines: {node: '>=4'}
     dev: false
 
@@ -4448,7 +4924,7 @@ packages:
     dev: false
 
   /retry/0.12.0:
-    resolution: {integrity: sha1-G0KmJmoh8HQh0bC1S33BZ7AcATs=}
+    resolution: {integrity: sha512-9LkiTwjUh6rT555DtE9rTX+BKByPfrMzEAtnlEtdEwr3Nkffwiihqe2bWADg+OQRjt9gl6ICdmB/ZFDCGAtSow==}
     engines: {node: '>= 4'}
     dev: false
 
@@ -4754,7 +5230,7 @@ packages:
       ansi-regex: 5.0.1
 
   /strip-bom/3.0.0:
-    resolution: {integrity: sha1-IzTBjpx1n3vdVv3vfprj1YjmjtM=}
+    resolution: {integrity: sha512-vavAMRXOgBVNF6nyEEmL3DBK19iRpDcoIwW+swQ+CbGiu7lju6t+JklA1MHweoWtadgt4ISVUsXLyDq34ddcwA==}
     engines: {node: '>=4'}
     dev: false
     optional: true
@@ -4852,7 +5328,7 @@ packages:
     dev: true
 
   /tr46/0.0.3:
-    resolution: {integrity: sha1-gYT9NH2snNwYWZLzpmIuFLnZq2o=}
+    resolution: {integrity: sha512-N3WMsuqV66lT30CrXNbEjx4GEwlow3v6rr4mCcv6prnfwhS01rkgyFdjPNBYd9br7LpXV1+Emh01fHnq2Gdgrw==}
     dev: false
 
   /tr46/1.0.1:
@@ -4862,7 +5338,7 @@ packages:
     dev: false
 
   /truncate-utf8-bytes/1.0.2:
-    resolution: {integrity: sha1-QFkjkJWS1W94pYGENLC3hInKXys=}
+    resolution: {integrity: sha512-95Pu1QXQvruGEhv62XCMO3Mm90GscOCClvrIUwCM0PYOXK3kaF3l3sIHxx71ThJfcbM2O5Au6SO3AWCSEfW4mQ==}
     dependencies:
       utf8-byte-length: 1.0.4
     dev: false
@@ -4880,8 +5356,8 @@ packages:
       tsconfig-paths: 3.14.1
     dev: false
 
-  /ts-node/10.4.0_mugk4nb34cgyfwd4f3jfnst2qi:
-    resolution: {integrity: sha512-g0FlPvvCXSIO1JDF6S232P5jPYqBkRL9qly81ZgAOSU7rwI0stphCgd2kLiCrU9DjQCrJMWEqcNSjQL02s6d8A==}
+  /ts-node/10.8.1_mugk4nb34cgyfwd4f3jfnst2qi:
+    resolution: {integrity: sha512-Wwsnao4DQoJsN034wePSg5nZiw4YKXf56mPIAeD6wVmiv+RytNSWqc2f3fKvcUoV+Yn2+yocD71VOfQHbmVX4g==}
     hasBin: true
     peerDependencies:
       '@swc/core': '>=1.2.50'
@@ -4894,37 +5370,7 @@ packages:
       '@swc/wasm':
         optional: true
     dependencies:
-      '@cspotcode/source-map-support': 0.7.0
-      '@tsconfig/node10': 1.0.8
-      '@tsconfig/node12': 1.0.9
-      '@tsconfig/node14': 1.0.1
-      '@tsconfig/node16': 1.0.2
-      '@types/node': 17.0.14
-      acorn: 8.7.0
-      acorn-walk: 8.2.0
-      arg: 4.1.3
-      create-require: 1.1.1
-      diff: 4.0.2
-      make-error: 1.3.6
-      typescript: 4.6.4
-      yn: 3.1.1
-    dev: true
-
-  /ts-node/10.7.0_mugk4nb34cgyfwd4f3jfnst2qi:
-    resolution: {integrity: sha512-TbIGS4xgJoX2i3do417KSaep1uRAW/Lu+WAL2doDHC0D6ummjirVOXU5/7aiZotbQ5p1Zp9tP7U6cYhA0O7M8A==}
-    hasBin: true
-    peerDependencies:
-      '@swc/core': '>=1.2.50'
-      '@swc/wasm': '>=1.2.50'
-      '@types/node': '*'
-      typescript: '>=2.7'
-    peerDependenciesMeta:
-      '@swc/core':
-        optional: true
-      '@swc/wasm':
-        optional: true
-    dependencies:
-      '@cspotcode/source-map-support': 0.7.0
+      '@cspotcode/source-map-support': 0.8.1
       '@tsconfig/node10': 1.0.8
       '@tsconfig/node12': 1.0.9
       '@tsconfig/node14': 1.0.1
@@ -4939,7 +5385,6 @@ packages:
       typescript: 4.6.4
       v8-compile-cache-lib: 3.0.1
       yn: 3.1.1
-    dev: false
 
   /ts-node/7.0.1:
     resolution: {integrity: sha512-BVwVbPJRspzNh2yfslyT1PSbl5uIk03EZlb493RKHN4qej/D06n1cEhjlOJG69oFsE7OT8XjpTUcYf6pKTLMhw==}
@@ -5029,7 +5474,7 @@ packages:
     dev: false
 
   /utf8-byte-length/1.0.4:
-    resolution: {integrity: sha1-9F8VDExm7uloGGUFq5P8u4rWv2E=}
+    resolution: {integrity: sha512-4+wkEYLBbWxqTahEsWrhxepcoVOJ+1z5PGIjPZxRkytcdSUaNjIjBM7Xn8E+pdSuV7SzvWovBFA54FO0JSoqhA==}
     dev: false
 
   /util-deprecate/1.0.2:
@@ -5054,7 +5499,6 @@ packages:
 
   /v8-compile-cache-lib/3.0.1:
     resolution: {integrity: sha512-wa7YjyUGfNZngI/vtK0UHAN+lgDCxBPCylVXGp0zu59Fz5aiGtNXaq3DhIov063MorB+VfufLh3JlF2KdTK3xg==}
-    dev: false
 
   /varint-decoder/1.0.0:
     resolution: {integrity: sha512-JkOvdztASWGUAsXshCFHrB9f6AgR2Q8W08CEyJ+43b1qtFocmI8Sp1R/M0E/hDOY2FzVIqk63tOYLgDYWuJ7IQ==}
@@ -5076,7 +5520,7 @@ packages:
     dev: false
 
   /webidl-conversions/3.0.1:
-    resolution: {integrity: sha1-JFNCdeKnvGvnvIZhHMFq4KVlSHE=}
+    resolution: {integrity: sha512-2JAn3z8AR6rjK8Sm8orRC0h/bcl/DqL7tRPdGZ4I1CjdF+EaMLmYxBHyXuKL849eucPFhvBoxMsflfOb8kxaeQ==}
     dev: false
 
   /webidl-conversions/4.0.2:
@@ -5084,7 +5528,7 @@ packages:
     dev: false
 
   /whatwg-url/5.0.0:
-    resolution: {integrity: sha1-lmRU6HZUYuN2RNNib2dCzotwll0=}
+    resolution: {integrity: sha512-saE57nupxk6v3HY35+jzBwYa0rKSy0XR8JSxZPwgLr7ys0IBzhGviA1/TUGJLmSVqs8pb9AnvICXEuOHLprYTw==}
     dependencies:
       tr46: 0.0.3
       webidl-conversions: 3.0.1
@@ -5269,7 +5713,7 @@ packages:
     dev: false
 
   /yn/2.0.0:
-    resolution: {integrity: sha1-5a2ryKz0CPY4X8dklWhMiOavaJo=}
+    resolution: {integrity: sha512-uTv8J/wiWTgUTg+9vLTi//leUl5vDQS6uii/emeTb2ssY7vl6QWf2fFbIIGjnhjvbdKlU0ed7QPgY1htTC86jQ==}
     engines: {node: '>=4'}
     dev: false
 

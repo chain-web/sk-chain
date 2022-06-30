@@ -13,7 +13,6 @@ import { newAccount } from '../../mate/account';
 import { createEmptyStorageRoot } from '../ipld/util';
 import { UpdateAccountI } from '../ipld';
 import { genTransactionClass, genTransMeta, runContract } from './trans.pure';
-import { Message } from 'ipfs-core-types/src/pubsub';
 import { BlockHeaderData } from '../../mate/block';
 
 export enum TransStatus {
@@ -259,7 +258,7 @@ export class TransactionAction extends SKChainLibBase {
     );
   };
 
-  private receiveTransaction = async (data: Message) => {
+  private receiveTransaction = async (data: any) => {
     // 接收p2p网络里的交易，并塞到交易列表
     if (data.from === this.chain.did) {
       // 不再处理自己发出的交易，因为已经直接添加到了队列

@@ -2,7 +2,6 @@ import { createNode } from '../src';
 import { DidJson } from '../src/lib/p2p/did';
 import { resolve } from 'path';
 import { homedir } from 'os';
-import { isInDocker } from '../../config';
 import BigNumber from 'bignumber.js';
 const account: DidJson = {
   id: '12D3KooWL1NF6fdTJ9cucEuwvuX8V8KtpJZZnUE4umdLBuK15eUZ',
@@ -15,7 +14,7 @@ const run = async () => {
     networkid: 'testnet',
     account,
     storePath: {
-      main: isInDocker ? '/app/db' : resolve(homedir(), './.skdb2'),
+      main: resolve(homedir(), './.skdb2'),
     },
     network: { tcp: 3002, ws: 3003, api: 6011, geteway: 9029 },
   });
