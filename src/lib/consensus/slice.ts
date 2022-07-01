@@ -17,6 +17,8 @@ type SlicePubData =
       ready?: false;
     };
 
+const slicePrefix = 'sk-slice-';
+
 export class Slice extends SKChainLibBase {
   constructor(chain: SKChain) {
     super(chain);
@@ -110,7 +112,7 @@ export class Slice extends SKChainLibBase {
   private initSliceSubscribe = async () => {
     // 监听当前分片
     await this.chain.db.pubsub.subscribe(
-      this.slice,
+      `${slicePrefix}${this.slice}`,
       this.handelSubSliceMessage,
     );
   };
@@ -200,7 +202,7 @@ export class Slice extends SKChainLibBase {
       };
     }
     await this.chain.db.pubsub.publish(
-      this.slice,
+      `${slicePrefix}${this.slice}`,
       bytes.fromString(JSON.stringify(slicePubData)),
     );
     await this.refreshCurrPeers();
