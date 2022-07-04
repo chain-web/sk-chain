@@ -3,7 +3,6 @@ import { createLibp2p, Libp2p, Libp2pOptions } from 'libp2p';
 import WS from 'libp2p-websockets';
 import { KadDHT } from '@libp2p/kad-dht';
 import { GossipSub } from '@chainsafe/libp2p-gossipsub';
-import { validator, selector } from './ipns';
 import { WebRTCStar } from '@libp2p/webrtc-star';
 import { Libp2pFactoryFn } from 'ipfs-core/dist/src/types';
 import { Noise } from '@chainsafe/libp2p-noise'
@@ -20,9 +19,13 @@ export class Network {
 
   checkNetwork = async () => {
     if (this.libp2p) {
-      const lp = await this.libp2p
-      const ps = await lp.getPeers()
-      console.log('ps',ps)
+      // const lp = await this.libp2p
+      // const ps = await lp.getPeers()
+      // console.log('peers',ps)
+      // const conns = await lp.getConnections()
+      // console.log('conns', conns)
+      // const topice = lp.pubsub.getTopics();
+      // console.log('topice', topice)
       setTimeout(() => {
         this.checkNetwork()
       }, 10000);
@@ -45,7 +48,7 @@ export class Network {
       ...opts.libp2pOptions,
       peerId,
       datastore: ds,
-      transports: [this.webRtcStar],
+      transports: [this.webRtcStar as any],
       connectionEncryption: [new Noise()],
       streamMuxers: [new Mplex() as any],
       peerDiscovery: [this.webRtcStar.discovery],
