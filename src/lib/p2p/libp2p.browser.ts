@@ -10,7 +10,7 @@ import { Mplex } from '@libp2p/mplex'
 import { Bootstrap } from '@libp2p/bootstrap'
 
 export class Network {
-  private libp2p!: Promise<Libp2p>;
+  private libp2p?: Promise<Libp2p>;
   webRtcStar = new WebRTCStar();
 
   constructor () {
