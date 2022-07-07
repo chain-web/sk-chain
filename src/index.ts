@@ -4,6 +4,7 @@ import type { DidJson } from './lib/p2p/did';
 import { create } from './node';
 export type { SKChain, SKChainOption } from './skChain';
 export type { DidJson } from './lib/p2p/did';
+export { genetateDid } from './lib/p2p/did';
 export { skCacheKeys } from './lib/ipfs/key';
 export { Block } from './mate/block';
 export { Account } from './mate/account';
