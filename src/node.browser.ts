@@ -6,6 +6,7 @@ import { lifecycleEvents, LifecycleStap } from './lib/events/lifecycle';
 import type { SKChainOption } from './skChain';
 import type { DidJson } from './lib/p2p/did';
 import { createIpfs } from './lib/ipfs/ipfs.browser';
+import { checkInitOption } from './utils/skConfig';
 
 export interface CreateBrowserNodeConfig {
   // 网络id
@@ -20,6 +21,7 @@ const config = configMap.testnet;
 export const create = async (
   cfg: Partial<CreateBrowserNodeConfig>,
 ): Promise<any> => {
+  checkInitOption(cfg);
   const allCfg = await initCreateOption(cfg);
   lifecycleEvents.emit(LifecycleStap.creatingIpfs);
 
