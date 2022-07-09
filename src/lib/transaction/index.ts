@@ -41,6 +41,18 @@ export class TransactionAction extends SKChainLibBase {
 
   private breakNextBlock = false; // 是否中断下一个块的打包
 
+  get status() {
+    let waitCount = 0;
+    this.waitTransMap.forEach((v, _k) => {
+      waitCount += v.size;
+    });
+    return {
+      transingArr: this.transingArr,
+      waitTransCount: waitCount,
+      waitTransMap: this.waitTransMap,
+    };
+  }
+
   init = async () => {
     await this.initTransactionListen();
     await this.contract.init();
@@ -155,24 +167,29 @@ export class TransactionAction extends SKChainLibBase {
 
     // 生成新块
     const nextBlock = await this.chain.ipld.commit();
+
+    // 检查新快是否已经被接受
     if (!this.checkIsBreakTransTask()) {
-      this.taskInProgress = false;
       const headerBlock = await this.chain.blockService.getHeaderBlock();
       if (nextBlock.header.parent === headerBlock.hash) {
+        // 如果新块的父块和当前块相同，说明当前打包的是下一块,则生成新块
+
+        // 清理当前打包中的交易
+        this.transingArr = [];
+      } else {
+        message.error(
+          'do trans task error',
+          'nextBlock',
+          nextBlock,
+          'headerBlock',
+          headerBlock,
+        );
+        // TODO 中断交易的情况下
+        // 回退已经执行的trans
+
         return;
       }
-      // TODO 错误的情况下，如何处理？
-      message.error(
-        'do trans task error',
-        'nextBlock',
-        nextBlock,
-        'headerBlock',
-        headerBlock,
-      );
-      return;
     }
-    // 清理当前打包中的交易
-    this.transingArr = [];
     // 广播新块
     await this.chain.consensus.pubNewBlock(nextBlock);
     // 初始化下一个区块的ipld
