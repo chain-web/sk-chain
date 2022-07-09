@@ -75,16 +75,24 @@ export class BlockRoot {
   deleteFromStartNUmber = async (number: BigNumber) => {
     const { setIndex, curIndex } = this.genIndex(number);
     const set = this.rootNode.Links[setIndex];
+    let deleted = [];
     if (set) {
       // 删除当前set中的部分
       const setData = (await this.db.dag.get(set.Hash)).value;
+      deleted.push(...setData.slice(curIndex));
       const newSetData = setData.splice(0, curIndex);
       const newSetCid = await this.db.dag.put(newSetData);
       set.Hash = newSetCid;
     }
     while (this.rootNode.Links.length > setIndex + 1) {
-      this.rootNode.Links.pop();
+      const poped = this.rootNode.Links.pop();
+      if (poped) {
+        const setData = (await this.db.dag.get(poped.Hash)).value;
+        deleted = deleted.concat(setData);
+      }
     }
+    message.info(`deleteFromStartNUmber ${number}`, deleted);
+    return deleted;
   };
 
   // 获取指定高度的块cid
@@ -109,7 +117,7 @@ export class BlockRoot {
     }
   };
 
-// 获取指定高度的块，所在set，并且只包含指定块之后的块
+  // 获取指定高度的块，所在set，并且只包含指定块之后的块
   getSetAfterNumber = async (number: BigNumber) => {
     const { curIndex } = this.genIndex(number);
     const setData = await this.getSetByNumber(number);

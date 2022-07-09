@@ -27,6 +27,31 @@ export class BlockService extends SKChainLibBase {
   getBlockByNumber: BlockRoot['getBlockByNumber'];
   getHeaderBlock: BlockRoot['getHeaderBlock'];
 
+  /**
+   * @description 添加或更新指定块的cid
+   * @param cid
+   * @param number
+   */
+  addBlockCidByNumber = async (
+    cid: string,
+    number: BigNumber, // 其实没必要用BigNumber，因为这里实现是用的数组，并且最大长度为setSize，不会出现超大数字，先这么放着吧
+  ) => {
+    let prevBlock = await this.getBlockByNumber(this.checkedBlockHeight);
+    let nextBlock = await Block.fromCid(cid, this.chain.db);
+    if (this.checkOneBlock(nextBlock, prevBlock)) {
+      this.checkedBlockHeight = nextBlock.header.number;
+    }
+    await this.blockRoot.addBlockToRootNode(cid, number);
+    await this.chain.pinService.pin(cid);
+    await this.save();
+  };
+
+  // 删除指定块及其之后的块
+  deleteFromStartNUmber = async (number: BigNumber) => {
+    const deleted = await this.blockRoot.deleteFromStartNUmber(number);
+    await this.chain.pinService.unpinFromList(deleted);
+  };
+
   // 是否完全冷启动
   needGenseis = () => {
     return this.blockRoot.rootNode.Links.length === 0;
@@ -51,11 +76,9 @@ export class BlockService extends SKChainLibBase {
   };
 
   checkBlockRoot = async () => {
-    let prevBlock = await this.blockRoot.getBlockByNumber(
-      this.checkedBlockHeight,
-    );
+    let prevBlock = await this.getBlockByNumber(this.checkedBlockHeight);
     const headerBlockNumber = (
-      await this.blockRoot.getHeaderBlock()
+      await this.getHeaderBlock()
     ).header.number.toString();
     let checked = false;
     while (!checked) {
@@ -63,7 +86,7 @@ export class BlockService extends SKChainLibBase {
         LifecycleStap.checkingBlockIndex,
         `${this.checkedBlockHeight.toString()}/${headerBlockNumber}`,
       );
-      const checkBlock = await this.blockRoot.getBlockByNumber(
+      const checkBlock = await this.getBlockByNumber(
         this.checkedBlockHeight.plus(1),
       );
       if (this.checkOneBlock(checkBlock, prevBlock)) {
@@ -72,7 +95,7 @@ export class BlockService extends SKChainLibBase {
         checked = true;
         if (checkBlock) {
           //  check不通过，纠正数据, 删除错误块及其之后的块
-          await this.blockRoot.deleteFromStartNUmber(this.checkedBlockHeight);
+          await this.deleteFromStartNUmber(this.checkedBlockHeight);
 
           lifecycleEvents.emit(
             LifecycleStap.checkedBlockIndex,
@@ -106,35 +129,13 @@ export class BlockService extends SKChainLibBase {
     return true;
   };
 
-  /**
-   * @description 添加或更新指定块的cid
-   * @param cid
-   * @param number
-   */
-  addBlockCidByNumber = async (
-    cid: string,
-    number: BigNumber, // 其实没必要用BigNumber，因为这里实现是用的数组，并且最大长度为setSize，不会出现超大数字，先这么放着吧
-  ) => {
-    let prevBlock = await this.blockRoot.getBlockByNumber(
-      this.checkedBlockHeight,
-    );
-    let nextBlock = await Block.fromCid(cid, this.chain.db);
-    if (this.checkOneBlock(nextBlock, prevBlock)) {
-      this.checkedBlockHeight = nextBlock.header.number;
-    }
-    await this.blockRoot.addBlockToRootNode(cid, number);
-    await this.save();
-  };
-
   // 检查收到的blockRoot与自己本地的是否一致
   syncFromBlockRoot = async (blockRoot: string) => {
     lifecycleEvents.emit(LifecycleStap.syncingHeaderBlock, blockRoot);
     const newBlockRoot = new BlockRoot(this.chain.db);
     await newBlockRoot.init(blockRoot);
     const newHeaderBlock = await newBlockRoot.getHeaderBlock();
-    let prevBlock = await this.blockRoot.getBlockByNumber(
-      this.checkedBlockHeight,
-    );
+    let prevBlock = await this.getBlockByNumber(this.checkedBlockHeight);
     while (this.checkedBlockHeight.isLessThan(newHeaderBlock.header.number)) {
       // 逐个set的去把区块同步到本地
       const set = await newBlockRoot.getSetAfterNumber(
@@ -164,7 +165,7 @@ export class BlockService extends SKChainLibBase {
             if (this.checkedBlockHeight.isEqualTo(0)) {
               return;
             }
-            await this.blockRoot.deleteFromStartNUmber(this.checkedBlockHeight);
+            await this.deleteFromStartNUmber(this.checkedBlockHeight);
             await this.save();
             await this.syncFromBlockRoot(blockRoot);
             return;
@@ -178,8 +179,11 @@ export class BlockService extends SKChainLibBase {
   findTxBlockWidthDeep = async (tx: string, deep: number) => {
     let headerNumber = this.checkedBlockHeight;
     while (deep >= 0 && headerNumber.isGreaterThanOrEqualTo(0)) {
-      const currBlock = await this.blockRoot.getBlockByNumber(headerNumber);
-      if (currBlock && await isTxInBlock(tx, currBlock.header, this.chain.db)) {
+      const currBlock = await this.getBlockByNumber(headerNumber);
+      if (
+        currBlock &&
+        (await isTxInBlock(tx, currBlock.header, this.chain.db))
+      ) {
         return currBlock;
       }
       headerNumber = headerNumber.minus(1);

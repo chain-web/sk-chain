@@ -10,6 +10,7 @@ import { Genesis } from './lib/genesis';
 import { TransactionTest } from './lib/transaction/test';
 import { message } from './utils/message';
 import { BlockService } from './lib/ipld/blockService/blockService';
+import { PinService } from './lib/ipld/pinService';
 
 export interface SKChainOption {
   genesis: GenesisConfig;
@@ -28,6 +29,7 @@ export class SKChain {
     this.consensus = new Consensus(this);
     this.transAction = new TransactionAction(this);
     this.transTest = new TransactionTest(this);
+    this.pinService = new PinService(this);
 
     // 对外暴露的一些方法
     this.transaction = this.transAction.transaction;
@@ -46,6 +48,7 @@ export class SKChain {
   ipld: Ipld;
 
   blockService: BlockService;
+  pinService: PinService;
 
   // 共识
   consensus: Consensus;

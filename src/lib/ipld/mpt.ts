@@ -27,6 +27,9 @@ export class Mpt {
   initRootTree = async () => {
     try {
       this.rootTree = (await this.db.dag.get(CID.parse(this.root))).value;
+      if (!this.rootTree) {
+        message.error('rootTree is null', this.root);
+      }
     } catch (error) {
       message.error(error);
     }
